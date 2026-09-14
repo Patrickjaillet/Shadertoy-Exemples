@@ -91,7 +91,8 @@
     }
   }
 
-  async function selectShader(num) {
+  async function selectShader(num, options) {
+    const opts = options || {};
     const entry = state.index.find(e => e.num === num);
     if (!entry) return;
 
@@ -107,9 +108,32 @@
 
       renderShader(shader);
       renderSidebar();
+
+      if (!opts.fromHash) {
+        setHash(num);
+      }
     } catch (err) {
       el.currentTitle.textContent = `Erreur de chargement du shader ${num}`;
       console.error(err);
+    }
+  }
+
+  function setHash(num) {
+    const target = `#/${num}`;
+    if (location.hash !== target) {
+      history.pushState(null, '', target);
+    }
+  }
+
+  function parseHash() {
+    const match = location.hash.match(/^#\/(\d+)$/);
+    return match ? match[1].padStart(3, '0') : null;
+  }
+
+  function handleHashChange() {
+    const num = parseHash();
+    if (num && state.index.some(e => e.num === num)) {
+      selectShader(num, { fromHash: true });
     }
   }
 
@@ -169,6 +193,9 @@
     el.btnPlay.addEventListener('click', () => runtime && runtime.play());
     el.btnPause.addEventListener('click', () => runtime && runtime.pause());
     el.btnReset.addEventListener('click', () => runtime && runtime.reset());
+
+    window.addEventListener('popstate', handleHashChange);
+    window.addEventListener('hashchange', handleHashChange);
   }
 
   async function init() {
@@ -177,6 +204,11 @@
     state.index = await res.json();
     state.byCategory = groupByCategory(state.index);
     renderSidebar();
+
+    const num = parseHash();
+    if (num && state.index.some(e => e.num === num)) {
+      selectShader(num, { fromHash: true });
+    }
   }
 
   init();

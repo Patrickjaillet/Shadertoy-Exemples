@@ -58,9 +58,10 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 - Testé en conditions réelles (Playwright + Chromium) : l'éditeur affiche le code avec coloration syntaxique et numéros de ligne, le bouton copier place bien le code source dans le presse-papier (vérifié avec permissions `clipboard-read`/`clipboard-write` accordées).
 
 ### 5. Navigation et état
-- [ ] Routing simple côté client via `#hash` (ex. `#/tunnel/010`) pour permettre le lien direct vers un shader précis.
-- [ ] Chargement du shader sélectionné : fetch de `data/shaders/<NNN>.json`, compilation, mise à jour de l'éditeur.
-- [ ] Recherche (titre) et filtre par catégorie dans la sidebar, mis à jour en direct.
+- [x] Routing simple côté client via `#hash`, format `#/<NNN>` (ex. `#/307`), le numéro étant déjà unique sur l'ensemble du dépôt (pas besoin de préfixer par la catégorie). Implémenté avec `history.pushState` (pas de rechargement de page) et écoute de `popstate`/`hashchange` pour le bouton précédent/suivant du navigateur. Un hash invalide ou pointant vers un shader inexistant est ignoré sans erreur.
+- [x] Chargement du shader sélectionné : fetch de `data/shaders/<NNN>.json`, compilation, mise à jour de l'éditeur *(fait dès l'étape 3/4)*.
+- [x] Recherche (titre) dans la sidebar, mise à jour en direct *(fait dès l'étape 2)*. Pas de filtre par catégorie séparé : le regroupement par catégorie sert déjà de filtre visuel, une catégorie sans résultat de recherche est masquée.
+- Testé en conditions réelles (Playwright + Chromium) : lien direct `#/307` charge le bon shader au chargement de page, la sélection d'un autre shader met à jour le hash, le bouton "précédent" du navigateur revient à l'état antérieur, un hash invalide (`#/999`) n'entraîne aucune erreur.
 - [ ] Miniatures (optionnel, étape ultérieure) : capture d'une frame du rendu en `<canvas>.toDataURL()` pour prévisualisation dans la liste (peut être pré-générée par le script de build avec un rendu headless, ou généré à la volée côté client au premier affichage puis mis en cache `localStorage`).
 
 ### 6. Robustesse face aux shaders non supportés

@@ -48,7 +48,7 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
   - affiche une erreur de compilation lisible dans l'UI (log GLSL complet, vertex ou fragment) plutôt qu'un écran noir silencieux. Testé en conditions réelles (Playwright + Chromium) : le shader `063` (array literal GLSL ES 3.00) échoue proprement avec le détail des erreurs de compilation affiché ; le shader `307` (raymarching tunnel) compile et s'affiche correctement dans le viewport.
 - [x] Contrôles de base : Play/Pause, Reset (bornés à l'activation du chargement d'un shader). *(non fait : affichage FPS de debug, non bloquant)*.
 - [x] Interaction souris simplifiée pour `iMouse` (mousedown/mousemove/mouseup convertis en coordonnées canvas).
-- [ ] Gestion des shaders qui utilisent des textures externes (`iChannel` image/cubemap) : à ce stade ces shaders (19/378) compilent probablement mais avec un rendu non fidèle (aucune texture liée à `iChannel0..3`) ; le fallback explicite (message "aperçu non disponible") reste à faire (cf. Étape 6).
+- [x] Gestion des shaders qui utilisent des textures externes (`iChannel` image/cubemap) : détection au build et fallback explicite implémentés à l'étape 6 (badge "aperçu non disponible" + message clair dans le viewport, sans tenter la compilation WebGL, 19/378 shaders concernés).
 
 ### 4. Éditeur de code avec copie
 - [x] Éditeur en lecture seule avec coloration syntaxique GLSL : CodeMirror 5 (mode `clike`, proche de la syntaxe C/GLSL) chargé via cdnjs, thème `dracula`. CodeMirror 6 nécessite un bundler (imports ES modules), écarté au profit de CodeMirror 5 qui s'intègre en simples balises `<script>`/`<link>`, cohérent avec la contrainte "site 100% statique sans backend".

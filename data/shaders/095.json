@@ -5,5 +5,5 @@
   "file": "raymarching/095-simple.glsl",
   "unsupported": false,
   "unsupportedReason": null,
-  "source": "void mainImage(out vec4 k,in vec2 l){\r\n  vec2 m=(l.xy-.5*iResolution.xy)/iResolution.y;\r\n  float c=iTime;\r\n  vec3 g=vec3(0.);\r\n  float d=0.,h=cos(c*1.4),i=sin(c*1.4);\r\n  mat2 n=mat2(h,-i,i,h);\r\n  vec4 b=vec4(1.,8./11.,0./11.,5.9);\r\n  for(float e=0.;e<65.;e++){\r\n    vec3 a=vec3(m*(1.9+sin(c*1.)),d-.1);\r\n    a.zx*=n;\r\n    float f=1.;\r\n    for(int j=0;j<7;j++){\r\n      a=abs(a)/dot(a,a)-.8;\r\n      f+=length(a);\r\n    }\r\n    d+=0.;\r\n    float o=d*0.+e*1.;\r\n    vec3 p=abs(fract(vec3(o)+b.xyz)*6.-b.www),q=mix(b.xxx,clamp(p-b.xxx,0.,1.),1.);\r\n    g+=q/(f*f*.1);\r\n  }\r\n  k=vec4(g*.1,1.);\r\n}"
+  "source": "void mainImage(out vec4 k,in vec2 l){\n  vec2 m=(l.xy-.5*iResolution.xy)/iResolution.y;\n  float c=iTime;\n  vec3 g=vec3(0.);\n  float d=0.,h=cos(c*1.4),i=sin(c*1.4);\n  mat2 n=mat2(h,-i,i,h);\n  vec4 b=vec4(1.,8./11.,0./11.,5.9);\n  for(float e=0.;e<65.;e++){\n    vec3 a=vec3(m*(1.9+sin(c*1.)),d-.1);\n    a.zx*=n;\n    float f=1.;\n    for(int j=0;j<7;j++){\n      a=abs(a)/dot(a,a)-.8;\n      f+=length(a);\n    }\n    d+=0.;\n    float o=d*0.+e*1.;\n    vec3 p=abs(fract(vec3(o)+b.xyz)*6.-b.www),q=mix(b.xxx,clamp(p-b.xxx,0.,1.),1.);\n    g+=q/(f*f*.1);\n  }\n  k=vec4(g*.1,1.);\n}"
 }

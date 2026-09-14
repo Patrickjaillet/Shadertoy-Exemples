@@ -5,5 +5,5 @@
   "file": "raymarching/232-simple.glsl",
   "unsupported": false,
   "unsupportedReason": null,
-  "source": "void mainImage(out vec4 o,vec2 u){vec2 R=iResolution.xy,\r\np=(u-.5*R)/R.y-vec2(mod(iTime*.6,2.4)-1.2,0);\r\nfloat l=length(p),k=abs(atan(p.y,p.x)),d=abs(k-2.502)*l,\r\nm=step(p.x,0.),i=step(2.502,k)*m;vec2 e=exp(p.x*vec2(3.5,-45.*d/p.x));\r\no.rgb=vec3(.01,.02,.04)+.05*vec3(.1,.55,1)/(l+.1)+5.*exp(-l*80.)+2.*exp(-l*12.)\r\n*vec3(.1,.55,1)+3.*m*exp(-d*60.)*vec3(.2,.85,1)+i*(mix(vec3(.1,.55,1),\r\nvec3(.2,.85,1),sin(l*80.-iTime*20.)*.5+.5)*1.5*e.x+e.y*vec3(.4,1.7,2));\r\no=pow(o,vec4(.8));}"
+  "source": "void mainImage(out vec4 o,vec2 u){vec2 R=iResolution.xy,\np=(u-.5*R)/R.y-vec2(mod(iTime*.6,2.4)-1.2,0);\nfloat l=length(p),k=abs(atan(p.y,p.x)),d=abs(k-2.502)*l,\nm=step(p.x,0.),i=step(2.502,k)*m;vec2 e=exp(p.x*vec2(3.5,-45.*d/p.x));\no.rgb=vec3(.01,.02,.04)+.05*vec3(.1,.55,1)/(l+.1)+5.*exp(-l*80.)+2.*exp(-l*12.)\n*vec3(.1,.55,1)+3.*m*exp(-d*60.)*vec3(.2,.85,1)+i*(mix(vec3(.1,.55,1),\nvec3(.2,.85,1),sin(l*80.-iTime*20.)*.5+.5)*1.5*e.x+e.y*vec3(.4,1.7,2));\no=pow(o,vec4(.8));}"
 }

@@ -5,5 +5,5 @@
   "file": "divers/037-simple.glsl",
   "unsupported": false,
   "unsupportedReason": null,
-  "source": "void mainImage(out vec4 c, vec2 u){\r\n    vec3 R = iResolution;\r\n    u = (u - 0.5 * R.xy) / R.y;\r\n\n    float zoom = 1.0 + 0.5 * sin(iTime * 1.5);\r\n    u *= zoom;\r\n\n    float a = atan(u.y, u.x);\r\n    float d = length(u);\r\n\n    vec2 p = u + vec2(sin(a * 4.0 + iTime * 3.0) * 0.05, cos(a * 5.0 - iTime * 4.0) * 0.05);\r\n    float d2 = length(p);\r\n\n    vec3 col = 0.5 + 0.5 * cos(vec3(0.0, 1.0, 2.0) + a + d2 * 4.0 - iTime * 2.0);\r\n\n    c = vec4(col * (1.0 - u.y), 1.0) * step(0.0, sin(d2 * 60.0 - iTime * 8.0 + a * 3.0));\r\n}"
+  "source": "void mainImage(out vec4 c, vec2 u){\n    vec3 R = iResolution;\n    u = (u - 0.5 * R.xy) / R.y;\n\n    float zoom = 1.0 + 0.5 * sin(iTime * 1.5);\n    u *= zoom;\n\n    float a = atan(u.y, u.x);\n    float d = length(u);\n\n    vec2 p = u + vec2(sin(a * 4.0 + iTime * 3.0) * 0.05, cos(a * 5.0 - iTime * 4.0) * 0.05);\n    float d2 = length(p);\n\n    vec3 col = 0.5 + 0.5 * cos(vec3(0.0, 1.0, 2.0) + a + d2 * 4.0 - iTime * 2.0);\n\n    c = vec4(col * (1.0 - u.y), 1.0) * step(0.0, sin(d2 * 60.0 - iTime * 8.0 + a * 3.0));\n}"
 }

@@ -5,5 +5,5 @@
   "file": "raymarching/225-simple.glsl",
   "unsupported": false,
   "unsupportedReason": null,
-  "source": "void mainImage(out vec4 o, vec2 u) {\r\n    vec3 p, d = vec3((u + u - (p = iResolution).xy) / p.y, 1);\r\n    float i, s, e, t = iTime * .3;\r\n    for(o -= o; i++ < 40.; ) {\r\n        p = d * i * .1; \r\n        p.xy *= mat2(cos(t), sin(t), -sin(t), cos(t));\r\n        s = 1.;\r\n        for(int j = 0; j < 6; j++) {\r\n            p = abs(p - 1.) - 1.;\r\n            e = 1.8 / clamp(dot(p, p), .1, 1.2);\r\n            p *= e;\r\n            s *= e;\r\n        }\r\n        o += (cos(t + i * .05 + vec4(0, 1, 2, 0)) + 1.) * 2e-5 * s;\r\n    }\r\n    o = smoothstep(0., 1., pow(o, vec4(.6)));\r\n}"
+  "source": "void mainImage(out vec4 o, vec2 u) {\n    vec3 p, d = vec3((u + u - (p = iResolution).xy) / p.y, 1);\n    float i, s, e, t = iTime * .3;\n    for(o -= o; i++ < 40.; ) {\n        p = d * i * .1; \n        p.xy *= mat2(cos(t), sin(t), -sin(t), cos(t));\n        s = 1.;\n        for(int j = 0; j < 6; j++) {\n            p = abs(p - 1.) - 1.;\n            e = 1.8 / clamp(dot(p, p), .1, 1.2);\n            p *= e;\n            s *= e;\n        }\n        o += (cos(t + i * .05 + vec4(0, 1, 2, 0)) + 1.) * 2e-5 * s;\n    }\n    o = smoothstep(0., 1., pow(o, vec4(.6)));\n}"
 }

@@ -5,5 +5,5 @@
   "file": "raymarching/178-simple.glsl",
   "unsupported": false,
   "unsupportedReason": null,
-  "source": "void mainImage(out vec4 o, vec2 u){\r\n    vec2 R = iResolution.xy;\r\n    float t = iTime, a = 8., d;\r\n    vec3 b = vec3((u+u - R)/R.y * (1. + sin(t*.3)) * -4.75, cos(t*.4)),\r\n         c = vec3(log(d = length(b)), exp(-b.y/d), atan(b.x, b.z));\r\n\n    for(d = c.y - 1.; a < 1e3; a *= 2.)\r\n        d -= abs(dot(sin(c.yzx*a), 1. - cos(c*a))) / a * .6;\r\n\n    o = vec4(smoothstep(0., 1., abs(d)*5.));\r\n    o.a = 0.;\r\n}"
+  "source": "void mainImage(out vec4 o, vec2 u){\n    vec2 R = iResolution.xy;\n    float t = iTime, a = 8., d;\n    vec3 b = vec3((u+u - R)/R.y * (1. + sin(t*.3)) * -4.75, cos(t*.4)),\n         c = vec3(log(d = length(b)), exp(-b.y/d), atan(b.x, b.z));\n\n    for(d = c.y - 1.; a < 1e3; a *= 2.)\n        d -= abs(dot(sin(c.yzx*a), 1. - cos(c*a))) / a * .6;\n\n    o = vec4(smoothstep(0., 1., abs(d)*5.));\n    o.a = 0.;\n}"
 }

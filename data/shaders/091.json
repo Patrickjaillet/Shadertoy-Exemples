@@ -5,5 +5,5 @@
   "file": "raymarching/091-simple.glsl",
   "unsupported": false,
   "unsupportedReason": null,
-  "source": "void mainImage(out vec4 o, vec2 c) {\r\n    vec3 r = iResolution, p = vec3(0, 0, -iTime);\r\n      for(int i; i < 40; i++)      \r\n        p += vec3((c+c-r.xy)/r.y, 1) * (length(sin(p) * cos(p.yzx)) - .4);\r\n        o = sin(p + iTime).xyzz;\r\n}"
+  "source": "void mainImage(out vec4 o, vec2 c) {\n    vec3 r = iResolution, p = vec3(0, 0, -iTime);\n      for(int i; i < 40; i++)      \n        p += vec3((c+c-r.xy)/r.y, 1) * (length(sin(p) * cos(p.yzx)) - .4);\n        o = sin(p + iTime).xyzz;\n}"
 }

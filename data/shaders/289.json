@@ -5,5 +5,5 @@
   "file": "space-cosmos/289-simple.glsl",
   "unsupported": false,
   "unsupportedReason": null,
-  "source": "void mainImage(out vec4 g, vec2 h) {\r\n    vec2 u = iResolution.xy,\r\n         a = abs(.5 - fract((h+h-u)/u.y * vec2(1.-.7*(2.*h.y-u.y)/u.y, 1))),\r\n         b = a, c = u-u;\r\n\n    for(int e=0; e<4; e++)\r\n        b = abs(b) / clamp(abs(b.x*b.y), .1, 1.) - .8,\r\n        c = min(c, abs(b)) + fract(vec2(b.x + iTime*.5, b.y*.2 + iTime));\r\n\n    vec2 k = exp(-.9*c);\r\n    g = vec4(k.x * 2.3 + exp(-5.1*length(a)), length(k) + exp(-5.1*length(a)), \r\n    k.y * 4.9 + exp(-5.1*length(a)), 1.);\r\n}"
+  "source": "void mainImage(out vec4 g, vec2 h) {\n    vec2 u = iResolution.xy,\n         a = abs(.5 - fract((h+h-u)/u.y * vec2(1.-.7*(2.*h.y-u.y)/u.y, 1))),\n         b = a, c = u-u;\n\n    for(int e=0; e<4; e++)\n        b = abs(b) / clamp(abs(b.x*b.y), .1, 1.) - .8,\n        c = min(c, abs(b)) + fract(vec2(b.x + iTime*.5, b.y*.2 + iTime));\n\n    vec2 k = exp(-.9*c);\n    g = vec4(k.x * 2.3 + exp(-5.1*length(a)), length(k) + exp(-5.1*length(a)), \n    k.y * 4.9 + exp(-5.1*length(a)), 1.);\n}"
 }

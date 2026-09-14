@@ -5,5 +5,5 @@
   "file": "raymarching/113-simple.glsl",
   "unsupported": false,
   "unsupportedReason": null,
-  "source": "void mainImage(out vec4 O,vec2 U){\r\nvec3 d=normalize(vec3(1,8,-7.8)),a;float t=iTime,g=0.,F=0.,h=.4-cos(t)*.3,s=sin(h),c=cos(h);\r\nU=(U+U-iResolution.xy)/iResolution.x*14.-.4-sin(t);\r\nfor(int j=0;j<25;j++){a=vec3(U,g-2.6);a.y+=sin(t*9.4+U.x+a.z*4.2)*0.3;\r\nfor(int k=0;k<16;k++)a=c*a+s*cross(d,a)+(1.-c)*dot(d,a)*d,a=abs(a*1.2)-vec3(1,1,.9);\r\ng+=c=(length(a.zy)-0.8)/300.0;F+=exp(-c*3300.0)/30.0;\r\n}O=vec4(F);}"
+  "source": "void mainImage(out vec4 O,vec2 U){\nvec3 d=normalize(vec3(1,8,-7.8)),a;float t=iTime,g=0.,F=0.,h=.4-cos(t)*.3,s=sin(h),c=cos(h);\nU=(U+U-iResolution.xy)/iResolution.x*14.-.4-sin(t);\nfor(int j=0;j<25;j++){a=vec3(U,g-2.6);a.y+=sin(t*9.4+U.x+a.z*4.2)*0.3;\nfor(int k=0;k<16;k++)a=c*a+s*cross(d,a)+(1.-c)*dot(d,a)*d,a=abs(a*1.2)-vec3(1,1,.9);\ng+=c=(length(a.zy)-0.8)/300.0;F+=exp(-c*3300.0)/30.0;\n}O=vec4(F);}"
 }

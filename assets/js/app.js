@@ -13,12 +13,21 @@
     categoryList: document.getElementById('category-list'),
     currentTitle: document.getElementById('current-title'),
     codeContent: document.getElementById('code-content'),
+    canvas: document.getElementById('shader-canvas'),
     viewportPlaceholder: document.getElementById('viewport-placeholder'),
+    viewportError: document.getElementById('viewport-error'),
     btnCopy: document.getElementById('btn-copy'),
     btnPlay: document.getElementById('btn-play'),
     btnPause: document.getElementById('btn-pause'),
     btnReset: document.getElementById('btn-reset')
   };
+
+  let runtime = null;
+  try {
+    runtime = new ShaderToyRuntime(el.canvas);
+  } catch (err) {
+    console.error(err);
+  }
 
   function groupByCategory(entries) {
     const map = new Map();
@@ -84,13 +93,45 @@
       state.current = shader;
       el.currentTitle.textContent = `${shader.num} — ${shader.title}`;
       el.codeContent.textContent = shader.source;
-      el.viewportPlaceholder.textContent = 'Rendu WebGL à venir (étape 3 de la roadmap).';
       el.btnCopy.disabled = false;
 
+      renderShader(shader);
       renderSidebar();
     } catch (err) {
       el.currentTitle.textContent = `Erreur de chargement du shader ${num}`;
       console.error(err);
+    }
+  }
+
+  function showViewportError(message) {
+    el.viewportPlaceholder.hidden = true;
+    el.viewportError.hidden = false;
+    el.viewportError.textContent = message;
+    setPlaybackControls(false);
+  }
+
+  function clearViewportError() {
+    el.viewportPlaceholder.hidden = true;
+    el.viewportError.hidden = true;
+  }
+
+  function setPlaybackControls(enabled) {
+    el.btnPlay.disabled = !enabled;
+    el.btnPause.disabled = !enabled;
+    el.btnReset.disabled = !enabled;
+  }
+
+  function renderShader(shader) {
+    if (!runtime) {
+      showViewportError('WebGL non disponible sur ce navigateur.');
+      return;
+    }
+    try {
+      runtime.load(shader.source);
+      clearViewportError();
+      setPlaybackControls(true);
+    } catch (err) {
+      showViewportError(err.message || String(err));
     }
   }
 
@@ -114,6 +155,10 @@
     });
 
     el.btnCopy.addEventListener('click', copyCode);
+
+    el.btnPlay.addEventListener('click', () => runtime && runtime.play());
+    el.btnPause.addEventListener('click', () => runtime && runtime.pause());
+    el.btnReset.addEventListener('click', () => runtime && runtime.reset());
   }
 
   async function init() {

@@ -42,12 +42,13 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 - Le rendu WebGL réel (étape 3) et l'éditeur CodeMirror (étape 4) ne sont pas encore branchés : le code source s'affiche pour l'instant en texte brut dans un `<pre>`, et le viewport affiche un message d'attente.
 
 ### 3. Viewport de rendu WebGL (800×450)
-- [ ] Canvas fixé à `width=800 height=450` (résolution interne), avec `iResolution` réglé en conséquence.
-- [ ] Petit runtime WebGL "Shadertoy-like" (`assets/js/shadertoy-runtime.js`) :
-  - compile le fragment shader (pass `image` unique) en l'enveloppant dans un template qui fournit `mainImage`, les uniforms standards (`iResolution`, `iTime`, `iTimeDelta`, `iFrame`, `iMouse`, `iDate`), un quad plein écran, et la boucle `requestAnimationFrame`.
-  - affiche une erreur de compilation lisible dans l'UI (log GLSL) plutôt qu'un écran noir silencieux.
-- [ ] Contrôles de base : Play/Pause, Reset time, affichage FPS (debug), et si pertinent, interaction souris simplifiée pour `iMouse`.
-- [ ] Gestion des shaders qui utilisent des textures externes (`iChannel` image/cubemap) : soit non supportés au départ (fallback message clair), soit ajout d'assets par défaut plus tard (cf. Étape 6).
+- [x] Canvas fixé à `width=800 height=450` (résolution interne), avec `iResolution` réglé en conséquence.
+- [x] Petit runtime WebGL "Shadertoy-like" (`assets/js/shadertoy-runtime.js`) :
+  - compile le fragment shader (pass `image` unique) en l'enveloppant dans un template qui fournit `mainImage`, les uniforms standards (`iResolution`, `iTime`, `iTimeDelta`, `iFrame`, `iMouse`, `iDate`), un quad plein écran (triangle unique), et la boucle `requestAnimationFrame`.
+  - affiche une erreur de compilation lisible dans l'UI (log GLSL complet, vertex ou fragment) plutôt qu'un écran noir silencieux. Testé en conditions réelles (Playwright + Chromium) : le shader `063` (array literal GLSL ES 3.00) échoue proprement avec le détail des erreurs de compilation affiché ; le shader `307` (raymarching tunnel) compile et s'affiche correctement dans le viewport.
+- [x] Contrôles de base : Play/Pause, Reset (bornés à l'activation du chargement d'un shader). *(non fait : affichage FPS de debug, non bloquant)*.
+- [x] Interaction souris simplifiée pour `iMouse` (mousedown/mousemove/mouseup convertis en coordonnées canvas).
+- [ ] Gestion des shaders qui utilisent des textures externes (`iChannel` image/cubemap) : à ce stade ces shaders (19/378) compilent probablement mais avec un rendu non fidèle (aucune texture liée à `iChannel0..3`) ; le fallback explicite (message "aperçu non disponible") reste à faire (cf. Étape 6).
 
 ### 4. Éditeur de code avec copie
 - [ ] Intégrer un éditeur en lecture seule avec coloration syntaxique GLSL (ex. CodeMirror 6, léger, chargé via CDN pour rester statique).

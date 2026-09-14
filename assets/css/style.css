@@ -50,10 +50,95 @@ html, body {
   border-bottom: 1px solid var(--border);
 }
 
+.sidebar-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
 .sidebar-title {
-  margin: 0 0 12px;
+  margin: 0;
   font-size: 16px;
   font-weight: 600;
+}
+
+.about-link {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.about-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.about-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 16px;
+}
+
+.about-dialog {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.about-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.about-header h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.about-close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.about-close:hover {
+  color: var(--text);
+}
+
+.about-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.about-dialog p {
+  margin: 6px 0;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.about-dialog a {
+  color: var(--accent);
 }
 
 .search-input {

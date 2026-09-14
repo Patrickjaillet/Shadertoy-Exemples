@@ -14,7 +14,10 @@
 
     <aside id="sidebar" class="sidebar">
       <div class="sidebar-header">
-        <h1 class="sidebar-title">Shadertoy Exemples</h1>
+        <div class="sidebar-title-row">
+          <h1 class="sidebar-title">Shadertoy Exemples</h1>
+          <button id="btn-about" class="about-link" aria-haspopup="dialog">À propos</button>
+        </div>
         <input id="search-input" class="search-input" type="search" placeholder="Rechercher un shader...">
       </div>
       <nav id="category-list" class="category-list"></nav>
@@ -47,6 +50,19 @@
         <div id="code-editor" class="code-editor"></div>
       </section>
     </main>
+  </div>
+
+  <div id="about-overlay" class="about-overlay" hidden>
+    <div id="about-dialog" class="about-dialog" role="dialog" aria-modal="true" aria-labelledby="about-title">
+      <div class="about-header">
+        <h2 id="about-title">À propos</h2>
+        <button id="btn-about-close" class="about-close" aria-label="Fermer">×</button>
+      </div>
+      <p class="about-name">Shadertoy Exemples</p>
+      <p>Copyright © 2026 Patrick JAILLET — Tous droits réservés</p>
+      <p>E-mail : <a href="mailto:sandefjord.development@proton.me">sandefjord.development@proton.me</a></p>
+      <p>Site web : <a href="https://patrickjaillet.github.io/Shadertoy-Exemples" target="_blank" rel="noopener">patrickjaillet.github.io/Shadertoy-Exemples</a></p>
+    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>

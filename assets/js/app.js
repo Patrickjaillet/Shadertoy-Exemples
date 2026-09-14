@@ -19,7 +19,10 @@
     btnCopy: document.getElementById('btn-copy'),
     btnPlay: document.getElementById('btn-play'),
     btnPause: document.getElementById('btn-pause'),
-    btnReset: document.getElementById('btn-reset')
+    btnReset: document.getElementById('btn-reset'),
+    btnAbout: document.getElementById('btn-about'),
+    btnAboutClose: document.getElementById('btn-about-close'),
+    aboutOverlay: document.getElementById('about-overlay')
   };
 
   let runtime = null;
@@ -206,6 +209,15 @@
 
     window.addEventListener('popstate', handleHashChange);
     window.addEventListener('hashchange', handleHashChange);
+
+    el.btnAbout.addEventListener('click', () => { el.aboutOverlay.hidden = false; });
+    el.btnAboutClose.addEventListener('click', () => { el.aboutOverlay.hidden = true; });
+    el.aboutOverlay.addEventListener('click', (e) => {
+      if (e.target === el.aboutOverlay) el.aboutOverlay.hidden = true;
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !el.aboutOverlay.hidden) el.aboutOverlay.hidden = true;
+    });
   }
 
   async function init() {

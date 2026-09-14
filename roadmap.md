@@ -116,8 +116,8 @@ Site web : https://patrickjaillet.github.io/Shadertoy-Exemples
 - [ ] Chaque fonctionnalité ajoutée doit être reflétée dans ce fichier ROADMAP.md.
 - [ ] Sérialisation automatique de la version du logiciel selon la norme stricte SemVer.
 - [ ] Ne pas mettre de nom de phase dans les fichiers.
-- [ ] Chaque modification doit être automatiquement reflétée dans le fichier CHANGELOG.md.
-- [ ] Le fichier README.md doit être créé et mis à jour à chaque modification, incluant une capture d'écran du logiciel.
+- [x] Chaque modification doit être automatiquement reflétée dans le fichier CHANGELOG.md. *(CHANGELOG.md créé, jalon 0.1.0 couvrant l'ensemble du travail jusqu'ici ; les prochaines modifications devront y ajouter une entrée.)*
+- [x] Le fichier README.md doit être créé et mis à jour à chaque modification, incluant une capture d'écran du logiciel.
 - [ ] Ne jamais intégrer Claude AI dans GitHub, les fichiers, ou la liste des contributeurs.
-- [ ] Intégrer copyright / e-mail / site web dans un onglet « À propos ».
+- [x] Intégrer copyright / e-mail / site web dans un onglet « À propos ». *(bouton "À propos" dans la sidebar, ouvrant une modale avec le copyright, l'e-mail et le site web, fermeture par clic extérieur/Échap/bouton croix.)*
 - [ ] Aller droit au but, exhaustivité et rigueur technique professionnelle.

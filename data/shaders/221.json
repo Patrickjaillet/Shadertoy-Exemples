@@ -3,5 +3,7 @@
   "title": "Raymarching 221",
   "category": "raymarching",
   "file": "raymarching/221-simple.glsl",
+  "unsupported": false,
+  "unsupportedReason": null,
   "source": "// https://patrickjaillet.github.io/sandefjord-software\r\nmat2 l(float b){\r\n    float a=sin(b);\r\n    float c=cos(b);\r\n    return mat2(c,-a,a,c);\r\n}\r\nvoid mainImage(out vec4 m,in vec2 n){\r\n    vec2 o=1.-n.xy/iResolution.y;\r\n    vec3 p=vec3(.5,0.,-1.);\r\n    vec3 q=vec3(o,1.);\r\n    vec3 d=p;\r\n    vec3 e=vec3(0.);\r\n    float f=0.;\r\n    float c=.001;\r\n    for(float g=0.;g<97.;g+=1.){\r\n        vec3 h=q;\r\n        if(c<0.){\r\n            h=d*12.;\r\n        }\r\n        d+=h*c;\r\n        vec3 a=d;\r\n        a.yz*=l(iTime*.5);\r\n        a.z=fract(a.z+iTime)-.5;\r\n        float b=atan(a.x,a.y);\r\n        float r=length(a.xy);\r\n        a.xy=vec2(cos(b*6.),sin(b*6.))*r;\r\n        a=.5-abs(a);\r\n        float i=2.7;\r\n        for(int j=0;j<7;j++){\r\n            a=abs(a)-.65;\r\n            float s=clamp(dot(a,a),0.,1.6);\r\n            float k=7.2/s;\r\n            i*=k;\r\n            a=abs(a)*k-3.9;\r\n            a.z+=3.8;\r\n        }\r\n        c=length(a.xz)/max(i,0.);\r\n        float t=max(c,0.);\r\n        float u=.01/exp(t*104.8);\r\n        e+=vec3(u);\r\n        f+=max(c,.001);\r\n        if(f>22.3)break;\r\n    }\r\n    m=vec4(e,1.);\r\n}"
 }

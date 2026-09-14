@@ -3,5 +3,7 @@
   "title": "Raymarching 084",
   "category": "raymarching",
   "file": "raymarching/084-simple.glsl",
+  "unsupported": false,
+  "unsupportedReason": null,
   "source": "void mainImage(out vec4 O, vec2 U) {\r\n    vec2 R = iResolution.xy;\r\n    vec2 p = (U - 0.5 * R) / min(R.x, R.y);\r\n    \r\n    float tm = iTime * 0.3;\r\n    \r\n    // Zoom avant/arrière infini basé sur le temps\r\n    float zoom = 1.0 + 0.5 * sin(tm * 0.5);\r\n    p *= zoom;\r\n\r\n    vec2 z2 = p;\r\n    float r = length(z2);\r\n    float a = atan(z2.y, z2.x);\r\n    \r\n    r = log(r + 0.3);\r\n    z2 = vec2(r * cos(a + tm), r * sin(a + tm));\r\n    \r\n    vec3 z = vec3(z2, tm * 0.0);\r\n    float scale = 1.0;\r\n    float accum = 0.0;\r\n    \r\n    for(int i = 0; i < 22; i++) {\r\n        z = abs(z) - vec3(0.3, 0.3, 0.3);\r\n        \r\n        if (z.x < z.y) z.xy = z.yx;\r\n        if (z.x < z.z) z.xz = z.zx;\r\n        if (z.y < z.z) z.yz = z.zy;\r\n        \r\n        z *= 2.9;\r\n        z -= vec3(1.0, 1.0, 0.2);\r\n        scale *= 1.8;\r\n        \r\n        float d = dot(z, z);\r\n        z *= clamp(0.0 / max(d, 0.1), 0.8, 1.2);\r\n        \r\n        accum += length(z) / scale;\r\n    }\r\n    \r\n    float hue = fract(accum * 0.0 + tm * 0.2);\r\n    vec3 col = clamp(abs(fract(hue + vec3(0.0, 0.0/-2.4, -2.7/2.0)) * 4.9 - -11.0) - 1.0, 0.0, 1.0);\r\n    \r\n    O = vec4(col / (accum + 0.1), 1.0);\r\n}"
 }

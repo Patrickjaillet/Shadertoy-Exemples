@@ -36,6 +36,23 @@ function extractImageSource(content) {
   return content.slice(match.index + match[0].length).trim();
 }
 
+function detectUnsupported(source) {
+  const channels = new Set();
+  const channelRe = /\biChannel([0-3])\b/g;
+  let m;
+  while ((m = channelRe.exec(source)) !== null) {
+    channels.add(Number(m[1]));
+  }
+  if (channels.size > 0) {
+    const list = [...channels].sort().map(n => `iChannel${n}`).join(', ');
+    return `Texture(s) externe(s) non fournie(s) dans le dépôt (${list}).`;
+  }
+  if (/\bsamplerCube\b|\btextureCube\b/.test(source)) {
+    return 'Cubemap externe non fournie dans le dépôt.';
+  }
+  return null;
+}
+
 function buildEntries() {
   const entries = [];
 
@@ -68,12 +85,15 @@ function buildEntries() {
     const content = fs.readFileSync(path.join(item.dir, item.file), 'utf-8');
     const title = extractTitle(content, num, item.category);
     const source = extractImageSource(content);
+    const unsupportedReason = detectUnsupported(source);
 
     entries.push({
       num,
       title,
       category: item.category,
       file: item.relPath.replace(/\\/g, '/'),
+      unsupported: unsupportedReason !== null,
+      unsupportedReason,
       source
     });
   }
@@ -85,7 +105,7 @@ function buildEntries() {
 function writeOutputs(entries) {
   fs.mkdirSync(shadersDataDir, { recursive: true });
 
-  const index = entries.map(({ num, title, category, file }) => ({ num, title, category, file }));
+  const index = entries.map(({ num, title, category, file, unsupported }) => ({ num, title, category, file, unsupported }));
   fs.writeFileSync(
     path.join(dataDir, 'shaders.json'),
     JSON.stringify(index, null, 2),

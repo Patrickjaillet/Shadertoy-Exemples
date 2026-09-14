@@ -3,5 +3,7 @@
   "title": "Tunnel 332",
   "category": "tunnel",
   "file": "tunnel/332-simple.glsl",
+  "unsupported": false,
+  "unsupportedReason": null,
   "source": "void mainImage(out vec4 o, vec2 FC) {\r\n    vec2 uv = (FC - 0.5 * iResolution.xy) / iResolution.y;\r\n    float t = iTime * 0.3;\r\n    \r\n    vec3 ro = vec3(1.0, -1.8 - iTime * 1.5, 0.0);\r\n    vec3 rd = normalize(vec3(uv, 0.1));\r\n    rd.yz *= mat2(cos(1.2), -sin(1.2), sin(1.2), cos(1.2));\r\n    \r\n    float acc = 1.0;\r\n    vec3 p;\r\n    \r\n    for(float i = 0.0; i < 80.0; i++) {\r\n        p = ro + rd * (i * 0.3);\r\n        p = mod(p, 4.0) - 2.0;\r\n        \r\n        float d = length(p.xy) - 1.0;\r\n        d = abs(d) - 0.4;\r\n        d = max(d, abs(p.z) - 0.3);\r\n        \r\n        float pulse = sin(t + i * 0.1) * 0.5 + 0.5;\r\n        acc += 0.04 / (0.01 + d * d) * pulse;\r\n        \r\n        ro.z += 0.01;\r\n    }\r\n    \r\n    vec3 col = vec3(1.0, 0.0, 0.0) * acc;\r\n    col += vec3(1.0, 1.0, 0.4) * acc * 0.1;\r\n    \r\n    o = vec4(col * (0.6 - length(uv) * 0.4), 1.0);\r\n}"
 }

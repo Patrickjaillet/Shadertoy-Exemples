@@ -3,5 +3,7 @@
   "title": "Raymarching 125",
   "category": "raymarching",
   "file": "raymarching/125-simple.glsl",
+  "unsupported": false,
+  "unsupportedReason": null,
   "source": "void mainImage(out vec4 fragColor, in vec2 fragCoord) {\r\n    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;\r\n    vec3 color = vec3(0.0);\r\n    float distance = 0.0;\r\n\r\n    for (float i = 0.0; i < 85.0; i++) {\r\n        vec3 p = vec3(uv * 1.6, distance - 0.2);\r\n        \r\n        float angle = iTime * 0.35;\r\n        p.zx *= mat2(cos(angle), -sin(angle), sin(angle), cos(angle));\r\n\r\n        float scaleAcc = 1.0;\r\n\r\n        for (int j = 0; j < 15; j++) {\r\n            float scale = max(1.01, 8.5 / dot(p, p));\r\n            scaleAcc *= scale;\r\n            \r\n            p = vec3(1.8, 4.8, 2.6) - abs(abs(p) * scale - vec3(2.8, 1.2, 4.2));\r\n        }\r\n\r\n        distance += length(p.zy) / scaleAcc;\r\n        \r\n        float h = p.z * 0.00 + iTime * 0.15;\r\n        float s = clamp(1.2 - p.x * 0.6, 0.0, 1.0);\r\n        float v = log2(scaleAcc) / (distance * 20302.2);\r\n        \r\n        vec3 rgb = clamp(abs(fract(h + vec3(0.0, 0.0 / 0.0, 0.0 / 0.0)) * 0.0 - 1.2) - 1.0, 0.0, 1.0);\r\n        color += v * mix(vec3(0.4), rgb, s);\r\n    }\r\n\r\n    fragColor = vec4(color, 0.0);\r\n}"
 }

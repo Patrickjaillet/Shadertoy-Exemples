@@ -3,2268 +3,2646 @@
     "num": "001",
     "title": "Divers 001",
     "category": "divers",
-    "file": "divers/001-simple.glsl"
+    "file": "divers/001-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "002",
     "title": "Divers 002",
     "category": "divers",
-    "file": "divers/002-simple.glsl"
+    "file": "divers/002-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "003",
     "title": "Divers 003",
     "category": "divers",
-    "file": "divers/003-simple.glsl"
+    "file": "divers/003-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "004",
     "title": "Divers 004",
     "category": "divers",
-    "file": "divers/004-simple.glsl"
+    "file": "divers/004-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "005",
     "title": "Divers 005",
     "category": "divers",
-    "file": "divers/005-simple.glsl"
+    "file": "divers/005-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "006",
     "title": "Divers 006",
     "category": "divers",
-    "file": "divers/006-simple.glsl"
+    "file": "divers/006-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "007",
     "title": "Divers 007",
     "category": "divers",
-    "file": "divers/007-simple.glsl"
+    "file": "divers/007-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "008",
     "title": "Divers 008",
     "category": "divers",
-    "file": "divers/008-simple.glsl"
+    "file": "divers/008-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "009",
     "title": "Divers 009",
     "category": "divers",
-    "file": "divers/009-simple.glsl"
+    "file": "divers/009-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "010",
     "title": "Divers 010",
     "category": "divers",
-    "file": "divers/010-simple.glsl"
+    "file": "divers/010-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "011",
     "title": "Divers 011",
     "category": "divers",
-    "file": "divers/011-simple.glsl"
+    "file": "divers/011-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "012",
     "title": "Divers 012",
     "category": "divers",
-    "file": "divers/012-simple.glsl"
+    "file": "divers/012-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "013",
     "title": "Divers 013",
     "category": "divers",
-    "file": "divers/013-simple.glsl"
+    "file": "divers/013-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "014",
     "title": "Divers 014",
     "category": "divers",
-    "file": "divers/014-simple.glsl"
+    "file": "divers/014-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "015",
     "title": "Divers 015",
     "category": "divers",
-    "file": "divers/015-simple.glsl"
+    "file": "divers/015-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "016",
     "title": "Divers 016",
     "category": "divers",
-    "file": "divers/016-simple.glsl"
+    "file": "divers/016-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "017",
     "title": "Divers 017",
     "category": "divers",
-    "file": "divers/017-simple.glsl"
+    "file": "divers/017-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "018",
     "title": "Divers 018",
     "category": "divers",
-    "file": "divers/018-simple.glsl"
+    "file": "divers/018-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "019",
     "title": "Divers 019",
     "category": "divers",
-    "file": "divers/019-simple.glsl"
+    "file": "divers/019-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "020",
     "title": "Divers 020",
     "category": "divers",
-    "file": "divers/020-simple.glsl"
+    "file": "divers/020-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "021",
     "title": "Divers 021",
     "category": "divers",
-    "file": "divers/021-simple.glsl"
+    "file": "divers/021-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "022",
     "title": "Divers 022",
     "category": "divers",
-    "file": "divers/022-simple.glsl"
+    "file": "divers/022-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "023",
     "title": "Divers 023",
     "category": "divers",
-    "file": "divers/023-simple.glsl"
+    "file": "divers/023-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "024",
     "title": "Divers 024",
     "category": "divers",
-    "file": "divers/024-simple.glsl"
+    "file": "divers/024-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "025",
     "title": "Divers 025",
     "category": "divers",
-    "file": "divers/025-simple.glsl"
+    "file": "divers/025-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "026",
     "title": "Divers 026",
     "category": "divers",
-    "file": "divers/026-simple.glsl"
+    "file": "divers/026-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "027",
     "title": "Divers 027",
     "category": "divers",
-    "file": "divers/027-simple.glsl"
+    "file": "divers/027-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "028",
     "title": "Divers 028",
     "category": "divers",
-    "file": "divers/028-simple.glsl"
+    "file": "divers/028-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "029",
     "title": "Divers 029",
     "category": "divers",
-    "file": "divers/029-simple.glsl"
+    "file": "divers/029-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "030",
     "title": "Divers 030",
     "category": "divers",
-    "file": "divers/030-simple.glsl"
+    "file": "divers/030-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "031",
     "title": "Divers 031",
     "category": "divers",
-    "file": "divers/031-simple.glsl"
+    "file": "divers/031-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "032",
     "title": "Divers 032",
     "category": "divers",
-    "file": "divers/032-simple.glsl"
+    "file": "divers/032-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "033",
     "title": "Divers 033",
     "category": "divers",
-    "file": "divers/033-simple.glsl"
+    "file": "divers/033-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "034",
     "title": "Divers 034",
     "category": "divers",
-    "file": "divers/034-simple.glsl"
+    "file": "divers/034-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "035",
     "title": "Divers 035",
     "category": "divers",
-    "file": "divers/035-simple.glsl"
+    "file": "divers/035-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "036",
     "title": "Divers 036",
     "category": "divers",
-    "file": "divers/036-simple.glsl"
+    "file": "divers/036-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "037",
     "title": "Divers 037",
     "category": "divers",
-    "file": "divers/037-simple.glsl"
+    "file": "divers/037-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "038",
     "title": "Divers 038",
     "category": "divers",
-    "file": "divers/038-simple.glsl"
+    "file": "divers/038-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "039",
     "title": "Divers 039",
     "category": "divers",
-    "file": "divers/039-simple.glsl"
+    "file": "divers/039-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "040",
     "title": "Divers 040",
     "category": "divers",
-    "file": "divers/040-simple.glsl"
+    "file": "divers/040-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "041",
     "title": "Divers 041",
     "category": "divers",
-    "file": "divers/041-simple.glsl"
+    "file": "divers/041-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "042",
     "title": "Divers 042",
     "category": "divers",
-    "file": "divers/042-simple.glsl"
+    "file": "divers/042-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "043",
     "title": "Divers 043",
     "category": "divers",
-    "file": "divers/043-simple.glsl"
+    "file": "divers/043-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "044",
     "title": "Divers 044",
     "category": "divers",
-    "file": "divers/044-simple.glsl"
+    "file": "divers/044-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "045",
     "title": "Divers 045",
     "category": "divers",
-    "file": "divers/045-simple.glsl"
+    "file": "divers/045-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "046",
     "title": "Divers 046",
     "category": "divers",
-    "file": "divers/046-simple.glsl"
+    "file": "divers/046-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "047",
     "title": "Divers 047",
     "category": "divers",
-    "file": "divers/047-simple.glsl"
+    "file": "divers/047-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "048",
     "title": "Divers 048",
     "category": "divers",
-    "file": "divers/048-simple.glsl"
+    "file": "divers/048-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "049",
     "title": "Divers 049",
     "category": "divers",
-    "file": "divers/049-simple.glsl"
+    "file": "divers/049-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "050",
     "title": "Divers 050",
     "category": "divers",
-    "file": "divers/050-simple.glsl"
+    "file": "divers/050-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "051",
     "title": "Divers 051",
     "category": "divers",
-    "file": "divers/051-simple.glsl"
+    "file": "divers/051-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "052",
     "title": "Divers 052",
     "category": "divers",
-    "file": "divers/052-simple.glsl"
+    "file": "divers/052-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "053",
     "title": "Divers 053",
     "category": "divers",
-    "file": "divers/053-simple.glsl"
+    "file": "divers/053-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "054",
     "title": "Divers 054",
     "category": "divers",
-    "file": "divers/054-simple.glsl"
+    "file": "divers/054-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "055",
     "title": "Divers 055",
     "category": "divers",
-    "file": "divers/055-simple.glsl"
+    "file": "divers/055-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "056",
     "title": "Divers 056",
     "category": "divers",
-    "file": "divers/056-simple.glsl"
+    "file": "divers/056-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "057",
     "title": "Divers 057",
     "category": "divers",
-    "file": "divers/057-simple.glsl"
+    "file": "divers/057-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "058",
     "title": "Divers 058",
     "category": "divers",
-    "file": "divers/058-simple.glsl"
+    "file": "divers/058-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "059",
     "title": "Divers 059",
     "category": "divers",
-    "file": "divers/059-simple.glsl"
+    "file": "divers/059-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "060",
     "title": "Divers 060",
     "category": "divers",
-    "file": "divers/060-simple.glsl"
+    "file": "divers/060-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "061",
     "title": "Divers 061",
     "category": "divers",
-    "file": "divers/061-simple.glsl"
+    "file": "divers/061-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "062",
     "title": "Divers 062",
     "category": "divers",
-    "file": "divers/062-simple.glsl"
+    "file": "divers/062-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "063",
     "title": "Test ZCode 3D #2",
     "category": "raymarching",
-    "file": "raymarching/063-simple.glsl"
+    "file": "raymarching/063-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "064",
     "title": "Raymarching 064",
     "category": "raymarching",
-    "file": "raymarching/064-simple.glsl"
+    "file": "raymarching/064-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "065",
     "title": "Raymarching 065",
     "category": "raymarching",
-    "file": "raymarching/065-simple.glsl"
+    "file": "raymarching/065-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "066",
     "title": "Raymarching 066",
     "category": "raymarching",
-    "file": "raymarching/066-simple.glsl"
+    "file": "raymarching/066-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "067",
     "title": "Raymarching 067",
     "category": "raymarching",
-    "file": "raymarching/067-simple.glsl"
+    "file": "raymarching/067-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "068",
     "title": "Raymarching 068",
     "category": "raymarching",
-    "file": "raymarching/068-simple.glsl"
+    "file": "raymarching/068-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "069",
     "title": "Raymarching 069",
     "category": "raymarching",
-    "file": "raymarching/069-simple.glsl"
+    "file": "raymarching/069-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "070",
     "title": "Raymarching 070",
     "category": "raymarching",
-    "file": "raymarching/070-simple.glsl"
+    "file": "raymarching/070-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "071",
     "title": "Raymarching 071",
     "category": "raymarching",
-    "file": "raymarching/071-simple.glsl"
+    "file": "raymarching/071-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "072",
     "title": "Raymarching 072",
     "category": "raymarching",
-    "file": "raymarching/072-simple.glsl"
+    "file": "raymarching/072-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "073",
     "title": "Raymarching 073",
     "category": "raymarching",
-    "file": "raymarching/073-simple.glsl"
+    "file": "raymarching/073-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "074",
     "title": "Raymarching 074",
     "category": "raymarching",
-    "file": "raymarching/074-simple.glsl"
+    "file": "raymarching/074-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "075",
     "title": "Raymarching 075",
     "category": "raymarching",
-    "file": "raymarching/075-simple.glsl"
+    "file": "raymarching/075-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "076",
     "title": "Raymarching 076",
     "category": "raymarching",
-    "file": "raymarching/076-simple.glsl"
+    "file": "raymarching/076-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "077",
     "title": "Raymarching 077",
     "category": "raymarching",
-    "file": "raymarching/077-simple.glsl"
+    "file": "raymarching/077-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "078",
     "title": "Raymarching 078",
     "category": "raymarching",
-    "file": "raymarching/078-simple.glsl"
+    "file": "raymarching/078-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "079",
     "title": "Raymarching 079",
     "category": "raymarching",
-    "file": "raymarching/079-simple.glsl"
+    "file": "raymarching/079-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "080",
     "title": "Raymarching 080",
     "category": "raymarching",
-    "file": "raymarching/080-simple.glsl"
+    "file": "raymarching/080-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "081",
     "title": "Raymarching 081",
     "category": "raymarching",
-    "file": "raymarching/081-simple.glsl"
+    "file": "raymarching/081-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "082",
     "title": "Raymarching 082",
     "category": "raymarching",
-    "file": "raymarching/082-simple.glsl"
+    "file": "raymarching/082-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "083",
     "title": "Raymarching 083",
     "category": "raymarching",
-    "file": "raymarching/083-simple.glsl"
+    "file": "raymarching/083-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "084",
     "title": "Raymarching 084",
     "category": "raymarching",
-    "file": "raymarching/084-simple.glsl"
+    "file": "raymarching/084-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "085",
     "title": "Raymarching 085",
     "category": "raymarching",
-    "file": "raymarching/085-simple.glsl"
+    "file": "raymarching/085-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "086",
     "title": "Raymarching 086",
     "category": "raymarching",
-    "file": "raymarching/086-simple.glsl"
+    "file": "raymarching/086-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "087",
     "title": "Raymarching 087",
     "category": "raymarching",
-    "file": "raymarching/087-simple.glsl"
+    "file": "raymarching/087-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "088",
     "title": "Raymarching 088",
     "category": "raymarching",
-    "file": "raymarching/088-simple.glsl"
+    "file": "raymarching/088-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "089",
     "title": "Raymarching 089",
     "category": "raymarching",
-    "file": "raymarching/089-simple.glsl"
+    "file": "raymarching/089-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "090",
     "title": "Raymarching 090",
     "category": "raymarching",
-    "file": "raymarching/090-simple.glsl"
+    "file": "raymarching/090-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "091",
     "title": "Raymarching 091",
     "category": "raymarching",
-    "file": "raymarching/091-simple.glsl"
+    "file": "raymarching/091-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "092",
     "title": "Raymarching 092",
     "category": "raymarching",
-    "file": "raymarching/092-simple.glsl"
+    "file": "raymarching/092-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "093",
     "title": "Raymarching 093",
     "category": "raymarching",
-    "file": "raymarching/093-simple.glsl"
+    "file": "raymarching/093-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "094",
     "title": "Raymarching 094",
     "category": "raymarching",
-    "file": "raymarching/094-simple.glsl"
+    "file": "raymarching/094-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "095",
     "title": "Raymarching 095",
     "category": "raymarching",
-    "file": "raymarching/095-simple.glsl"
+    "file": "raymarching/095-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "096",
     "title": "Raymarching 096",
     "category": "raymarching",
-    "file": "raymarching/096-simple.glsl"
+    "file": "raymarching/096-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "097",
     "title": "Raymarching 097",
     "category": "raymarching",
-    "file": "raymarching/097-simple.glsl"
+    "file": "raymarching/097-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "098",
     "title": "Raymarching 098",
     "category": "raymarching",
-    "file": "raymarching/098-simple.glsl"
+    "file": "raymarching/098-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "099",
     "title": "Raymarching 099",
     "category": "raymarching",
-    "file": "raymarching/099-simple.glsl"
+    "file": "raymarching/099-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "100",
     "title": "Raymarching 100",
     "category": "raymarching",
-    "file": "raymarching/100-simple.glsl"
+    "file": "raymarching/100-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "101",
     "title": "Raymarching 101",
     "category": "raymarching",
-    "file": "raymarching/101-simple.glsl"
+    "file": "raymarching/101-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "102",
     "title": "Raymarching 102",
     "category": "raymarching",
-    "file": "raymarching/102-simple.glsl"
+    "file": "raymarching/102-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "103",
     "title": "Raymarching 103",
     "category": "raymarching",
-    "file": "raymarching/103-simple.glsl"
+    "file": "raymarching/103-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "104",
     "title": "Raymarching 104",
     "category": "raymarching",
-    "file": "raymarching/104-simple.glsl"
+    "file": "raymarching/104-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "105",
     "title": "Raymarching 105",
     "category": "raymarching",
-    "file": "raymarching/105-simple.glsl"
+    "file": "raymarching/105-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "106",
     "title": "Raymarching 106",
     "category": "raymarching",
-    "file": "raymarching/106-simple.glsl"
+    "file": "raymarching/106-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "107",
     "title": "Raymarching 107",
     "category": "raymarching",
-    "file": "raymarching/107-simple.glsl"
+    "file": "raymarching/107-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "108",
     "title": "Raymarching 108",
     "category": "raymarching",
-    "file": "raymarching/108-simple.glsl"
+    "file": "raymarching/108-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "109",
     "title": "Raymarching 109",
     "category": "raymarching",
-    "file": "raymarching/109-simple.glsl"
+    "file": "raymarching/109-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "110",
     "title": "Raymarching 110",
     "category": "raymarching",
-    "file": "raymarching/110-simple.glsl"
+    "file": "raymarching/110-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "111",
     "title": "Raymarching 111",
     "category": "raymarching",
-    "file": "raymarching/111-simple.glsl"
+    "file": "raymarching/111-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "112",
     "title": "Raymarching 112",
     "category": "raymarching",
-    "file": "raymarching/112-simple.glsl"
+    "file": "raymarching/112-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "113",
     "title": "Raymarching 113",
     "category": "raymarching",
-    "file": "raymarching/113-simple.glsl"
+    "file": "raymarching/113-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "114",
     "title": "Raymarching 114",
     "category": "raymarching",
-    "file": "raymarching/114-simple.glsl"
+    "file": "raymarching/114-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "115",
     "title": "Raymarching 115",
     "category": "raymarching",
-    "file": "raymarching/115-simple.glsl"
+    "file": "raymarching/115-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "116",
     "title": "Raymarching 116",
     "category": "raymarching",
-    "file": "raymarching/116-simple.glsl"
+    "file": "raymarching/116-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "117",
     "title": "Raymarching 117",
     "category": "raymarching",
-    "file": "raymarching/117-simple.glsl"
+    "file": "raymarching/117-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "118",
     "title": "Raymarching 118",
     "category": "raymarching",
-    "file": "raymarching/118-simple.glsl"
+    "file": "raymarching/118-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "119",
     "title": "Raymarching 119",
     "category": "raymarching",
-    "file": "raymarching/119-simple.glsl"
+    "file": "raymarching/119-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "120",
     "title": "Raymarching 120",
     "category": "raymarching",
-    "file": "raymarching/120-simple.glsl"
+    "file": "raymarching/120-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "121",
     "title": "Raymarching 121",
     "category": "raymarching",
-    "file": "raymarching/121-simple.glsl"
+    "file": "raymarching/121-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "122",
     "title": "Raymarching 122",
     "category": "raymarching",
-    "file": "raymarching/122-simple.glsl"
+    "file": "raymarching/122-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "123",
     "title": "Raymarching 123",
     "category": "raymarching",
-    "file": "raymarching/123-simple.glsl"
+    "file": "raymarching/123-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "124",
     "title": "Raymarching 124",
     "category": "raymarching",
-    "file": "raymarching/124-simple.glsl"
+    "file": "raymarching/124-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "125",
     "title": "Raymarching 125",
     "category": "raymarching",
-    "file": "raymarching/125-simple.glsl"
+    "file": "raymarching/125-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "126",
     "title": "Raymarching 126",
     "category": "raymarching",
-    "file": "raymarching/126-simple.glsl"
+    "file": "raymarching/126-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "127",
     "title": "Raymarching 127",
     "category": "raymarching",
-    "file": "raymarching/127-simple.glsl"
+    "file": "raymarching/127-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "128",
     "title": "Raymarching 128",
     "category": "raymarching",
-    "file": "raymarching/128-simple.glsl"
+    "file": "raymarching/128-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "129",
     "title": "Raymarching 129",
     "category": "raymarching",
-    "file": "raymarching/129-simple.glsl"
+    "file": "raymarching/129-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "130",
     "title": "Raymarching 130",
     "category": "raymarching",
-    "file": "raymarching/130-simple.glsl"
+    "file": "raymarching/130-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "131",
     "title": "Raymarching 131",
     "category": "raymarching",
-    "file": "raymarching/131-simple.glsl"
+    "file": "raymarching/131-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "132",
     "title": "Raymarching 132",
     "category": "raymarching",
-    "file": "raymarching/132-simple.glsl"
+    "file": "raymarching/132-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "133",
     "title": "Raymarching 133",
     "category": "raymarching",
-    "file": "raymarching/133-simple.glsl"
+    "file": "raymarching/133-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "134",
     "title": "Raymarching 134",
     "category": "raymarching",
-    "file": "raymarching/134-simple.glsl"
+    "file": "raymarching/134-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "135",
     "title": "Raymarching 135",
     "category": "raymarching",
-    "file": "raymarching/135-simple.glsl"
+    "file": "raymarching/135-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "136",
     "title": "Raymarching 136",
     "category": "raymarching",
-    "file": "raymarching/136-simple.glsl"
+    "file": "raymarching/136-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "137",
     "title": "Raymarching 137",
     "category": "raymarching",
-    "file": "raymarching/137-simple.glsl"
+    "file": "raymarching/137-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "138",
     "title": "Raymarching 138",
     "category": "raymarching",
-    "file": "raymarching/138-simple.glsl"
+    "file": "raymarching/138-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "139",
     "title": "Raymarching 139",
     "category": "raymarching",
-    "file": "raymarching/139-simple.glsl"
+    "file": "raymarching/139-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "140",
     "title": "Raymarching 140",
     "category": "raymarching",
-    "file": "raymarching/140-simple.glsl"
+    "file": "raymarching/140-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "141",
     "title": "Raymarching 141",
     "category": "raymarching",
-    "file": "raymarching/141-simple.glsl"
+    "file": "raymarching/141-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "142",
     "title": "Raymarching 142",
     "category": "raymarching",
-    "file": "raymarching/142-simple.glsl"
+    "file": "raymarching/142-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "143",
     "title": "Raymarching 143",
     "category": "raymarching",
-    "file": "raymarching/143-simple.glsl"
+    "file": "raymarching/143-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "144",
     "title": "Raymarching 144",
     "category": "raymarching",
-    "file": "raymarching/144-simple.glsl"
+    "file": "raymarching/144-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "145",
     "title": "Raymarching 145",
     "category": "raymarching",
-    "file": "raymarching/145-simple.glsl"
+    "file": "raymarching/145-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "146",
     "title": "Raymarching 146",
     "category": "raymarching",
-    "file": "raymarching/146-simple.glsl"
+    "file": "raymarching/146-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "147",
     "title": "Raymarching 147",
     "category": "raymarching",
-    "file": "raymarching/147-simple.glsl"
+    "file": "raymarching/147-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "148",
     "title": "Raymarching 148",
     "category": "raymarching",
-    "file": "raymarching/148-simple.glsl"
+    "file": "raymarching/148-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "149",
     "title": "Raymarching 149",
     "category": "raymarching",
-    "file": "raymarching/149-simple.glsl"
+    "file": "raymarching/149-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "150",
     "title": "Raymarching 150",
     "category": "raymarching",
-    "file": "raymarching/150-simple.glsl"
+    "file": "raymarching/150-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "151",
     "title": "Raymarching 151",
     "category": "raymarching",
-    "file": "raymarching/151-simple.glsl"
+    "file": "raymarching/151-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "152",
     "title": "Raymarching 152",
     "category": "raymarching",
-    "file": "raymarching/152-simple.glsl"
+    "file": "raymarching/152-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "153",
     "title": "Raymarching 153",
     "category": "raymarching",
-    "file": "raymarching/153-simple.glsl"
+    "file": "raymarching/153-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "154",
     "title": "Raymarching 154",
     "category": "raymarching",
-    "file": "raymarching/154-simple.glsl"
+    "file": "raymarching/154-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "155",
     "title": "Raymarching 155",
     "category": "raymarching",
-    "file": "raymarching/155-simple.glsl"
+    "file": "raymarching/155-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "156",
     "title": "Raymarching 156",
     "category": "raymarching",
-    "file": "raymarching/156-simple.glsl"
+    "file": "raymarching/156-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "157",
     "title": "Raymarching 157",
     "category": "raymarching",
-    "file": "raymarching/157-simple.glsl"
+    "file": "raymarching/157-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "158",
     "title": "Raymarching 158",
     "category": "raymarching",
-    "file": "raymarching/158-simple.glsl"
+    "file": "raymarching/158-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "159",
     "title": "Raymarching 159",
     "category": "raymarching",
-    "file": "raymarching/159-simple.glsl"
+    "file": "raymarching/159-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "160",
     "title": "Raymarching 160",
     "category": "raymarching",
-    "file": "raymarching/160-simple.glsl"
+    "file": "raymarching/160-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "161",
     "title": "Raymarching 161",
     "category": "raymarching",
-    "file": "raymarching/161-simple.glsl"
+    "file": "raymarching/161-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "162",
     "title": "Raymarching 162",
     "category": "raymarching",
-    "file": "raymarching/162-simple.glsl"
+    "file": "raymarching/162-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "163",
     "title": "Raymarching 163",
     "category": "raymarching",
-    "file": "raymarching/163-simple.glsl"
+    "file": "raymarching/163-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "164",
     "title": "Raymarching 164",
     "category": "raymarching",
-    "file": "raymarching/164-simple.glsl"
+    "file": "raymarching/164-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "165",
     "title": "Raymarching 165",
     "category": "raymarching",
-    "file": "raymarching/165-simple.glsl"
+    "file": "raymarching/165-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "166",
     "title": "Raymarching 166",
     "category": "raymarching",
-    "file": "raymarching/166-simple.glsl"
+    "file": "raymarching/166-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "167",
     "title": "Raymarching 167",
     "category": "raymarching",
-    "file": "raymarching/167-simple.glsl"
+    "file": "raymarching/167-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "168",
     "title": "Raymarching 168",
     "category": "raymarching",
-    "file": "raymarching/168-simple.glsl"
+    "file": "raymarching/168-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "169",
     "title": "Raymarching 169",
     "category": "raymarching",
-    "file": "raymarching/169-simple.glsl"
+    "file": "raymarching/169-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "170",
     "title": "Raymarching 170",
     "category": "raymarching",
-    "file": "raymarching/170-simple.glsl"
+    "file": "raymarching/170-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "171",
     "title": "Raymarching 171",
     "category": "raymarching",
-    "file": "raymarching/171-simple.glsl"
+    "file": "raymarching/171-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "172",
     "title": "Raymarching 172",
     "category": "raymarching",
-    "file": "raymarching/172-simple.glsl"
+    "file": "raymarching/172-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "173",
     "title": "Raymarching 173",
     "category": "raymarching",
-    "file": "raymarching/173-simple.glsl"
+    "file": "raymarching/173-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "174",
     "title": "Raymarching 174",
     "category": "raymarching",
-    "file": "raymarching/174-simple.glsl"
+    "file": "raymarching/174-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "175",
     "title": "Raymarching 175",
     "category": "raymarching",
-    "file": "raymarching/175-simple.glsl"
+    "file": "raymarching/175-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "176",
     "title": "Raymarching 176",
     "category": "raymarching",
-    "file": "raymarching/176-simple.glsl"
+    "file": "raymarching/176-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "177",
     "title": "Raymarching 177",
     "category": "raymarching",
-    "file": "raymarching/177-simple.glsl"
+    "file": "raymarching/177-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "178",
     "title": "Raymarching 178",
     "category": "raymarching",
-    "file": "raymarching/178-simple.glsl"
+    "file": "raymarching/178-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "179",
     "title": "Raymarching 179",
     "category": "raymarching",
-    "file": "raymarching/179-simple.glsl"
+    "file": "raymarching/179-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "180",
     "title": "Raymarching 180",
     "category": "raymarching",
-    "file": "raymarching/180-simple.glsl"
+    "file": "raymarching/180-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "181",
     "title": "Raymarching 181",
     "category": "raymarching",
-    "file": "raymarching/181-simple.glsl"
+    "file": "raymarching/181-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "182",
     "title": "Raymarching 182",
     "category": "raymarching",
-    "file": "raymarching/182-simple.glsl"
+    "file": "raymarching/182-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "183",
     "title": "Raymarching 183",
     "category": "raymarching",
-    "file": "raymarching/183-simple.glsl"
+    "file": "raymarching/183-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "184",
     "title": "Raymarching 184",
     "category": "raymarching",
-    "file": "raymarching/184-simple.glsl"
+    "file": "raymarching/184-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "185",
     "title": "Raymarching 185",
     "category": "raymarching",
-    "file": "raymarching/185-simple.glsl"
+    "file": "raymarching/185-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "186",
     "title": "Raymarching 186",
     "category": "raymarching",
-    "file": "raymarching/186-simple.glsl"
+    "file": "raymarching/186-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "187",
     "title": "Raymarching 187",
     "category": "raymarching",
-    "file": "raymarching/187-simple.glsl"
+    "file": "raymarching/187-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "188",
     "title": "Raymarching 188",
     "category": "raymarching",
-    "file": "raymarching/188-simple.glsl"
+    "file": "raymarching/188-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "189",
     "title": "Raymarching 189",
     "category": "raymarching",
-    "file": "raymarching/189-simple.glsl"
+    "file": "raymarching/189-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "190",
     "title": "Raymarching 190",
     "category": "raymarching",
-    "file": "raymarching/190-simple.glsl"
+    "file": "raymarching/190-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "191",
     "title": "Raymarching 191",
     "category": "raymarching",
-    "file": "raymarching/191-simple.glsl"
+    "file": "raymarching/191-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "192",
     "title": "Raymarching 192",
     "category": "raymarching",
-    "file": "raymarching/192-simple.glsl"
+    "file": "raymarching/192-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "193",
     "title": "Raymarching 193",
     "category": "raymarching",
-    "file": "raymarching/193-simple.glsl"
+    "file": "raymarching/193-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "194",
     "title": "Raymarching 194",
     "category": "raymarching",
-    "file": "raymarching/194-simple.glsl"
+    "file": "raymarching/194-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "195",
     "title": "Raymarching 195",
     "category": "raymarching",
-    "file": "raymarching/195-simple.glsl"
+    "file": "raymarching/195-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "196",
     "title": "Raymarching 196",
     "category": "raymarching",
-    "file": "raymarching/196-simple.glsl"
+    "file": "raymarching/196-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "197",
     "title": "Raymarching 197",
     "category": "raymarching",
-    "file": "raymarching/197-simple.glsl"
+    "file": "raymarching/197-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "198",
     "title": "Raymarching 198",
     "category": "raymarching",
-    "file": "raymarching/198-simple.glsl"
+    "file": "raymarching/198-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "199",
     "title": "Raymarching 199",
     "category": "raymarching",
-    "file": "raymarching/199-simple.glsl"
+    "file": "raymarching/199-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "200",
     "title": "Raymarching 200",
     "category": "raymarching",
-    "file": "raymarching/200-simple.glsl"
+    "file": "raymarching/200-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "201",
     "title": "Raymarching 201",
     "category": "raymarching",
-    "file": "raymarching/201-simple.glsl"
+    "file": "raymarching/201-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "202",
     "title": "Raymarching 202",
     "category": "raymarching",
-    "file": "raymarching/202-simple.glsl"
+    "file": "raymarching/202-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "203",
     "title": "Raymarching 203",
     "category": "raymarching",
-    "file": "raymarching/203-simple.glsl"
+    "file": "raymarching/203-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "204",
     "title": "Raymarching 204",
     "category": "raymarching",
-    "file": "raymarching/204-simple.glsl"
+    "file": "raymarching/204-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "205",
     "title": "Raymarching 205",
     "category": "raymarching",
-    "file": "raymarching/205-simple.glsl"
+    "file": "raymarching/205-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "206",
     "title": "Raymarching 206",
     "category": "raymarching",
-    "file": "raymarching/206-simple.glsl"
+    "file": "raymarching/206-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "207",
     "title": "Raymarching 207",
     "category": "raymarching",
-    "file": "raymarching/207-simple.glsl"
+    "file": "raymarching/207-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "208",
     "title": "Raymarching 208",
     "category": "raymarching",
-    "file": "raymarching/208-simple.glsl"
+    "file": "raymarching/208-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "209",
     "title": "Raymarching 209",
     "category": "raymarching",
-    "file": "raymarching/209-simple.glsl"
+    "file": "raymarching/209-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "210",
     "title": "Raymarching 210",
     "category": "raymarching",
-    "file": "raymarching/210-simple.glsl"
+    "file": "raymarching/210-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "211",
     "title": "Raymarching 211",
     "category": "raymarching",
-    "file": "raymarching/211-simple.glsl"
+    "file": "raymarching/211-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "212",
     "title": "Raymarching 212",
     "category": "raymarching",
-    "file": "raymarching/212-simple.glsl"
+    "file": "raymarching/212-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "213",
     "title": "Raymarching 213",
     "category": "raymarching",
-    "file": "raymarching/213-simple.glsl"
+    "file": "raymarching/213-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "214",
     "title": "Raymarching 214",
     "category": "raymarching",
-    "file": "raymarching/214-simple.glsl"
+    "file": "raymarching/214-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "215",
     "title": "Raymarching 215",
     "category": "raymarching",
-    "file": "raymarching/215-simple.glsl"
+    "file": "raymarching/215-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "216",
     "title": "Raymarching 216",
     "category": "raymarching",
-    "file": "raymarching/216-simple.glsl"
+    "file": "raymarching/216-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "217",
     "title": "Raymarching 217",
     "category": "raymarching",
-    "file": "raymarching/217-simple.glsl"
+    "file": "raymarching/217-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "218",
     "title": "Raymarching 218",
     "category": "raymarching",
-    "file": "raymarching/218-simple.glsl"
+    "file": "raymarching/218-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "219",
     "title": "Raymarching 219",
     "category": "raymarching",
-    "file": "raymarching/219-simple.glsl"
+    "file": "raymarching/219-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "220",
     "title": "Raymarching 220",
     "category": "raymarching",
-    "file": "raymarching/220-simple.glsl"
+    "file": "raymarching/220-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "221",
     "title": "Raymarching 221",
     "category": "raymarching",
-    "file": "raymarching/221-simple.glsl"
+    "file": "raymarching/221-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "222",
     "title": "Raymarching 222",
     "category": "raymarching",
-    "file": "raymarching/222-simple.glsl"
+    "file": "raymarching/222-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "223",
     "title": "Raymarching 223",
     "category": "raymarching",
-    "file": "raymarching/223-simple.glsl"
+    "file": "raymarching/223-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "224",
     "title": "Raymarching 224",
     "category": "raymarching",
-    "file": "raymarching/224-simple.glsl"
+    "file": "raymarching/224-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "225",
     "title": "Raymarching 225",
     "category": "raymarching",
-    "file": "raymarching/225-simple.glsl"
+    "file": "raymarching/225-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "226",
     "title": "Raymarching 226",
     "category": "raymarching",
-    "file": "raymarching/226-simple.glsl"
+    "file": "raymarching/226-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "227",
     "title": "Raymarching 227",
     "category": "raymarching",
-    "file": "raymarching/227-simple.glsl"
+    "file": "raymarching/227-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "228",
     "title": "Raymarching 228",
     "category": "raymarching",
-    "file": "raymarching/228-simple.glsl"
+    "file": "raymarching/228-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "229",
     "title": "Raymarching 229",
     "category": "raymarching",
-    "file": "raymarching/229-simple.glsl"
+    "file": "raymarching/229-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "230",
     "title": "Raymarching 230",
     "category": "raymarching",
-    "file": "raymarching/230-simple.glsl"
+    "file": "raymarching/230-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "231",
     "title": "Raymarching 231",
     "category": "raymarching",
-    "file": "raymarching/231-simple.glsl"
+    "file": "raymarching/231-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "232",
     "title": "Raymarching 232",
     "category": "raymarching",
-    "file": "raymarching/232-simple.glsl"
+    "file": "raymarching/232-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "233",
     "title": "Raymarching 233",
     "category": "raymarching",
-    "file": "raymarching/233-simple.glsl"
+    "file": "raymarching/233-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "234",
     "title": "Raymarching 234",
     "category": "raymarching",
-    "file": "raymarching/234-simple.glsl"
+    "file": "raymarching/234-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "235",
     "title": "Raymarching 235",
     "category": "raymarching",
-    "file": "raymarching/235-simple.glsl"
+    "file": "raymarching/235-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "236",
     "title": "Raymarching 236",
     "category": "raymarching",
-    "file": "raymarching/236-simple.glsl"
+    "file": "raymarching/236-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "237",
     "title": "Raymarching 237",
     "category": "raymarching",
-    "file": "raymarching/237-simple.glsl"
+    "file": "raymarching/237-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "238",
     "title": "Raymarching 238",
     "category": "raymarching",
-    "file": "raymarching/238-simple.glsl"
+    "file": "raymarching/238-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "239",
     "title": "Raymarching 239",
     "category": "raymarching",
-    "file": "raymarching/239-simple.glsl"
+    "file": "raymarching/239-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "240",
     "title": "Raymarching 240",
     "category": "raymarching",
-    "file": "raymarching/240-simple.glsl"
+    "file": "raymarching/240-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "241",
     "title": "Raymarching 241",
     "category": "raymarching",
-    "file": "raymarching/241-simple.glsl"
+    "file": "raymarching/241-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "242",
     "title": "Raymarching 242",
     "category": "raymarching",
-    "file": "raymarching/242-simple.glsl"
+    "file": "raymarching/242-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "243",
     "title": "Raymarching 243",
     "category": "raymarching",
-    "file": "raymarching/243-simple.glsl"
+    "file": "raymarching/243-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "244",
     "title": "Raymarching 244",
     "category": "raymarching",
-    "file": "raymarching/244-simple.glsl"
+    "file": "raymarching/244-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "245",
     "title": "HYPER-RECURSIVE MONOLITH",
     "category": "raymarching",
-    "file": "raymarching/245-simple.glsl"
+    "file": "raymarching/245-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "246",
     "title": "Raymarching 246",
     "category": "raymarching",
-    "file": "raymarching/246-simple.glsl"
+    "file": "raymarching/246-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "247",
     "title": "PYTHAGOREAN THEOREM",
     "category": "raymarching",
-    "file": "raymarching/247-simple.glsl"
+    "file": "raymarching/247-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "248",
     "title": "Retro-gaming 248",
     "category": "retro-gaming",
-    "file": "retro-gaming/248-simple.glsl"
+    "file": "retro-gaming/248-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "249",
     "title": "Retro-gaming 249",
     "category": "retro-gaming",
-    "file": "retro-gaming/249-simple.glsl"
+    "file": "retro-gaming/249-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "250",
     "title": "Retro-gaming 250",
     "category": "retro-gaming",
-    "file": "retro-gaming/250-simple.glsl"
+    "file": "retro-gaming/250-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "251",
     "title": "Retro-gaming 251",
     "category": "retro-gaming",
-    "file": "retro-gaming/251-simple.glsl"
+    "file": "retro-gaming/251-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "252",
     "title": "Retro-gaming 252",
     "category": "retro-gaming",
-    "file": "retro-gaming/252-simple.glsl"
+    "file": "retro-gaming/252-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "253",
     "title": "Retro-gaming 253",
     "category": "retro-gaming",
-    "file": "retro-gaming/253-simple.glsl"
+    "file": "retro-gaming/253-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "254",
     "title": "Retro-gaming 254",
     "category": "retro-gaming",
-    "file": "retro-gaming/254-simple.glsl"
+    "file": "retro-gaming/254-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "255",
     "title": "Retro-gaming 255",
     "category": "retro-gaming",
-    "file": "retro-gaming/255-simple.glsl"
+    "file": "retro-gaming/255-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "256",
     "title": "Retro-gaming 256",
     "category": "retro-gaming",
-    "file": "retro-gaming/256-simple.glsl"
+    "file": "retro-gaming/256-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "257",
     "title": "Retro-gaming 257",
     "category": "retro-gaming",
-    "file": "retro-gaming/257-simple.glsl"
+    "file": "retro-gaming/257-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "258",
     "title": "Retro-gaming 258",
     "category": "retro-gaming",
-    "file": "retro-gaming/258-simple.glsl"
+    "file": "retro-gaming/258-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "259",
     "title": "Retro-synthwave 259",
     "category": "retro-synthwave",
-    "file": "retro-synthwave/259-simple.glsl"
+    "file": "retro-synthwave/259-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "260",
     "title": "Retro-synthwave 260",
     "category": "retro-synthwave",
-    "file": "retro-synthwave/260-simple.glsl"
+    "file": "retro-synthwave/260-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "261",
     "title": "Retro-synthwave 261",
     "category": "retro-synthwave",
-    "file": "retro-synthwave/261-simple.glsl"
+    "file": "retro-synthwave/261-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "262",
     "title": "Retro-synthwave 262",
     "category": "retro-synthwave",
-    "file": "retro-synthwave/262-simple.glsl"
+    "file": "retro-synthwave/262-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "263",
     "title": "MEGADEMO 60S LOOPED",
     "category": "retro-synthwave",
-    "file": "retro-synthwave/263-simple.glsl"
+    "file": "retro-synthwave/263-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "264",
     "title": "TRON RIDER",
     "category": "retro-synthwave",
-    "file": "retro-synthwave/264-simple.glsl"
+    "file": "retro-synthwave/264-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "265",
     "title": "INFINITE GYROID CRYSTAL TUNNEL",
     "category": "space-cosmos",
-    "file": "space-cosmos/265-simple.glsl"
+    "file": "space-cosmos/265-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "266",
     "title": "INDUSTRIAL TECHNO TUNNEL",
     "category": "space-cosmos",
-    "file": "space-cosmos/266-simple.glsl"
+    "file": "space-cosmos/266-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "267",
     "title": "Space-cosmos 267",
     "category": "space-cosmos",
-    "file": "space-cosmos/267-simple.glsl"
+    "file": "space-cosmos/267-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "268",
     "title": "PROCEDURAL ROBOTIC JUMP",
     "category": "space-cosmos",
-    "file": "space-cosmos/268-simple.glsl"
+    "file": "space-cosmos/268-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "269",
     "title": "QUANTUM WAVE INTERFERENCE",
     "category": "space-cosmos",
-    "file": "space-cosmos/269-simple.glsl"
+    "file": "space-cosmos/269-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "270",
     "title": "Space-cosmos 270",
     "category": "space-cosmos",
-    "file": "space-cosmos/270-simple.glsl"
+    "file": "space-cosmos/270-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "271",
     "title": "Space-cosmos 271",
     "category": "space-cosmos",
-    "file": "space-cosmos/271-simple.glsl"
+    "file": "space-cosmos/271-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "272",
     "title": "Space-cosmos 272",
     "category": "space-cosmos",
-    "file": "space-cosmos/272-simple.glsl"
+    "file": "space-cosmos/272-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "273",
     "title": "Space-cosmos 273",
     "category": "space-cosmos",
-    "file": "space-cosmos/273-simple.glsl"
+    "file": "space-cosmos/273-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "274",
     "title": "Space-cosmos 274",
     "category": "space-cosmos",
-    "file": "space-cosmos/274-simple.glsl"
+    "file": "space-cosmos/274-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "275",
     "title": "Space-cosmos 275",
     "category": "space-cosmos",
-    "file": "space-cosmos/275-simple.glsl"
+    "file": "space-cosmos/275-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "276",
     "title": "Space-cosmos 276",
     "category": "space-cosmos",
-    "file": "space-cosmos/276-simple.glsl"
+    "file": "space-cosmos/276-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "277",
     "title": "Space-cosmos 277",
     "category": "space-cosmos",
-    "file": "space-cosmos/277-simple.glsl"
+    "file": "space-cosmos/277-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "278",
     "title": "Space-cosmos 278",
     "category": "space-cosmos",
-    "file": "space-cosmos/278-simple.glsl"
+    "file": "space-cosmos/278-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "279",
     "title": "Space-cosmos 279",
     "category": "space-cosmos",
-    "file": "space-cosmos/279-simple.glsl"
+    "file": "space-cosmos/279-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "280",
     "title": "SHINY VORTEX",
     "category": "space-cosmos",
-    "file": "space-cosmos/280-simple.glsl"
+    "file": "space-cosmos/280-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "281",
     "title": "Space-cosmos 281",
     "category": "space-cosmos",
-    "file": "space-cosmos/281-simple.glsl"
+    "file": "space-cosmos/281-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "282",
     "title": "Space-cosmos 282",
     "category": "space-cosmos",
-    "file": "space-cosmos/282-simple.glsl"
+    "file": "space-cosmos/282-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "283",
     "title": "Space-cosmos 283",
     "category": "space-cosmos",
-    "file": "space-cosmos/283-simple.glsl"
+    "file": "space-cosmos/283-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "284",
     "title": "Space-cosmos 284",
     "category": "space-cosmos",
-    "file": "space-cosmos/284-simple.glsl"
+    "file": "space-cosmos/284-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "285",
     "title": "Space-cosmos 285",
     "category": "space-cosmos",
-    "file": "space-cosmos/285-simple.glsl"
+    "file": "space-cosmos/285-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "286",
     "title": "Space-cosmos 286",
     "category": "space-cosmos",
-    "file": "space-cosmos/286-simple.glsl"
+    "file": "space-cosmos/286-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "287",
     "title": "Space-cosmos 287",
     "category": "space-cosmos",
-    "file": "space-cosmos/287-simple.glsl"
+    "file": "space-cosmos/287-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "288",
     "title": "Space-cosmos 288",
     "category": "space-cosmos",
-    "file": "space-cosmos/288-simple.glsl"
+    "file": "space-cosmos/288-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "289",
     "title": "Space-cosmos 289",
     "category": "space-cosmos",
-    "file": "space-cosmos/289-simple.glsl"
+    "file": "space-cosmos/289-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "290",
     "title": "Space-cosmos 290",
     "category": "space-cosmos",
-    "file": "space-cosmos/290-simple.glsl"
+    "file": "space-cosmos/290-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "291",
     "title": "Space-cosmos 291",
     "category": "space-cosmos",
-    "file": "space-cosmos/291-simple.glsl"
+    "file": "space-cosmos/291-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "292",
     "title": "Space-cosmos 292",
     "category": "space-cosmos",
-    "file": "space-cosmos/292-simple.glsl"
+    "file": "space-cosmos/292-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "293",
     "title": "Space-cosmos 293",
     "category": "space-cosmos",
-    "file": "space-cosmos/293-simple.glsl"
+    "file": "space-cosmos/293-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "294",
     "title": "Space-cosmos 294",
     "category": "space-cosmos",
-    "file": "space-cosmos/294-simple.glsl"
+    "file": "space-cosmos/294-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "295",
     "title": "Space-cosmos 295",
     "category": "space-cosmos",
-    "file": "space-cosmos/295-simple.glsl"
+    "file": "space-cosmos/295-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "296",
     "title": "QUANTUM COSMIC SANCTUARY RAYMARCHER",
     "category": "space-cosmos",
-    "file": "space-cosmos/296-simple.glsl"
+    "file": "space-cosmos/296-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "297",
     "title": "Space-cosmos 297",
     "category": "space-cosmos",
-    "file": "space-cosmos/297-simple.glsl"
+    "file": "space-cosmos/297-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "298",
     "title": "Space-cosmos 298",
     "category": "space-cosmos",
-    "file": "space-cosmos/298-simple.glsl"
+    "file": "space-cosmos/298-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "299",
     "title": "Space-cosmos 299",
     "category": "space-cosmos",
-    "file": "space-cosmos/299-simple.glsl"
+    "file": "space-cosmos/299-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "300",
     "title": "Space-cosmos 300",
     "category": "space-cosmos",
-    "file": "space-cosmos/300-simple.glsl"
+    "file": "space-cosmos/300-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "301",
     "title": "Space-cosmos 301",
     "category": "space-cosmos",
-    "file": "space-cosmos/301-simple.glsl"
+    "file": "space-cosmos/301-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "302",
     "title": "PULSATING GYROID ORBS",
     "category": "space-cosmos",
-    "file": "space-cosmos/302-simple.glsl"
+    "file": "space-cosmos/302-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "303",
     "title": "Space-cosmos 303",
     "category": "space-cosmos",
-    "file": "space-cosmos/303-simple.glsl"
+    "file": "space-cosmos/303-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "304",
     "title": "SCHRODINGER QUANTUM PROBABILITY",
     "category": "space-cosmos",
-    "file": "space-cosmos/304-simple.glsl"
+    "file": "space-cosmos/304-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "305",
     "title": "Space-cosmos 305",
     "category": "space-cosmos",
-    "file": "space-cosmos/305-simple.glsl"
+    "file": "space-cosmos/305-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "306",
     "title": "SPACETIME FABRIC DISTORTION",
     "category": "space-cosmos",
-    "file": "space-cosmos/306-simple.glsl"
+    "file": "space-cosmos/306-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "307",
     "title": "VISCERAL ORGANIC TUNNEL",
     "category": "tunnel",
-    "file": "tunnel/307-simple.glsl"
+    "file": "tunnel/307-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "308",
     "title": "Tunnel 308",
     "category": "tunnel",
-    "file": "tunnel/308-simple.glsl"
+    "file": "tunnel/308-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "309",
     "title": "Tunnel 309",
     "category": "tunnel",
-    "file": "tunnel/309-simple.glsl"
+    "file": "tunnel/309-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "310",
     "title": "Tunnel 310",
     "category": "tunnel",
-    "file": "tunnel/310-simple.glsl"
+    "file": "tunnel/310-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "311",
     "title": "Tunnel 311",
     "category": "tunnel",
-    "file": "tunnel/311-simple.glsl"
+    "file": "tunnel/311-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "312",
     "title": "Tunnel 312",
     "category": "tunnel",
-    "file": "tunnel/312-simple.glsl"
+    "file": "tunnel/312-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "313",
     "title": "Tunnel 313",
     "category": "tunnel",
-    "file": "tunnel/313-simple.glsl"
+    "file": "tunnel/313-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "314",
     "title": "Tunnel 314",
     "category": "tunnel",
-    "file": "tunnel/314-simple.glsl"
+    "file": "tunnel/314-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "315",
     "title": "Tunnel 315",
     "category": "tunnel",
-    "file": "tunnel/315-simple.glsl"
+    "file": "tunnel/315-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "316",
     "title": "Tunnel 316",
     "category": "tunnel",
-    "file": "tunnel/316-simple.glsl"
+    "file": "tunnel/316-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "317",
     "title": "Tunnel 317",
     "category": "tunnel",
-    "file": "tunnel/317-simple.glsl"
+    "file": "tunnel/317-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "318",
     "title": "Tunnel 318",
     "category": "tunnel",
-    "file": "tunnel/318-simple.glsl"
+    "file": "tunnel/318-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "319",
     "title": "Tunnel 319",
     "category": "tunnel",
-    "file": "tunnel/319-simple.glsl"
+    "file": "tunnel/319-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "320",
     "title": "Tunnel 320",
     "category": "tunnel",
-    "file": "tunnel/320-simple.glsl"
+    "file": "tunnel/320-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "321",
     "title": "Tunnel 321",
     "category": "tunnel",
-    "file": "tunnel/321-simple.glsl"
+    "file": "tunnel/321-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "322",
     "title": "Tunnel 322",
     "category": "tunnel",
-    "file": "tunnel/322-simple.glsl"
+    "file": "tunnel/322-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "323",
     "title": "Tunnel 323",
     "category": "tunnel",
-    "file": "tunnel/323-simple.glsl"
+    "file": "tunnel/323-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "324",
     "title": "Tunnel 324",
     "category": "tunnel",
-    "file": "tunnel/324-simple.glsl"
+    "file": "tunnel/324-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "325",
     "title": "Tunnel 325",
     "category": "tunnel",
-    "file": "tunnel/325-simple.glsl"
+    "file": "tunnel/325-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "326",
     "title": "Tunnel 326",
     "category": "tunnel",
-    "file": "tunnel/326-simple.glsl"
+    "file": "tunnel/326-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "327",
     "title": "Tunnel 327",
     "category": "tunnel",
-    "file": "tunnel/327-simple.glsl"
+    "file": "tunnel/327-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "328",
     "title": "Tunnel 328",
     "category": "tunnel",
-    "file": "tunnel/328-simple.glsl"
+    "file": "tunnel/328-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "329",
     "title": "Tunnel 329",
     "category": "tunnel",
-    "file": "tunnel/329-simple.glsl"
+    "file": "tunnel/329-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "330",
     "title": "Tunnel 330",
     "category": "tunnel",
-    "file": "tunnel/330-simple.glsl"
+    "file": "tunnel/330-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "331",
     "title": "Tunnel 331",
     "category": "tunnel",
-    "file": "tunnel/331-simple.glsl"
+    "file": "tunnel/331-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "332",
     "title": "Tunnel 332",
     "category": "tunnel",
-    "file": "tunnel/332-simple.glsl"
+    "file": "tunnel/332-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "333",
     "title": "Tunnel 333",
     "category": "tunnel",
-    "file": "tunnel/333-simple.glsl"
+    "file": "tunnel/333-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "334",
     "title": "Tunnel 334",
     "category": "tunnel",
-    "file": "tunnel/334-simple.glsl"
+    "file": "tunnel/334-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "335",
     "title": "Tunnel 335",
     "category": "tunnel",
-    "file": "tunnel/335-simple.glsl"
+    "file": "tunnel/335-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "336",
     "title": "Tunnel 336",
     "category": "tunnel",
-    "file": "tunnel/336-simple.glsl"
+    "file": "tunnel/336-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "337",
     "title": "Tunnel 337",
     "category": "tunnel",
-    "file": "tunnel/337-simple.glsl"
+    "file": "tunnel/337-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "338",
     "title": "Tunnel 338",
     "category": "tunnel",
-    "file": "tunnel/338-simple.glsl"
+    "file": "tunnel/338-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "339",
     "title": "Tunnel 339",
     "category": "tunnel",
-    "file": "tunnel/339-simple.glsl"
+    "file": "tunnel/339-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "340",
     "title": "Tunnel 340",
     "category": "tunnel",
-    "file": "tunnel/340-simple.glsl"
+    "file": "tunnel/340-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "341",
     "title": "Tunnel 341",
     "category": "tunnel",
-    "file": "tunnel/341-simple.glsl"
+    "file": "tunnel/341-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "342",
     "title": "Tunnel 342",
     "category": "tunnel",
-    "file": "tunnel/342-simple.glsl"
+    "file": "tunnel/342-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "343",
     "title": "Tunnel 343",
     "category": "tunnel",
-    "file": "tunnel/343-simple.glsl"
+    "file": "tunnel/343-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "344",
     "title": "Tunnel 344",
     "category": "tunnel",
-    "file": "tunnel/344-simple.glsl"
+    "file": "tunnel/344-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "345",
     "title": "Tunnel 345",
     "category": "tunnel",
-    "file": "tunnel/345-simple.glsl"
+    "file": "tunnel/345-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "346",
     "title": "Tunnel 346",
     "category": "tunnel",
-    "file": "tunnel/346-simple.glsl"
+    "file": "tunnel/346-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "347",
     "title": "Tunnel 347",
     "category": "tunnel",
-    "file": "tunnel/347-simple.glsl"
+    "file": "tunnel/347-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "348",
     "title": "Tunnel 348",
     "category": "tunnel",
-    "file": "tunnel/348-simple.glsl"
+    "file": "tunnel/348-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "349",
     "title": "Tunnel 349",
     "category": "tunnel",
-    "file": "tunnel/349-simple.glsl"
+    "file": "tunnel/349-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "350",
     "title": "Tunnel 350",
     "category": "tunnel",
-    "file": "tunnel/350-simple.glsl"
+    "file": "tunnel/350-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "351",
     "title": "Tunnel 351",
     "category": "tunnel",
-    "file": "tunnel/351-simple.glsl"
+    "file": "tunnel/351-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "352",
     "title": "Tunnel 352",
     "category": "tunnel",
-    "file": "tunnel/352-simple.glsl"
+    "file": "tunnel/352-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "353",
     "title": "Tunnel 353",
     "category": "tunnel",
-    "file": "tunnel/353-simple.glsl"
+    "file": "tunnel/353-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "354",
     "title": "Tunnel 354",
     "category": "tunnel",
-    "file": "tunnel/354-simple.glsl"
+    "file": "tunnel/354-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "355",
     "title": "Tunnel 355",
     "category": "tunnel",
-    "file": "tunnel/355-simple.glsl"
+    "file": "tunnel/355-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "356",
     "title": "Tunnel 356",
     "category": "tunnel",
-    "file": "tunnel/356-simple.glsl"
+    "file": "tunnel/356-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "357",
     "title": "Tunnel 357",
     "category": "tunnel",
-    "file": "tunnel/357-simple.glsl"
+    "file": "tunnel/357-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "358",
     "title": "Tunnel 358",
     "category": "tunnel",
-    "file": "tunnel/358-simple.glsl"
+    "file": "tunnel/358-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "359",
     "title": "Tunnel 359",
     "category": "tunnel",
-    "file": "tunnel/359-simple.glsl"
+    "file": "tunnel/359-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "360",
     "title": "ORGANIC PLASMA TUNNEL",
     "category": "water",
-    "file": "water/360-simple.glsl"
+    "file": "water/360-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "361",
     "title": "Water 361",
     "category": "water",
-    "file": "water/361-simple.glsl"
+    "file": "water/361-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "362",
     "title": "Water 362",
     "category": "water",
-    "file": "water/362-simple.glsl"
+    "file": "water/362-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "363",
     "title": "Water 363",
     "category": "water",
-    "file": "water/363-simple.glsl"
+    "file": "water/363-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "364",
     "title": "Water 364",
     "category": "water",
-    "file": "water/364-simple.glsl"
+    "file": "water/364-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "365",
     "title": "Water 365",
     "category": "water",
-    "file": "water/365-simple.glsl"
+    "file": "water/365-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "366",
     "title": "Water 366",
     "category": "water",
-    "file": "water/366-simple.glsl"
+    "file": "water/366-simple.glsl",
+    "unsupported": true
   },
   {
     "num": "367",
     "title": "Water 367",
     "category": "water",
-    "file": "water/367-simple.glsl"
+    "file": "water/367-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "368",
     "title": "Water 368",
     "category": "water",
-    "file": "water/368-simple.glsl"
+    "file": "water/368-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "369",
     "title": "Water 369",
     "category": "water",
-    "file": "water/369-simple.glsl"
+    "file": "water/369-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "370",
     "title": "Water 370",
     "category": "water",
-    "file": "water/370-simple.glsl"
+    "file": "water/370-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "371",
     "title": "Water 371",
     "category": "water",
-    "file": "water/371-simple.glsl"
+    "file": "water/371-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "372",
     "title": "Water 372",
     "category": "water",
-    "file": "water/372-simple.glsl"
+    "file": "water/372-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "373",
     "title": "Water 373",
     "category": "water",
-    "file": "water/373-simple.glsl"
+    "file": "water/373-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "374",
     "title": "Water 374",
     "category": "water",
-    "file": "water/374-simple.glsl"
+    "file": "water/374-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "375",
     "title": "Water 375",
     "category": "water",
-    "file": "water/375-simple.glsl"
+    "file": "water/375-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "376",
     "title": "Water 376",
     "category": "water",
-    "file": "water/376-simple.glsl"
+    "file": "water/376-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "377",
     "title": "MAXWELL'S ELECTROMAGNETIC PROPAG",
     "category": "water",
-    "file": "water/377-simple.glsl"
+    "file": "water/377-simple.glsl",
+    "unsupported": false
   },
   {
     "num": "378",
     "title": "NAVIER-STOKES LAMINAR FLOW",
     "category": "water",
-    "file": "water/378-simple.glsl"
+    "file": "water/378-simple.glsl",
+    "unsupported": false
   }
 ]

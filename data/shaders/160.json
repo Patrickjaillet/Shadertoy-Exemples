@@ -3,5 +3,7 @@
   "title": "Raymarching 160",
   "category": "raymarching",
   "file": "raymarching/160-simple.glsl",
+  "unsupported": false,
+  "unsupportedReason": null,
   "source": "void mainImage(out vec4 fragColor, in vec2 fragCoord) {\r\n    vec2 R = iResolution.xy;\r\n    vec2 uv = (5.3 * fragCoord - R) / R.y;\r\n    vec4 O = vec4(0.0);\r\n    float T = iTime;\r\n    \r\n    for(float i = -1.5; i < 1.0; i += 0.32) {\r\n        vec2 p = (uv + vec2(sin(T * 0.2 + i), cos(T * 0.15 + i)) * 0.3) / (0.25 + 0.1 * sin(T * 0.4 + i));\r\n        \r\n        float angle = T * 0.5 - i * 1.2 - length(p) * 0.6;\r\n        float c = cos(angle);\r\n        float s = sin(angle);\r\n        p = p * mat2(c, -s, s, c);\r\n        \r\n        p.x += sin(p.y * 2.0 + T) * 0.2;\r\n        p.y += cos(p.x * 2.0 - T) * 0.2;\r\n        \r\n        vec4 num = cos(i * 2.5 + vec4(0.0, 1.5, 3.0, 0.0) + T) + 1.0;\r\n        float den = length(p * sin(p * 1.5)) * (0.7 + 0.4 * sin(T + i)) + i * i * 0.0 + 0.02;\r\n        \r\n        O += (num / den) * (0.5 + 0.4 * sin(i * 3.2 + T));\r\n    }\r\n    \r\n    O = tanh(O * O / 62.5);\r\n    O = pow(O, vec4(0.5050));\r\n    \r\n    fragColor = O;\r\n}"
 }

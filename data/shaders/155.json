@@ -3,5 +3,7 @@
   "title": "Raymarching 155",
   "category": "raymarching",
   "file": "raymarching/155-simple.glsl",
+  "unsupported": false,
+  "unsupportedReason": null,
   "source": "void mainImage(out vec4 fragColor, in vec2 fragCoord) {\r\n    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;\r\n    vec3 ro = vec3(1.0, 1.0, -2.9);\r\n    vec3 rd = normalize(vec3(uv, 1.0));\r\n    float t = 0.0;\r\n    \r\n    for (int i = 0; i < 129; i++) {\r\n        vec3 p = ro + rd * t;\r\n        float d = 1e0;\r\n        \r\n        p.xy *= mat2(cos(iTime * 0.2), -sin(iTime * 0.2), sin(iTime * 0.2), cos(iTime * 0.2));\r\n        \r\n        for (int j = 0; j < 8; j++) {\r\n            p = abs(p) - 0.7;\r\n            if (p.x < p.y) p.xy = p.yx;\r\n            if (p.x < p.z) p.xz = p.zx;\r\n            if (p.y < p.z) p.yz = p.zy;\r\n            p = p * 1.5 - 0.3;\r\n        }\r\n        \r\n        d = (length(p.xy) - 0.0) / 79.4;\r\n        \r\n        if (d < 0.000 || t > 1.6) break;\r\n        t += d;\r\n    }\r\n    \r\n    fragColor = vec4(vec3(1.0 / (0.6 + t * t * 1.0)), 0.0);\r\n}"
 }

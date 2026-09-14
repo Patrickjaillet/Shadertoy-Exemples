@@ -79,6 +79,12 @@
 
         const btn = document.createElement('button');
         btn.textContent = `${entry.num} — ${entry.title}`;
+        if (entry.unsupported) {
+          const badge = document.createElement('span');
+          badge.className = 'unsupported-badge';
+          badge.textContent = 'aperçu non disponible';
+          btn.appendChild(badge);
+        }
         btn.addEventListener('click', () => selectShader(entry.num));
 
         item.appendChild(btn);
@@ -156,6 +162,10 @@
   }
 
   function renderShader(shader) {
+    if (shader.unsupported) {
+      showViewportError(`Aperçu non disponible : ${shader.unsupportedReason}\n\nLe code reste consultable et copiable ci-dessous.`);
+      return;
+    }
     if (!runtime) {
       showViewportError('WebGL non disponible sur ce navigateur.');
       return;

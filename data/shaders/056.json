@@ -3,5 +3,7 @@
   "title": "Divers 056",
   "category": "divers",
   "file": "divers/056-simple.glsl",
+  "unsupported": false,
+  "unsupportedReason": null,
   "source": "void mainImage(out vec4 o, in vec2 FC) {\r\n    o = vec4(0.0);\r\n    vec2 r = iResolution.xy;\r\n    float t = iTime;\r\n    vec3 p, q = vec3(0.0, 0.2, -1.8);\r\n    \r\n    for(float j, i, e, v, u; i++ < 130.; o += 0.007 / exp(3e3 / (v * vec4(0.2, 0.8, 0.3, 1.0) + e * 4e6))) {\r\n        p = q += vec3((FC.xy - 0.5 * r) / r.y, 1) * e;\r\n        \r\n        // Modification des fractales pour imiter la structure divergente et étalée de la canopée de l'arbre\r\n        for(j = e = v = 7.; j++ < 21.; e = min(e, max(length(p.xz = abs(p.xz * mat2(cos(j + t*0.2), -sin(j + t*0.2), sin(j + t*0.2), cos(j + t*0.2))) - vec2(0.1 + 0.05 * j, 0.4)) - 0.015 / u, abs(p.y) - 1.5) / v)) {\r\n            v /= u = dot(p, p), p /= u + 0.01;\r\n            // Étalement horizontal caractéristique de la ramification supérieure\r\n            p.x *= 1.4;\r\n        }\r\n    }\r\n}"
 }

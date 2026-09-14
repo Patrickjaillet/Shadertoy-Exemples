@@ -3,5 +3,7 @@
   "title": "Raymarching 097",
   "category": "raymarching",
   "file": "raymarching/097-simple.glsl",
+  "unsupported": false,
+  "unsupportedReason": null,
   "source": "void mainImage(out vec4 C, vec2 U) {\r\n    vec3 R = iResolution,\r\n         D = vec3((U+U-R.xy)/R.y, 2) * mat3(-67, 48, 0, 37, -87, 75, 0, 75, 66) * .01,\r\n         p = vec3(0, -17, 1),\r\n         a = vec3(0), L;\r\n    float d = 1., r = 0., s, i = 0.;\r\n    for (; i++ < 80.; p += D * d * r * .3) {\r\n        a += min(d * s, .6 - d) * .075;\r\n        r = length(p);\r\n        L = vec3(log(r) - iTime * .5, exp(-p.y / r + .5), atan(p.x, p.z));\r\n        d = L.y - 1.;\r\n        for (s = 8.; s < 1e3; s += s)\r\n            d -= abs(dot(sin(L.yzx * s), .5 - cos(L * s))) / s * .5;\r\n    }\r\n    C = vec4(a * (1.95 * a + .03) / (a * (2.11 * a + .43) + .19), 1);\r\n}"
 }

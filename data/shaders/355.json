@@ -3,5 +3,7 @@
   "title": "Tunnel 355",
   "category": "tunnel",
   "file": "tunnel/355-simple.glsl",
+  "unsupported": false,
+  "unsupportedReason": null,
   "source": "//======================================================================================//\r\n//:: [ Optimized for NVIDIA GeForce GeForce GTX 1080 Ti ] ::                            //\r\n//======================================================================================//\r\n//  >>  Author  : Patrick JAILLET (Sandefjord)                                          //\r\n//  >>  Email   : metashader@proton.me                                                  //\r\n//  >>  Engine  : MetaShader                                                            //\r\n//  >>  URL     : https://gotoy.xo.je                                                   //\r\n//*====================================================================================*//\r\nvoid mainImage(out vec4 o, vec2 u) {\r\n    vec3 p, R = iResolution, D = vec3((u+u-R.xy)/R.y, 1);\r\n    o -= o;\r\n    for(float i, d=.5, s, h, a, j; i++ < 1e2; o += (0.5+0.5*cos(i*.15+iTime+vec4(0,1,2,0))) * .06/(h+.01)) {\r\n        p = D * d;\r\n        p.z = mod(p.z + iTime*2., 4.) - 2.;\r\n        a = p.z*.2 + iTime*.1;\r\n        p.xy *= mat2(cos(a), sin(a), -sin(a), cos(a));\r\n        for(j=0., s=1.1; j++ < 7.; s *= 1.12)\r\n            p = abs(p)/dot(p,p) - .75,\r\n            p.yz *= mat2(.9, .4, -.4, .9);\r\n        d += max(h = length(p.xy)*s, .15) * .1;\r\n    }\r\n    o = tanh(mix(o, o.zyxw, length(u/R.y)) * o / 40.);\r\n}"
 }

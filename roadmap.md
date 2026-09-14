@@ -65,8 +65,9 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 - [ ] Miniatures (optionnel, étape ultérieure) : capture d'une frame du rendu en `<canvas>.toDataURL()` pour prévisualisation dans la liste (peut être pré-générée par le script de build avec un rendu headless, ou généré à la volée côté client au premier affichage puis mis en cache `localStorage`).
 
 ### 6. Robustesse face aux shaders non supportés
-- [ ] Détection des dépendances non gérées (textures, cubemaps, son, VR) au moment du build, marquage `unsupported: true` avec raison dans `shaders.json`.
-- [ ] Dans l'UI, afficher un badge "aperçu non disponible" + le code reste consultable/copiable même si le rendu échoue.
+- [x] Détection des dépendances non gérées au moment du build (`scripts/build-index.js`) : recherche de `iChannel0..3` (textures externes non fournies dans le dépôt) et de `samplerCube`/`textureCube` (cubemaps). 19/378 shaders détectés comme `unsupported: true`, avec `unsupportedReason` explicite dans `data/shaders/<NNN>.json` et propagé dans l'index léger `data/shaders.json`. Aucun shader `Sound`/VR restant dans le dépôt (déjà retirés avec les multi-passes à l'étape 1).
+- [x] Dans l'UI, badge "aperçu non disponible" affiché à côté du titre dans la sidebar pour chaque shader marqué `unsupported`, et le viewport affiche directement la raison (ex. "Texture(s) externe(s) non fournie(s) dans le dépôt (iChannel0, iChannel1).") sans même tenter la compilation WebGL. Le code reste entièrement consultable et copiable en dessous.
+- Testé en conditions réelles (Playwright + Chromium) : le shader `003` (utilisation de `iChannel0`/`iChannel1`) affiche le badge dans la sidebar et le message clair dans le viewport, avec le code toujours visible dans l'éditeur.
 
 ### 7. Déploiement GitHub Pages
 - [ ] Ajouter un workflow GitHub Actions (`.github/workflows/deploy.yml`) qui :

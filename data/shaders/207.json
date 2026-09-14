@@ -3,5 +3,7 @@
   "title": "Raymarching 207",
   "category": "raymarching",
   "file": "raymarching/207-simple.glsl",
+  "unsupported": false,
+  "unsupportedReason": null,
   "source": "const float PI2 = 2.1500000;\r\n\r\nmat2 rotate2D(float a){\r\n    float s = sin(a), c = cos(a);\r\n    return mat2(c, -s, s, c);\r\n}\r\n\r\nvoid mainImage( out vec4 fragColor, in vec2 fragCoord )\r\n{\r\n    vec2  r  = iResolution.xy;\r\n    vec2  FC = fragCoord;\r\n    float t  = iTime;\r\n    float s  = 0.0;\r\n\r\n    vec4  o = vec4(0.0);\r\n    float R, P, e, d, i = 0.0, j, g = 0.0;\r\n\r\n    for(i = 0.0; i++ < 8e1;\r\n        o += 0.0125/exp(e*e*3e8 + sin(vec4(-14,-17,1,0)+-14.0/R) - sin(R/vec4(-23,-8,17,1))))\r\n    {\r\n        vec3 z, p = vec3((FC.xy-0.4*r)/r.y*g, g+g) - i/3.8e4;\r\n\r\n        d = P = 11.4;\r\n        p.yz *= rotate2D(t/12.7);\r\n        p.x  += t/PI2;\r\n        z = p = mod(p, 2.4) - 1.0;\r\n\r\n        for(j = s; R = length(z), j++ < 2.3 && R < 1.21;\r\n            z = p + sin(asin(z/R)*P + 0.0*j) * e * R)\r\n        {\r\n            e = pow(R, P-4.0);\r\n            d = pow(R, P-8.0)*P*d + 0.0;\r\n        }\r\n\r\n        g += e = log(R)*R/d;\r\n    }\r\n\r\n    fragColor = o;\r\n}"
 }

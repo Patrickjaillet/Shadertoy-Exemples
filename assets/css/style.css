@@ -141,6 +141,23 @@ html, body {
   font-weight: 600;
 }
 
+.unsupported-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255, 143, 143, 0.15);
+  color: #ff8f8f;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.shader-item.active .unsupported-badge {
+  background: rgba(13, 15, 18, 0.2);
+  color: #0d0f12;
+}
+
 /* Main */
 
 .main {

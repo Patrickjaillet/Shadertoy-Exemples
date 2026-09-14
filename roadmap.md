@@ -45,7 +45,8 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 - [x] Canvas fixé à `width=800 height=450` (résolution interne), avec `iResolution` réglé en conséquence.
 - [x] Petit runtime WebGL "Shadertoy-like" (`assets/js/shadertoy-runtime.js`) :
   - compile le fragment shader (pass `image` unique) en l'enveloppant dans un template qui fournit `mainImage`, les uniforms standards (`iResolution`, `iTime`, `iTimeDelta`, `iFrame`, `iMouse`, `iDate`), un quad plein écran (triangle unique), et la boucle `requestAnimationFrame`.
-  - affiche une erreur de compilation lisible dans l'UI (log GLSL complet, vertex ou fragment) plutôt qu'un écran noir silencieux. Testé en conditions réelles (Playwright + Chromium) : le shader `063` (array literal GLSL ES 3.00) échoue proprement avec le détail des erreurs de compilation affiché ; le shader `307` (raymarching tunnel) compile et s'affiche correctement dans le viewport.
+  - affiche une erreur de compilation lisible dans l'UI (log GLSL complet, vertex ou fragment) plutôt qu'un écran noir silencieux.
+  - **[FAIT, mise à jour post-publication]** Runtime migré de WebGL1 (GLSL ES 1.00) vers **WebGL2 (GLSL ES 3.00, `#version 300 es`)** : plusieurs shaders du dépôt utilisent des fonctionnalités GLSL ES 3.00 (boucles `for` avec initialisation externe à la boucle, `tanh()` sur vecteurs, array literals `type[N](...)`) qui échouaient systématiquement en WebGL1 avec des erreurs de compilation, alors que Shadertoy lui-même tourne en WebGL2. Migration : `canvas.getContext('webgl2')`, `attribute`/`varying` remplacés par `in`/`out`, `gl_FragColor` remplacé par une sortie `out vec4 shadertoyFragColor` déclarée dans le wrapper. Testé en conditions réelles (Playwright + Chromium) sur 8 shaders précédemment en échec (dont `006`, `063`, `100`, `250`, `308`) : tous compilent et rendent désormais correctement, sans régression sur les shaders qui fonctionnaient déjà (`001`, `002`, `307`).
 - [x] Contrôles de base : Play/Pause, Reset (bornés à l'activation du chargement d'un shader). *(non fait : affichage FPS de debug, non bloquant)*.
 - [x] Interaction souris simplifiée pour `iMouse` (mousedown/mousemove/mouseup convertis en coordonnées canvas).
 - [x] Gestion des shaders qui utilisent des textures externes (`iChannel` image/cubemap) : détection au build et fallback explicite implémentés à l'étape 6 (badge "aperçu non disponible" + message clair dans le viewport, sans tenter la compilation WebGL, 19/378 shaders concernés).
@@ -82,13 +83,13 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 ### 8. Finitions
 - [x] README.md créé avec lien vers le site publié, instructions d'ajout d'un nouveau shader, pile technique, et capture d'écran du logiciel (`docs/screenshot.png`), conformément aux conventions strictes du dépôt.
 - [x] Thème visuel dark mode *(fait dès l'étape 2 : palette sombre CSS + thème `dracula` pour CodeMirror depuis l'étape 4)*.
-- [x] Vérification manuelle d'un échantillon de shaders par catégorie (2-3 par dossier, en plus des shaders déjà testés aux étapes précédentes) via Playwright + Chromium : 11 des 15 shaders testés rendent correctement dans le viewport, 4 échouent à la compilation GLSL (incompatibilités WebGL1/GLSL ES 3.00) avec l'erreur affichée proprement — comportement attendu et déjà géré par le runtime. Chaque catégorie compte au moins un shader validé fonctionnel.
+- [x] Vérification manuelle d'un échantillon de shaders par catégorie (2-3 par dossier, en plus des shaders déjà testés aux étapes précédentes) via Playwright + Chromium : 11 des 15 shaders testés rendaient correctement dans le viewport au moment du test, 4 échouaient à la compilation GLSL sous WebGL1 (`006`, `100`, `250`, `308`) avec l'erreur affichée proprement. **Ces 4 échecs ont depuis été résolus par la migration WebGL2** (cf. étape 3) : tous rendent désormais correctement.
 
 **Étape 8 complète : les 8 étapes de la roadmap sont désormais toutes réalisées** (miniatures de l'étape 5 restant en option non bloquante, cf. Risques).
 
 ## Pile technique proposée
 
-- HTML/CSS/JS vanilla + WebGL2 (ou WebGL1 en fallback) pour le runtime de rendu.
+- HTML/CSS/JS vanilla + WebGL2 (GLSL ES 3.00, sans fallback WebGL1) pour le runtime de rendu, aligné sur l'environnement de rendu réel de Shadertoy.
 - CodeMirror 6 (CDN) pour l'éditeur en lecture seule avec coloration GLSL.
 - Node.js uniquement pour le script de build (génération de `data/shaders.json`), aucune dépendance runtime côté client au-delà des CDN.
 - GitHub Actions + GitHub Pages pour l'hébergement et le déploiement automatique.

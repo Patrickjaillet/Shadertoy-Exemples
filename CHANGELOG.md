@@ -8,7 +8,12 @@ Le format s'inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 
 ### Ajouté
 
+- Favicon SVG inline pour éviter le 404 sur `favicon.ico`.
 - Miniatures de prévisualisation dans la sidebar : générées à la volée côté client au premier affichage d'un shader, mises en cache dans `localStorage`, affichées à côté du titre pour chaque shader déjà visité.
+
+### Corrigé
+
+- Runtime de rendu migré de WebGL1 vers WebGL2 (GLSL ES 3.00) : plusieurs shaders (`006`, `100`, `250`, `308`, et d'autres) échouaient à la compilation avec des messages comme `'for' : Invalid init declaration` ou `'tanh' : no matching overloaded function found`, ces fonctionnalités GLSL n'existant qu'en GLSL ES 3.00. Shadertoy tournant lui-même en WebGL2, l'alignement corrige le rendu de tous les shaders concernés sans régression sur ceux qui fonctionnaient déjà.
 
 ## [0.1.0] - 2026-09-14
 

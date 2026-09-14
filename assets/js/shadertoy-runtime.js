@@ -1,13 +1,14 @@
 (function (global) {
-  const VERTEX_SRC = `
-attribute vec2 aPosition;
+  const VERTEX_SRC = `#version 300 es
+in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
 }
 `;
 
-  const FRAGMENT_HEADER = `
+  const FRAGMENT_HEADER = `#version 300 es
 precision highp float;
+out vec4 shadertoyFragColor;
 uniform vec3 iResolution;
 uniform float iTime;
 uniform float iTimeDelta;
@@ -18,7 +19,7 @@ uniform vec4 iDate;
 
   const FRAGMENT_FOOTER = `
 void main() {
-  mainImage(gl_FragColor, gl_FragCoord.xy);
+  mainImage(shadertoyFragColor, gl_FragCoord.xy);
 }
 `;
 
@@ -52,9 +53,9 @@ void main() {
     constructor(canvas) {
       this.canvas = canvas;
       const contextOptions = { preserveDrawingBuffer: true };
-      this.gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
+      this.gl = canvas.getContext('webgl2', contextOptions);
       if (!this.gl) {
-        throw new Error('WebGL non disponible sur ce navigateur.');
+        throw new Error('WebGL2 non disponible sur ce navigateur.');
       }
 
       this.program = null;

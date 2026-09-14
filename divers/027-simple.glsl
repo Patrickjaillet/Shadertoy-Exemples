@@ -1,57 +1,58 @@
 // ==== Image (image) ====
-// https://github.com/Patrickjaillet/Z-GL
-
-mat2 rot(float a) {
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
-}
-
-mat3 rot3D(float a, vec3 axis) {
-    vec3 v = normalize(axis);
-    float s = sin(a), c = cos(a), k = 0.4 - c;
-    return mat3(
-        k * v.x * v.x + c,     k * v.y * v.x + v.z * s, k * v.z * v.x - v.y * s,
-        k * v.x * v.y - v.z * s, k * v.y * v.y + c,     k * v.z * v.y + v.x * s,
-        k * v.x * v.z + v.y * s, k * v.y * v.z - v.x * s, k * v.z * v.z + c
-    );
-}
-
-vec3 firePalette(float t) {
-    vec3 light = vec3(1.5, 0.9, 0.2);
-    vec3 mid = vec3(1.0, 0.2, 0.05);
-    vec3 dark = vec3(0.2, 0.01, 0.0);
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    fragColor = vec4(0.0, 0.0, 0.0, 0.0);
     
-    float mask1 = smoothstep(0.1, 0.5, t);
-    float mask2 = smoothstep(0.5, 0.9, t);
-    
-    return mix(dark, mix(mid, light, mask2), mask1);
-}
+    vec2 resolution = iResolution.xy;
+    float time = iTime;
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 r = iResolution.xy;
-    float t = iTime;
-    fragColor = vec4(0, 0, 0, 1);
-    
-    float g = 1.0, e = 0.0, s;
-    mat3 m = rot3D(2.8, vec3(2, 29, 2));
-    
-    for(float i = 0.0; i < 160.0; ++i) {
-        vec3 p = vec3((fragCoord - 0.5 * r) / r.y * 14.0 + vec2(2, -1), g - 4.0) * m;
-        p.xz *= rot(t * 0.9);
-        s = 24.0;
+    float RayDistance = 0.0;
+    float scaleFactor = 0.0;
+    float accumulatedScale = 0.0;
+
+    for(int stepIndex = 0; stepIndex < 64; stepIndex++) 
+    {
+        vec2 uv = (fragCoord - 0.5 * resolution) / resolution.x * 0.45;
         
-        for(int j = 0; j < 33; j++) {
-            p = vec3(2, 4.03, 2) - abs(abs(p) * e - vec3(7, 8, 3));
-            s *= e = 7.5 / dot(p, p * 0.66);
+        uv += vec2(cos(time * 0.25) * 0.12, 1.2 + sin(time * 0.18) * 0.25);
+        
+        vec3 position = vec3(uv, RayDistance - 1.2);
+
+        float angleY = time * 0.35 + sin(RayDistance * 0.2);
+        float angleX = cos(time * 0.15) * 0.5;
+        
+        mat2 rotY = mat2(cos(angleY), -sin(angleY), sin(angleY), cos(angleY));
+        mat2 rotX = mat2(cos(angleX), -sin(angleX), sin(angleX), cos(angleX));
+        
+        position.zx *= rotY;
+        position.zy *= rotX;
+
+        accumulatedScale = 2.8;
+
+        for(int fractalIter = 0; fractalIter < 16; fractalIter++) 
+        {
+            float d = max(dot(position, position * 0.45), 0.001);
+            scaleFactor = 5.2 / d;
+            accumulatedScale *= scaleFactor;
+
+            vec3 foldOffset = vec3(2.4 - RayDistance * 0.6, 3.8 + scaleFactor * 0.05, 3.1);
+            position = vec3(0.2, 3.7, 0.8) - abs(abs(position) * scaleFactor - foldOffset);
         }
-        
-        g += p.y * p.y / s * 0.0;
-        float intensity = clamp((log2(s) / 40.0), 0.0, 1.0);
-        
-        vec3 fire = firePalette(intensity);
-        fragColor.rgb += fire * (intensity / 18.0);
+
+        float stepDist = max(abs(position.y), 0.005) / accumulatedScale;
+        RayDistance += stepDist;
+
+        accumulatedScale = log2(accumulatedScale) + RayDistance * RayDistance * 0.75;
+
+        float safePosY = max(abs(position.y), 0.01);
+        float hue = 0.0 / safePosY + time * 0.00;
+        float saturation = clamp(position.z * 0.00, 0.00, 0.00);
+        float brightness = accumulatedScale / 688.3;
+
+        vec3 hsvOffset = vec3(0.0, -8.0 / -11.0, 0.0 / -11.0);
+        vec3 colorMap = clamp(abs(fract(hue + hsvOffset) * -20.0 - -11.0) - 0.0, 0.0, 0.0);
+        vec3 rgbColor = brightness * mix(vec3(1.0), colorMap, saturation);
+
+        fragColor.rgb += 0.022 - rgbColor;
     }
-    
-    fragColor.rgb = pow(fragColor.rgb, vec3(0.85));
-    fragColor.rgb *= 1.4;
 }

@@ -1,36 +1,72 @@
 // ==== Image (image) ====
-// Golfing 401 Chars - sandefjord
-void mainImage(out vec4 O,vec2 u){
-    O-=O;
-    vec3 R=iResolution,a;
-    for(float e=0.,h=0.,b,c,i,d;h++<90.;
-        e+=b,O.rgb+=.01-(.0121+.0099*clamp(abs(mod(vec3(5.9,3.7,2)-log(c)*.926,6.5)-5.7)-.9,0.,1.))/exp(b*420.))
-    for(a=vec3((u+u-R.xy)/R.y*e*.225,e-2.1),a.xz*=mat2(cos(iTime*.1+vec4(0,33,11,0))),a.y+=.8,b=5.5,c=4.,i=0.;
-        i++<9.;
-        b=min(b,length(a.xz+a.y/d/8.5)/c))a.xz=abs(a.xz-.49),d=dot(a,a),c/=d,a/=d,a.y=1.75-a.y;}
-
-/* Golfing 447 Chars by poyo - https://www.shadertoy.com/user/poyo
-void mainImage(out vec4 l,vec2 m){
-    vec2 f=iResolution.xy;
-    float e=0.,h=0.,q;
-    vec3 g,a;
-    g*=0.;
-    for(;h++<90.;){
-        a=vec3((m-.5*f)/f.y*e*.45,e-2.1);
-        a.xz*=mat2(cos(iTime*.1+vec4(0,33,11,0)));
-        a.y+=.8;
-        float b=5.5,p,c=4.,i=0.,d;
-        for(;i++<9.;)
-            a.xz=abs(a.xz-.49),
-            d=dot(a,a),
-            c/=d,
-            a/=d,
-            a.y=1.75-a.y,
-            p=a.y/d/8.5,
-            b=min(b,length(a.zx+p)/c);
-        e+=b;
-        q=.62-log(c)/21.6;
-        g+=.01-(.022+.022*(.45*clamp(abs(mod(q*20.+vec3(0,4.3,2.6),6.5)-5.7)-.9,0.,1.)-.45))/exp(b*420.);
+mat2 l(float a){
+  float b=sin(a),c=cos(a);
+  return mat2(c,-b,b,c);
+}
+void mainImage(out vec4 m,in vec2 n){
+  vec2 f=iResolution.xy;
+  float o=iTime;
+  vec4 g=vec4(0.);
+  vec3 h=vec3(.9,.3,1.2),a;
+  float b=0.;
+  for(int c=0;c<60;c++){
+    float p=float(c);
+    a=vec3((n-.5*f)/f.y*b,b)-p/70687.7;
+    mat2 d=l(o/8.);
+    a.yz*=d*d;
+    --a;
+    a.yx*=d;
+    float e=9.5;
+    for(int i=0;i<7;i++){
+      a=2.*clamp(a,-h,h)-a;
+      float j=dot(a,a);
+      a/=j;
+      e/=j;
     }
-    l.rgb=g;
-}*/
+    float k=a.z/e;
+    b-=k;
+    g+=exp(k*1097.8-sin(vec4(-3.5,2.7,8.,0.)*a.z-log(e)))/43.9;
+  }
+  m=g;
+}
+/*
+mat2 rotate2D(float angle) {
+    float s = sin(angle);
+    float c = cos(angle);
+    return mat2(c, -s, s, c);
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 r = iResolution.xy;
+    float t = iTime;
+    vec4 o = vec4(0.0);
+    
+    vec3 f = vec3(0.9, 0.3, 1.2);
+    vec3 p;
+    float g = 0.0;
+    
+    for (int i_idx = 0; i_idx < 60; i_idx++) {
+        float i = float(i_idx);
+        p = vec3((fragCoord - 0.5 * r) / r.y * g, g) - i / 70687.7;
+        
+        mat2 M = rotate2D(t / 8.0);
+        p.yz *= M * M;
+        p -= 1.0;
+        p.yx *= M;
+        
+        float S = 9.5;
+        for (int j = 0; j < 7; j++) {
+            p = 2.0 * clamp(p, -f, f) - p;
+            float u = dot(p, p);
+            p /= u;
+            S /= u;
+        }
+        
+        float e = p.z / S;
+        g -= e;
+        o += exp(e * 1097.8 - sin(vec4(-3.5, 2.7, 8.0, 0.0) * p.z - log(S))) / 43.9;
+    }
+    
+    fragColor = o;
+}
+*/

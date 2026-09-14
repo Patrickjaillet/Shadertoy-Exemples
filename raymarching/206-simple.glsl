@@ -1,43 +1,144 @@
 // ==== Image (image) ====
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    // Normalisation des coordonnées de l'écran (repère centré à 0,0, axe Y inversé pour correspondre à p5.js)
-    vec2 st = (fragCoord - iResolution.xy * 0.5) / iResolution.y;
-    st.y = -st.y;
-
-    vec3 color = vec3(0.035); // Fond sombre (équivalent à background(9) sur 255)
-    float time = iTime * 1.5;   // Progression temporelle
-
-    // Nombre de points accumulés dans la boucle du shader
-    const float totalPoints = 600.0;
+    // Camera zoom on the screen
+    float coordScale = 2.0;
+    vec2 uv = (fragCoord * coordScale - iResolution.xy) / iResolution.y;
+    float time = iTime;
+    // https://patrickjaillet.github.io/sandefjord-software
+    // Speed of the first scene rotation
+    float rotSpeed1 = 0.2;
+    float cosRot1 = cos(time * rotSpeed1);
+    float sinRot1 = sin(time * rotSpeed1);
+    mat2 rot1 = mat2(cosRot1, -sinRot1, sinRot1, cosRot1);
     
-    for (float idx = 0.0; idx < totalPoints; idx += 1.0) {
-        // Variation de i entre 0 et 10000 comme dans la boucle p5.js originale
-        float i = mix(0.0, 10000.0, idx / totalPoints);
-        float y = i / 43.0;
-
-        // Équivalents des variables géométriques du code p5.js
-        float k = 5.0 * cos(i / 14.0) * cos(y / 30.0);
-        float e = y / 8.0 - 13.0;
+    // Speed of the second scene rotation
+    float rotSpeed2 = 0.15;
+    // Offset to separate the two camera rotations
+    float rotOffset2 = 0.3;
+    float cosRot2 = cos(time * rotSpeed2 + rotOffset2);
+    float sinRot2 = sin(time * rotSpeed2 + rotOffset2);
+    mat2 rot2 = mat2(cosRot2, -sinRot2, sinRot2, cosRot2);
+    
+    // Fix by Elsio : https://www.shadertoy.com/user/Elsio
+    // ---------------------------------------------------
+    // Modification: integration of dynamic rotation based on iTime (Appolonian Fold)
+    vec2 rotInnerVec = cos(3.14/2. + iTime*.1 + vec2(0,33));
+    mat2 rotInner = mat2(rotInnerVec.x, -rotInnerVec.y, rotInnerVec.y, rotInnerVec.x);
+    // Base brightness of the dark background
+    float initialFragColor = 0.1;
+    fragColor = vec4(initialFragColor);
+    // Starting distance of the rendering ray
+    float totalDistance = 0.0;
+    
+    // Number of calculations per pixel (image quality)
+    float maxRaySteps = 32.0;
+    for (float i = 0.0; i < maxRaySteps; i++) {
+        vec3 rayPosition = vec3(uv * totalDistance, totalDistance);
         
-        // mag(k, e)^2 / 59 + 6
-        float d = (k * k + e * e) / 59.0 + 6.0;
+        rayPosition.xz *= rot1;
+        rayPosition.yz *= rot2;
         
-        float angle = atan(k, e); // atan2(k, e)
-        float q = 90.0 - 5.0 * sin(angle * e) + k * (3.0 + sin(d * d - time * 2.0));
-        float c = d / 2.0 - time / 18.0;
-
-        // Position calculée du point (recentrée par rapport aux 400x400 de l'original)
-        vec2 p = vec2(
-            (q = (90.0 - 5.0 * sin(angle * e) + k * (3.0 + sin(d * d - time * 2.0)))) * sin(c),
-            (q + d * pow(d, sin(d * 2.0 - time / 3.0))) * cos(c)
-        ) / 200.0;
-
-        // Rendu du point avec un flou léger (effet de trait stroke)
-        float dist = length(st - p);
-        float pointShape = smoothstep(0.008, 0.001, dist);
+        // Forward speed of the camera in a straight line
+        float cameraSpeed = 0.6;
+        rayPosition.z += time * cameraSpeed;
         
-        color += vec3(1.0, 1.0, 1.0) * pointShape * 0.15;
+        // Geometric offset to prevent everything from being perfectly centered
+        float spaceOffset = 1.0;
+        rayPosition += spaceOffset;
+        
+        // Maximum distance threshold of the shape
+        float baseOrbitDistance = 9.0;
+        float minOrbitDistance = baseOrbitDistance;
+        // Starting size of the fractal
+        float baseFractalScale = 9.0;
+        float fractalScale = baseFractalScale;
+        // Current step distance
+        float stepDistance = 0.0;
+        
+        // Number of pattern repetitions inside the fractal
+        int maxFractalIterations = 7;
+        for (int j = 0; j < maxFractalIterations; j++) {
+            // Spacing between each shape repetition
+            float modPeriod = 2.0;
+            // Offset to center the repetition
+            float modOffset = 1.0;
+            rayPosition = mod(rayPosition - modOffset, modPeriod) - modOffset;
+            rayPosition.yz *= rotInner;
+            
+            minOrbitDistance = min(minOrbitDistance, length(rayPosition));
+            
+            // Power of the spherical distortion
+            float inversionFactor = 0.6;
+            stepDistance = dot(rayPosition, rayPosition) * inversionFactor;
+            
+            fractalScale /= stepDistance;
+            rayPosition /= stepDistance;
+        }
+        
+        // Global scale inversion
+        float scaleInversion = 1.0;
+        stepDistance = scaleInversion / fractalScale;
+        totalDistance += stepDistance;
+        
+        // How much distance affects the color shifts
+        float hueScaleDistance = 0.08;
+        // Color shifting speed over time
+        float hueScaleTime = 0.04;
+        float colorHue = fract(minOrbitDistance + totalDistance * hueScaleDistance + time * hueScaleTime);
+        
+        // Red phase position in the color palette
+        float redPhase = 1.0;
+        // Green phase position in the color palette
+        float greenPhase = 2.0 / 3.0;
+        // Blue phase position in the color palette
+        float bluePhase = 1.0 / 3.0;
+        vec3 phaseOffsets = vec3(redPhase, greenPhase, bluePhase);
+        
+        // Frequency of the color bands (rainbow effect)
+        float waveFrequency = 20.0;
+        // Color saturation and boost control
+        float waveOffset = 3.0;
+        vec3 p = abs(fract(colorHue + phaseOffsets) * waveFrequency - waveOffset);
+        
+        // Lower limit to prevent total pitch blackness
+        float clampMin = 0.2;
+        // Upper limit to prevent severe color burning
+        float clampMax = 1.0;
+        // Balance between white highlights and pure color
+        float mixFactor = 0.7;
+        // Overall light power multiplier (glow/HDR intensity)
+        float colorIntensity = 2.6;
+        vec3 rgbColor = colorIntensity * mix(vec3(1.0), clamp(p - 1.0, clampMin, clampMax), mixFactor);
+        
+        // Strength of the glow halo effect
+        float glowIntensity = 0.014;
+        // Glow fade rate on the edges of the shapes
+        float falloffStep = 1200.0;
+        // Thickness of the background fog
+        float falloffDistance = 0.15;
+        fragColor.rgb += glowIntensity / exp(stepDistance * falloffStep + totalDistance * falloffDistance) * rgbColor;
     }
-
-    fragColor = vec4(color, 1.0);
+    
+    vec3 x = fragColor.rgb;
+    
+    // White balance contrast (ACES cinematic filter)
+    float aces_a = 2.51;
+    // Shadow adjustment (ACES cinematic filter)
+    float aces_b = 0.03;
+    // Midtone brightness (ACES cinematic filter)
+    float aces_c = 1.68;
+    // Overall contrast adjustment (ACES cinematic filter)
+    float aces_d = 0.59;
+    // Highlight saturation correction (ACES cinematic filter)
+    float aces_e = 0.14;
+    // Minimum screen safety boundary
+    float clampFloor = 0.0;
+    // Maximum screen safety boundary
+    float clampCeil = 1.0;
+    
+    fragColor.rgb = clamp((x * (aces_a * x + aces_b)) / (x * (aces_c * x + aces_d) + aces_e), clampFloor, clampCeil);
+    
+    // Final output transparency (fully opaque)
+    float alphaChannel = 1.0;
+    fragColor.a = alphaChannel;
 }

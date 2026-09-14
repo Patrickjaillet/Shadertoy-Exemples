@@ -1,130 +1,135 @@
 // ==== Image (image) ====
-mat2 h(float v) {
-    float c = cos(v), s = sin(v);
-    return mat2(c, -s, s, c);
+// ==========================================================
+// NAME : HYPER-RECURSIVE MONOLITH
+// ==========================================================
+// This shader explores an "extreme" non-Euclidean fractal structure through
+// spatial folding and infinite recursion. It uses a Raymarching engine
+// coupled with a KIFS (Kleinian Iterated Function System) distance
+// estimator. The visual style is focused on monochromatic depth,
+// complex shadows, and organic complexity rather than bright colors.
+// ==========================================================
+// Credits : Patrick JAILLET
+// https://shaderstudio.xo.je
+// https://renderforge.ct.ws
+
+#define MAX_STEPS 100
+#define MAX_DIST 20.0
+#define SURF_DIST 0.001
+
+// Standard 2D rotation
+mat2 Rot(float a) {
+float s = sin(a), c = cos(a);
+return mat2(c, -s, s, c);
 }
 
-vec3 l(float c, float s, float d) {
-    vec3 a = clamp(abs(mod(c * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
-    return d * mix(vec3(1.0), a, s);
+// Helper for smooth multicolor transitions (Cosine palette)
+vec3 Palette(float t) {
+// An organic, mineral palette: Golds, deep blues, and earthy greens
+vec3 a = vec3(0.5, 0.5, 0.5);
+vec3 b = vec3(0.5, 0.5, 0.5);
+vec3 c = vec3(1.0, 1.0, 0.7);
+vec3 d = vec3(0.0, 0.15, 0.20);
+return a + b * cos(6.28318 * (c * t + d));
 }
 
-float map(vec3 p, float t) {
-    float sphere_dist = length(p) - 1.5;
+// Global variable to store the color trap data
+float gTrap = 0.0;
 
-    vec3 p_fold = p;
-    p_fold.zx *= h(t * 1.2);
-    p_fold.xy *= h(t * 0.8);
-    
-    float scale = 1.0;
-    float e = 1.0;
-    for(int k = 0; k < 8; k++) {
-        p_fold = 2.2 - abs(p_fold * e - 0.4 / max(e, 0.001)) - sin(t * 0.5) * 0.05;
-        float q = dot(p_fold * (2.0 - sin(t * 0.2) * 0.3), p_fold * 1.5);
-        e = max(1.15, 4.5 / max(q, 0.005));
-        scale *= e;
-    }
-    
-    float fractal_dist = distance(p_fold.xz, p_fold.yx) / scale;
-    fractal_dist = max(fractal_dist, 0.001);
+// The fractal distance function (KIFS)
+float GetDist(vec3 p) {
+float scale = 1.35;
+p.xy *= Rot(iTime * 0.1);
+p.yz *= Rot(iTime * 0.15);
 
-    return max(sphere_dist, fractal_dist * 0.4); 
+vec3 p_orig = p;
+float d = 100.0;
+float trap = 0.0;
+
+// The "Extreme" folding loop
+for(int i = 0; i < 12; i++) {
+    p = abs(p) - vec3(0.5, 0.8, 0.4); 
+    p.xy *= Rot(0.785); 
+    p *= scale;
+    
+    // Orbit Trap: Accumulate position data for coloring
+    trap += exp(-length(p) * 0.1);
+    
+    float sphere = length(p) - 1.2;
+    d = min(d, sphere / pow(scale, float(i)));
 }
 
-vec3 calcNormal(vec3 p, float t) {
-    float eps = 0.001;
-    vec2 k = vec2(1.0, -1.0);
-    return normalize(
-        k.xyy * map(p + k.xyy * eps, t) +
-        k.yyx * map(p + k.yyx * eps, t) +
-        k.yxy * map(p + k.yxy * eps, t) +
-        k.xxx * map(p + k.xxx * eps, t)
-    );
+gTrap = trap * 0.15; // Store normalized trap value
+return d;
 }
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    float t = iTime * 0.25;
-    
-    vec3 ro = vec3(0.0, 0.0, -3.5);
-    vec3 rd = normalize(vec3(uv, 1.0));
-    
-    vec3 col = vec3(0.0);
-    float t_march = 0.0;
-    
-    for(int g = 0; g < 160; g++) {
-        vec3 p = ro + rd * t_march;
-        float d = map(p, t);
-
-         vec3 p_fold = p;
-        p_fold.zx *= h(t * 1.2); p_fold.xy *= h(t * 0.8);
-        float scale = 1.0; float e = 1.0;
-        for(int k = 0; k < 8; k++) {
-            p_fold = 2.2 - abs(p_fold * e - 0.4 / max(e, 0.001)) - sin(t * 0.5) * 0.05;
-            float q = dot(p_fold * (2.0 - sin(t * 0.2) * 0.3), p_fold * 1.5);
-            e = max(1.15, 4.5 / max(q, 0.005)); scale *= e;
-        }
-        float fractal_dist_pure = distance(p_fold.xz, p_fold.yx) / scale;
-
-        float r = exp(-fractal_dist_pure * 24.0) * exp(-t_march * 0.15);
-        col += l(1.5 + float(g) * 0.01 - t * 0.3, 0.85, r * 0.18);
-        
-        if(t_march > 30.0 || d < 0.001) break;
-        t_march += d * 0.6;
-    }
-    
-    vec3 final_col = col;
-    float sphere_t = 0.0;
-    float sphere_dist_travelled = 0.0;
-    bool hit_sphere = false;
-    for(int i = 0; i < 80; i++) {
-        vec3 p = ro + rd * sphere_t;
-        float d = length(p) - 1.5; 
-        if(d < 0.001) { hit_sphere = true; break; }
-        sphere_t += d;
-        if(sphere_t > 30.0) break;
-    }
-
-    if(hit_sphere) {
-        vec3 p = ro + rd * sphere_t;
-        vec3 n = normalize(p);
-        vec3 ref = reflect(rd, n);
-        
-        float fresnel = pow(1.0 - max(dot(-rd, n), 0.0), 3.0);
-        float specular = pow(max(dot(ref, normalize(vec3(1.0, 2.0, -1.0))), 0.0), 32.0);
-        
-        final_col = col * 0.5 + fresnel * 0.5 + specular * 0.8;
-        final_col *= 0.9 + 0.1 * n.y; 
-        
-        if(sphere_t > 1.5) final_col *= 0.1;
-    }
-
-    final_col = pow(final_col, vec3(0.4545));
-    fragColor = vec4(final_col, 1.0);
+// Raymarching engine
+float RayMarch(vec3 ro, vec3 rd) {
+float dO = 0.0;
+for(int i = 0; i < MAX_STEPS; i++) {
+vec3 p = ro + rd * dO;
+float dS = GetDist(p);
+dO += dS;
+if(dO > MAX_DIST || abs(dS) < SURF_DIST) break;
 }
-/***********************************************************************************
-*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____                       *
-* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \                      *
-* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |                     *
-*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |                     *
-* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/                      *
-*            PATRICK JAILLET-VAN DEN BEEMT [PJVDB]                                 *
-************************************************************************************
-* - Software:       https://patrickjaillet.github.io/sandefjord-software           *
-* - Social Network: https://x.com/JailletPatrick                                   *
-* - Music:          https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g       *
-************************************************************************************
-*           Software used for GLSL shader creation:                                *
-*                ******************************                                    *
-* GLSL shader design and value tweaking                                            *
-* - Sliders-GL v1.0.1:                                                             *
-* https://patrickjaillet.github.io/sandefjord-software/software.html?id=sliders-gl *
-*                                                                                  *
-* 100% safe Code Golfing                                                           *
-* - µShader v3.0.1:                                                                *
-* https://patrickjaillet.github.io/sandefjord-software/software.html?id=microshader*
-*                                                                                  *
-* Formatting & Layout                                                              *
-* - ShaderFmt v1.0.0:                                                              *
-* https://patrickjaillet.github.io/sandefjord-software/software.html?id=shaderfmt  *
-***********************************************************************************/
+return dO;
+}
+
+// Normal calculation
+vec3 GetNormal(vec3 p) {
+float d = GetDist(p);
+vec2 e = vec2(0.01, 0);
+vec3 n = d - vec3(
+GetDist(p - e.xyy),
+GetDist(p - e.yxy),
+GetDist(p - e.yyx));
+return normalize(n);
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
+vec3 col = vec3(0);
+
+// Camera
+vec3 ro = vec3(0, 0, -4.0);
+vec3 rd = normalize(vec3(uv.x, uv.y, 1.2));
+
+// Render
+float d = RayMarch(ro, rd);
+
+if(d < MAX_DIST) {
+    vec3 p = ro + rd * d;
+    vec3 n = GetNormal(p);
+    vec3 r = reflect(rd, n);
+    
+    // Retrieve the trap value calculated during RayMarch
+    float colorData = gTrap;
+
+    // Lighting
+    vec3 lightPos = vec3(2, 5, -5);
+    vec3 l = normalize(lightPos - p);
+    float diff = dot(n, l) * 0.5 + 0.5;
+    float spec = pow(max(dot(r, l), 0.0), 32.0);
+    
+    // Combine Orbit Trap with the palette
+    vec3 baseCol = Palette(colorData + length(p) * 0.1);
+    
+    col = baseCol * diff;
+    col += spec * 0.3 * baseCol; // Specular highlights tinted by base color
+    
+    // Ambient Occlusion (fake)
+    float ao = 1.0 / (1.0 + d * 0.15);
+    col *= ao;
+    
+    // Distance fog
+    col = mix(col, vec3(0.02, 0.04, 0.06), 1.0 - exp(-0.15 * d));
+} else {
+    // Background Gradient
+    col = vec3(0.01, 0.01, 0.03) + 0.05 * vec3(uv.y);
+}
+
+// Post-processing
+col = pow(col, vec3(0.4545)); // Gamma correction
+col *= 1.2; // Slight exposure boost
+
+fragColor = vec4(col, 1.0);
+}

@@ -1,195 +1,182 @@
 // ==== Image (image) ====
-mat2 rot2D(float a)
-{
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
-}
+void mainImage(out vec4 N, in vec2 O) {
+    vec2 uv = (O - 0.5 * iResolution.xy) / iResolution.y;
+    
+    vec3 ro = vec3(2.8 * cos(iTime * 0.3), 1.5 + 0.8 * sin(iTime * 0.2), 2.8 * sin(iTime * 0.3));
+    vec3 ww = normalize(-ro);
+    vec3 uu = normalize(cross(ww, vec3(0.0, 1.0, 0.0)));
+    vec3 vv = cross(uu, ww);
+    vec3 rd = normalize(uv.x * uu + uv.y * vv + 1.2 * ww);
 
-float sdOctahedron(vec3 p, float s)
-{
-    p = abs(p);
-    return (p.x + p.y + p.z - s) * 0.57735027;
-}
+    float morphCycle = iTime * 0.25;
+    float curId = floor(morphCycle);
+    float morphPhase = smoothstep(0.15, 0.85, fract(morphCycle));
+    int idA = int(mod(curId, 4.0));
+    int idB = int(mod(curId + 1.0, 4.0));
 
-float map(vec3 p, out vec3 w, out float matIdx)
-{
-    vec3 p_orig = p;
-    float scale = 1.0;
-    float d = 1e5;
+    vec3 off[4];
+    off[0] = vec3(1.2, 1.2, 1.2);
+    off[1] = vec3(1.5, 1.5, 1.5);
+    off[2] = vec3(1.0, 1.3, 1.0);
+    off[3] = vec3(1.4, 0.8, 1.4);
     
-    w = p;
-    
-    for(int i = 0; i < 8; i++)
-    {
-        p = abs(p) - vec3(0.38, 0.48, 0.33);
-        
-        if (p.x < p.y) p.xy = p.yx;
-        if (p.x < p.z) p.xz = p.zx;
-        if (p.y < p.z) p.yz = p.zy;
-        
-        p.xy *= rot2D(0.38 + sin(iTime * 0.03) * 0.05);
-        p.xz *= rot2D(0.20 + cos(iTime * 0.02) * 0.02);
-        
-        float k = 1.65;
-        p *= k;
-        scale *= k;
-        
-        w = mix(w, cos(p * 1.1), 0.25);
-        
-        float kifs_sponge = (length(p.xy) - 0.54) / scale;
-        d = min(d, kifs_sponge);
-    }
-    
-    vec3 p_cry = p_orig;
-    p_cry.y -= sin(iTime * 0.3) * 0.12;
-    p_cry.xz *= rot2D(iTime * 0.4);
-    p_cry.yx *= rot2D(iTime * 0.20);
-    float cry = sdOctahedron(p_cry, 0.26) - 0.005;
-    
-    if(cry < d)
-    {
-        matIdx = 1.0;
-        return cry;
-    }
-    
-    matIdx = 0.0;
-    return d * 0.75;
-}
+    float scl[4];
+    scl[0] = 2.0;
+    scl[1] = 2.2;
+    scl[2] = 2.0;
+    scl[3] = 2.4;
 
-vec3 getNormal(vec3 p)
-{
-    vec3 w; float m;
-    vec2 e = vec2(0.001, 0.0);
-    return normalize(vec3(
-        map(p + e.xyy, w, m) - map(p - e.xyy, w, m),
-        map(p + e.yxy, w, m) - map(p - e.yxy, w, m),
-        map(p + e.yyx, w, m) - map(p - e.yyx, w, m)
-    ));
-}
+    vec3 curOff = mix(off[idA], off[idB], morphPhase);
+    float curScl = mix(scl[idA], scl[idB], morphPhase);
 
-float getAO(vec3 p, vec3 n)
-{
-    float occ = 0.0;
-    float sca = 1.0;
-    vec3 w; float m;
-    for(int i = 0; i < 5; i++)
-    {
-        float hr = 0.01 + 0.15 * float(i) / 4.0;
-        float d = map(p + n * hr, w, m);
-        occ += (hr - d) * sca;
-        sca *= 0.75;
-    }
-    return clamp(1.0 - 5.0 * occ, 0.0, 1.0);
-}
-
-vec3 getEnvironment(vec3 rd)
-{
-    vec3 bg = mix(vec3(0.001, 0.002, 0.005), vec3(0.01, 0.015, 0.03), rd.y * 0.5 + 0.5);
-    
-    vec3 lDir1 = normalize(vec3(1.5, 0.8, -0.5));
-    bg += vec3(1.0, 0.75, 0.6) * pow(clamp(dot(rd, lDir1), 0.0, 1.0), 60.0);
-    
-    vec3 lDir2 = normalize(vec3(-1.5, -0.3, 0.8));
-    bg += vec3(0.2, 0.4, 0.8) * pow(clamp(dot(rd, lDir2), 0.0, 1.0), 25.0);
-    
-    bg += vec3(0.15, 0.2, 0.3) * pow(max(0.0, 1.0 - abs(rd.y)), 12.0);
-    
-    return bg;
-}
-
-vec3 render(vec3 ro, vec3 rd)
-{
     float t = 0.0;
-    vec3 w = vec3(0.0);
-    float matIdx = 0.0;
-    bool hit = false;
+    float max_t = 20.0;
+    float d = 0.0;
+    float glow = 0.0;
     
-    for(int i = 0; i < 100; i++)
-    {
-        vec3 p = ro + rd * t;
-        float d = map(p, w, matIdx);
-        if(d < 0.0015)
-        {
-            hit = true;
-            break;
-        }
-        t += d;
-        if(t > 30.0) break;
-    }
-    
-    vec3 bg = getEnvironment(rd);
-    if(!hit) return bg;
-    
-    vec3 p = ro + rd * t;
-    vec3 n = getNormal(p);
-    vec3 r = reflect(rd, n);
-    
-    float ao = getAO(p, n);
-    vec3 refCol = getEnvironment(r);
-    
-    vec3 lDir1 = normalize(vec3(5.0, 8.0, -4.0) - p);
-    float fre = pow(clamp(1.0 + dot(n, rd), 0.0, 1.0), 5.0);
-    
-    vec3 albedo = vec3(0.0);
-    
-    if(matIdx < 0.5)
-    {
-        vec3 chromeTint = mix(vec3(0.97, 0.98, 1.0), vec3(0.80, 0.88, 1.0), smoothstep(-0.3, 0.5, sin(w.x * 3.5) * cos(w.z * 3.5)));
-        
-        float spe = pow(clamp(dot(r, lDir1), 0.0, 1.0), 250.0);
-        vec3 specColor = spe * vec3(1.5, 1.35, 1.1);
-        
-        albedo = refCol * chromeTint;
-        albedo += specColor;
-        albedo = mix(albedo, albedo * ao, 0.5);
-        albedo += fre * vec3(0.5, 0.75, 1.0) * ao;
-    }
-    else
-    {
-        vec3 crystalBase = mix(vec3(0.95, 0.05, 0.35), vec3(0.02, 0.80, 0.95), sin(p.y * 12.0 + iTime * 0.8) * 0.5 + 0.5);
-        float spe = pow(clamp(dot(r, lDir1), 0.0, 1.0), 180.0);
-        
-        albedo = mix(crystalBase, refCol, 0.4 + 0.6 * fre);
-        albedo += spe * vec3(1.8) + fre * vec3(0.7, 0.9, 1.0);
-        albedo *= (ao * 0.6 + 0.4);
-    }
-    
-    vec3 finalColor = mix(albedo, bg, 1.0 - exp(-0.012 * t * t));
-    return finalColor;
-}
+    float a1 = iTime * 0.35;
+    float a2 = iTime * 0.45;
+    mat2 m1 = mat2(cos(a1), -sin(a1), sin(a1), cos(a1));
+    mat2 m2 = mat2(cos(a2), -sin(a2), sin(a2), cos(a2));
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord)
-{
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
+    for(int i = 0; i < 150; i++) {
+        vec3 q = ro + t * rd;
+        q.xz = m1 * q.xz;
+        q.yz = m2 * q.yz;
+        
+        vec3 p = q;
+        float s = 1.0;
+        for(int k = 0; k < 6; k++) {
+            p = abs(p);
+            if(p.x < p.y) p.xy = p.yx;
+            if(p.x < p.z) p.xz = p.zx;
+            if(p.y < p.z) p.yz = p.zy;
+            
+            p = p * curScl - curOff * (curScl - 1.0);
+            s *= curScl;
+        }
+        d = (length(p) - 0.8) / s;
+        
+        glow += 0.004 / (0.01 + d * d);
+        
+        if(d < 0.001 || t > max_t) break;
+        t += d * 0.6;
+    }
+
+    vec3 col = vec3(0.01, 0.015, 0.02) * (1.0 - length(uv) * 0.5);
+    col += vec3(0.98, 0.4, 0.15) * glow * 0.03;
     
-    float tCam = iTime * 0.15;
-    float radius = 3.6 + sin(iTime * 0.11) * 0.2;
+    vec3 bg_p = rd * 15.0;
+    float stars = pow(clamp(sin(bg_p.x * 25.0) * sin(bg_p.y * 25.0) * sin(bg_p.z * 25.0), 0.0, 1.0), 45.0);
+    col += vec3(0.9, 0.95, 1.0) * stars * clamp(1.0 - (t / max_t), 0.0, 1.0) * 1.5;
+
+    if(t < max_t) {
+        vec3 q = ro + t * rd;
+        q.xz = m1 * q.xz;
+        q.yz = m2 * q.yz;
+
+        vec3 n_q = vec3(0.0);
+        vec2 e = vec2(1.0, -1.0) * 0.5773 * 0.002;
+        for(int j = 0; j < 4; j++) {
+            vec3 e_vec = j==0 ? e.xyy : j==1 ? e.yyx : j==2 ? e.yxy : e.xxx;
+            vec3 p_in = q + e_vec;
+            
+            float s = 1.0;
+            for(int k = 0; k < 6; k++) {
+                p_in = abs(p_in);
+                if(p_in.x < p_in.y) p_in.xy = p_in.yx;
+                if(p_in.x < p_in.z) p_in.xz = p_in.zx;
+                if(p_in.y < p_in.z) p_in.yz = p_in.zy;
+                
+                p_in = p_in * curScl - curOff * (curScl - 1.0);
+                s *= curScl;
+            }
+            float d_n = (length(p_in) - 0.8) / s;
+            n_q += e_vec * d_n;
+        }
+        n_q = normalize(n_q);
+        
+        vec3 nor = n_q;
+        nor.yz = mat2(cos(a2), sin(a2), -sin(a2), cos(a2)) * nor.yz;
+        nor.xz = mat2(cos(a1), sin(a1), -sin(a1), cos(a1)) * nor.xz;
+
+        vec3 abs_n = abs(n_q);
+        vec2 faceUV = abs_n.x > abs_n.y && abs_n.x > abs_n.z ? q.yz : 
+                      abs_n.y > abs_n.x && abs_n.y > abs_n.z ? q.xz : q.xy;
+
+        vec3 fId = step(abs_n.yzx, abs_n) * step(abs_n.zxy, abs_n) * sign(n_q);
+        float fVal = dot(fId, vec3(1.1, 2.3, 3.7));
+
+        vec2 c2 = faceUV * 1.5;
+        float j2 = dot(c2, c2);
+        float d2 = iTime * 0.35;
+        vec2 e2_vec = vec2(0.0);
+        float k2 = 0.7, i2 = 0.7;
+        mat2 l2 = mat2(0.540302, -0.841470, 0.841470, 0.540302);
+        
+        for(int g = 0; g < 13; g++) {
+            c2 = l2 * c2;
+            e2_vec = l2 * e2_vec;
+            vec2 a_uv = c2 * i2 + e2_vec + vec2(d2 * 0.7, d2 * 0.2 + float(g) * 0.73);
+            float m2_val = sin(a_uv.x * 1.4 + d2) + cos(a_uv.y * 3.6 - j2 * 4.0);
+            e2_vec += vec2(cos(a_uv.y + m2_val - d2), sin(a_uv.x - m2_val + d2)) * 0.63;
+            k2 += (dot(cos(a_uv), sin(a_uv.yx)) + 0.5) / i2;
+            i2 *= 1.19;
+        }
+        
+        float h2 = k2 * 0.4;
+        vec3 c1 = 0.5 + 0.5 * cos(fVal * 1.5 + vec3(0.0, 2.0, 4.0));
+        vec3 c3 = 0.5 + 0.5 * cos(fVal * 1.5 + vec3(1.0, 3.0, 5.0));
+        vec3 c4 = 0.5 + 0.5 * cos(fVal * 1.5 + vec3(2.0, 4.0, 6.0));
+
+        vec3 texCol = c1 * (cos(h2 * 2.5 + 1.57) * 0.5 + 0.5) + 
+                      c3 * (sin(h2 * 12.0) + 0.9) + 
+                      c4 * (cos(h2 * 1.5 + 4.71) * 0.5 + 0.5);
+                      
+        texCol *= exp(-j2 * 1.1);
+        texCol = clamp(texCol, 0.0, 1.0);
+
+        vec3 lig = normalize(vec3(0.7, 1.0, -0.8));
+        float dif = max(dot(nor, lig), 0.0);
+        vec3 ref = reflect(rd, nor);
+        float spe = pow(max(dot(ref, lig), 0.0), 48.0);
+        float fre = pow(clamp(1.0 + dot(nor, rd), 0.0, 1.0), 3.0);
+
+        col = texCol * 2.0; 
+        col += texCol * dif * 0.6;
+        col += vec3(1.0, 0.95, 0.9) * spe * 1.5; 
+        col += texCol * fre * 2.5; 
+        col *= clamp(1.2 - length(faceUV) * 0.5, 0.0, 1.0); 
+    }
+
+    col = col / (1.0 + col);
+    col = pow(col, vec3(0.4545));
     
-    vec3 ro = vec3(
-        radius * sin(tCam) * cos(tCam * 0.3), 
-        radius * sin(tCam * 0.5), 
-        radius * cos(tCam) * cos(tCam * 0.3)
-    );
-    vec3 ta = vec3(0.0, 0.0, 0.0);
-    
-    vec3 cz = normalize(ta - ro);
-    vec3 up = vec3(sin(iTime * 0.1) * 0.1, 1.0, cos(iTime * 0.1) * 0.1);
-    vec3 cx = normalize(cross(up, cz));
-    vec3 cy = cross(cz, cx);
-    mat3 camMat = mat3(cx, cy, cz);
-    
-    vec3 rd = camMat * normalize(vec3(uv, 2.2));
-    
-    vec3 color = render(ro, rd);
-    
-    color = pow(color, vec3(0.4545)); 
-    
-    color = mix(color, vec3(dot(color, vec3(0.2126, 0.7152, 0.0722))), -0.05);
-    color = smoothstep(0.0, 1.0, color);
-    color = color * color * (2.6 - 0.7 * color);
-    
-    vec2 d = fragCoord / iResolution.xy;
-    color *= 0.65 + 0.35 * pow(16.0 * d.x * d.y * (1.0 - d.x) * (1.0 - d.y), 0.28);
-    
-    fragColor = vec4(color, 1.0);
+    N = vec4(col, 1.0);
 }
+/***********************************************************************************
+*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____                       *
+* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \                      *
+* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |                     *
+*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |                     *
+* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/                      *
+*            PATRICK JAILLET-VAN DEN BEEMT [PJVDB]                                 *
+************************************************************************************
+* - Software:       https://patrickjaillet.github.io/sandefjord-software           *
+* - Social Network: https://x.com/JailletPatrick                                   *
+* - Music:          https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g       *
+************************************************************************************
+*           Software used for GLSL shader creation:                                *
+*                ******************************                                    *
+* GLSL shader design and value tweaking                                            *
+* - Sliders-GL v1.0.1:                                                             *
+* https://patrickjaillet.github.io/sandefjord-software/software.html?id=sliders-gl *
+*                                                                                  *
+* 100% safe Code Golfing                                                           *
+* - µShader v3.0.1:                                                                *
+* https://patrickjaillet.github.io/sandefjord-software/software.html?id=microshader*
+*                                                                                  *
+* Formatting & Layout                                                              *
+* - ShaderFmt v1.0.0:                                                              *
+* https://patrickjaillet.github.io/sandefjord-software/software.html?id=shaderfmt  *
+***********************************************************************************/

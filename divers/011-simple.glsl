@@ -1,133 +1,162 @@
 // ==== Image (image) ====
-#define TEMPS iTime
-#define RES iResolution.xy
+#define R iResolution.xy
+#define T iTime
 
-float hachage(vec2 p) {
+float h12(vec2 p) {
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
     p3 += dot(p3, p3.yzx + 33.33);
     return fract((p3.x + p3.y) * p3.z);
 }
 
-float bruit(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    vec2 u = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hachage(i), hachage(i + vec2(1, 0)), u.x),
-               mix(hachage(i + vec2(0, 1)), hachage(i + vec2(1, 1)), u.x), u.y);
+float h31(vec3 p3) {
+    p3 = fract(p3 * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
 }
 
-float sdEllipsoide(vec3 p, vec3 r) {
-    float k0 = length(p / r);
-    float k1 = length(p / (r * r));
-    return k0 * (k0 - 1.0) / k1;
+float n3D(vec3 x) {
+    vec3 p = floor(x);
+    vec3 f = fract(x);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(mix(h31(p + vec3(0.0, 0.0, 0.0)), h31(p + vec3(1.0, 0.0, 0.0)), f.x),
+                   mix(h31(p + vec3(0.0, 1.0, 0.0)), h31(p + vec3(1.0, 1.0, 0.0)), f.x), f.y),
+               mix(mix(h31(p + vec3(0.0, 0.0, 1.0)), h31(p + vec3(1.0, 0.0, 1.0)), f.x),
+                   mix(h31(p + vec3(0.0, 1.0, 1.0)), h31(p + vec3(1.0, 1.0, 1.0)), f.x), f.y), f.z) * 2.0 - 1.0;
 }
 
-float smin(float a, float b, float k) {
-    float h = max(k - abs(a - b), 0.0) / k;
-    return min(a, b) - h * h * k * 0.25;
-}
-
-vec2 posCanard(float t) {
-    return vec2(sin(t * 1.2) * 3.5, cos(t * 0.7) * 2.5);
-}
-
-float hauteurEau(vec2 p) {
-    float h = sin(p.x * 1.5 + TEMPS * 2.0) * 0.05 + cos(p.y * 1.2 + TEMPS * 1.5) * 0.05;
-    vec2 dp = posCanard(TEMPS);
-    float dist = length(p - dp);
-    h += sin(dist * 10.0 - TEMPS * 8.0) * exp(-dist * 0.5) * 0.2;
-    h += bruit(p * 4.0 + TEMPS) * 0.03;
-    return h;
-}
-
-vec2 map(vec3 p) {
-    vec2 res = vec2(p.y - hauteurEau(p.xz), 4.0);
-    
-    vec2 pc = posCanard(TEMPS);
-    vec2 dir = normalize(posCanard(TEMPS + 0.01) - pc);
-    mat3 rot = mat3(dir.y, 0, -dir.x, 0, 1, 0, dir.x, 0, dir.y);
-    
-    vec3 q = p;
-    q.xz -= pc;
-    q = rot * q;
-    
-    float bob = sin(TEMPS * 4.0) * 0.1;
-    q.y -= hauteurEau(pc) + 0.3 + bob;
-    
-    float corps = sdEllipsoide(q, vec3(0.6, 0.45, 0.5));
-    float cou = sdEllipsoide(q - vec3(0, 0.4, 0.3), vec3(0.2, 0.4, 0.2));
-    float tete = length(q - vec3(0, 0.7, 0.4)) - 0.25;
-    float bec = sdEllipsoide(q - vec3(0, 0.65, 0.65), vec3(0.15, 0.07, 0.25));
-    
-    float dCanard = smin(corps, cou, 0.2);
-    dCanard = smin(dCanard, tete, 0.1);
-    
-    res = (dCanard < res.x) ? vec2(dCanard, 1.0) : res;
-    res = (bec < res.x) ? vec2(bec, 2.0) : res;
-    
-    return res;
-}
-
-vec3 calculerNormale(vec3 p) {
-    vec2 e = vec2(0.001, 0);
-    return normalize(vec3(map(p + e.xyy).x - map(p - e.xyy).x,
-                          map(p + e.yxy).x - map(p - e.yxy).x,
-                          map(p + e.yyx).x - map(p - e.yyx).x));
-}
-
-vec3 rendu(vec2 uv) {
-    vec3 ro = vec3(cos(TEMPS * 0.2) * 8.0, 4.0, sin(TEMPS * 0.2) * 8.0);
-    vec3 ta = vec3(0, 0, 0);
-    vec3 ww = normalize(ta - ro);
-    vec3 uu = normalize(cross(ww, vec3(0, 1, 0)));
-    vec3 vv = cross(uu, ww);
-    vec3 rd = normalize(uv.x * uu + uv.y * vv + 2.0 * ww);
-
-    float t = 0.0;
-    vec2 h;
-    for(int i = 0; i < 150; i++) {
-        h = map(ro + rd * t);
-        if(h.x < 0.0001 || t > 40.0) break;
-        t += h.x * 0.6;
+float mapC(vec3 p, int lod) {
+    vec3 q = p - vec3(0.0, 0.1, 1.0) * T;
+    float f = 0.0;
+    float a = 0.5;
+    for(int i = 0; i < 4; i++) {
+        if(i >= lod) break;
+        f += a * n3D(q);
+        q = q * 2.02;
+        a *= 0.5;
     }
-
-    if(t > 40.0) return vec3(0.02, 0.04, 0.08) + pow(max(dot(rd, vec3(0, 1, 0)), 0.0), 4.0) * vec3(0.5, 0.8, 1.0);
-
-    vec3 p = ro + rd * t;
-    vec3 n = calculerNormale(p);
-    vec3 ref = reflect(rd, n);
-    
-    vec3 col = vec3(0);
-    
-    if(h.y == 4.0) {
-        float fresnel = pow(1.0 - max(dot(n, -rd), 0.0), 5.0);
-        vec3 eauBase = mix(vec3(0.0, 0.1, 0.2), vec3(0.1, 0.5, 0.6), n.y);
-        vec3 ciel = vec3(0.5, 0.7, 1.0) * max(ref.y, 0.0);
-        col = mix(eauBase, ciel, fresnel);
-        col += pow(max(dot(ref, normalize(vec3(1, 1, 1))), 0.0), 64.0);
-        col += bruit(p.xz * 10.0 + TEMPS) * 0.1 * smoothstep(0.1, 0.0, h.x);
-    } else {
-        vec3 albedo = (h.y == 1.0) ? vec3(1.0, 0.8, 0.0) : vec3(1.0, 0.3, 0.0);
-        float diff = max(dot(n, normalize(vec3(1, 2, 1))), 0.0);
-        col = albedo * diff + albedo * 0.2;
-        col += pow(max(dot(ref, normalize(vec3(1, 2, 1))), 0.0), 32.0) * 0.5;
-    }
-    
-    return col * exp(-t * 0.03);
+    return clamp(1.5 - p.y - 2.0 + 1.75 * f, 0.0, 1.0);
 }
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * RES) / RES.y;
+mat3 setCam(vec3 ro, vec3 ta, float cr) {
+    vec3 cw = normalize(ta - ro);
+    vec3 cp = vec3(sin(cr), cos(cr), 0.0);
+    vec3 cu = normalize(cross(cw, cp));
+    vec3 cv = normalize(cross(cu, cw));
+    return mat3(cu, cv, cw);
+}
+
+vec4 rmC(vec3 ro, vec3 rd, vec3 bg, vec2 px) {
+    vec4 sum = vec4(0.0);
+    float t = 0.05 * h12(px);
+    vec3 sun = vec3(-0.7071, 0.0, -0.7071);
     
-    vec3 colFinal = vec3(0);
-    float decalage = bruit(uv * 10.0 + TEMPS) * 0.005;
+    for(int i = 0; i < 60; i++) {
+        vec3 pos = ro + t * rd;
+        if(pos.y < -3.0 || pos.y > 2.0 || sum.a > 0.99) break;
+        
+        int lod = t < 15.0 ? 4 : (t < 30.0 ? 3 : 2);
+        float den = mapC(pos, lod);
+        
+        if(den > 0.01) {
+            float dif = clamp((den - mapC(pos + 0.3 * sun, lod)) / 0.6, 0.0, 1.0);
+            vec3 lin = vec3(1.0, 0.6, 0.3) * dif + vec3(0.91, 0.98, 1.05);
+            vec4 col = vec4(mix(vec3(1.0, 0.95, 0.8), vec3(0.25, 0.3, 0.35), den), den);
+            col.xyz *= lin;
+            col.xyz = mix(col.xyz, bg, 1.0 - exp(-0.003 * t * t));
+            col.w *= 0.4;
+            col.rgb *= col.a;
+            sum += col * (1.0 - sum.a);
+        }
+        t += max(0.06, 0.05 * t);
+    }
+    return clamp(sum, 0.0, 1.0);
+}
+
+vec3 bgR(vec3 ro, vec3 rd, vec2 px) {
+    vec3 sun = vec3(-0.7071, 0.0, -0.7071);
+    float sunVal = clamp(dot(sun, rd), 0.0, 1.0);
+    vec3 col = vec3(0.6, 0.71, 0.75) - rd.y * 0.2 * vec3(1.0, 0.5, 1.0) + 0.075;
+    col += 0.2 * vec3(1.0, 0.6, 0.1) * pow(sunVal, 8.0);
+    vec4 res = rmC(ro, rd, col, px);
+    col = col * (1.0 - res.w) + res.xyz;
+    col += vec3(0.2, 0.08, 0.04) * pow(sunVal, 3.0);
+    return col;
+}
+
+float fS(float x, float t) {
+    float v = 0.0;
+    float sx = max(abs(x), 1e-4);
+    for(float i = 0.4; i < 10.0; i *= 2.0) {
+        v += sin((t + log(sx * sx)) / i) * x;
+    }
+    return v / 3.0;
+}
+
+float dS(vec2 p, float t) {
+    float y = fS(p.x, t);
+    float dy = (fS(p.x + 1e-3, t) - fS(p.x - 1e-3, t)) / 2e-3;
+    return abs(p.y - y) / sqrt(1.0 + dy * dy);
+}
+
+vec3 pS(float t) {
+    return 0.5 + 0.5 * cos(6.28318 * (vec3(1.0) * t + vec3(0.0, 0.33, 0.67)));
+}
+
+vec3 fgR(vec2 uv, vec2 coff) {
+    vec3 c = vec3(0.0);
+    int aa = 3;
+    for(int i = 0; i < aa; i++) {
+        for(int j = 0; j < aa; j++) {
+            vec2 o = (vec2(float(i), float(j)) / float(aa) - 0.5) * 2.0 / R.y;
+            vec2 puv = uv + o;
+            
+            vec3 sC = vec3(0.0);
+            for(int k = 0; k < 3; k++) {
+                vec2 cuv = puv;
+                if(k == 0) cuv += coff;
+                if(k == 2) cuv -= coff;
+                
+                float dist = dS(cuv, T);
+                float y = fS(cuv.x, T);
+                float fill = smoothstep(0.01, -0.01, cuv.y - y);
+                float line = smoothstep(0.015, 0.0, dist);
+                float glow = 0.005 / (dist * dist + 1e-4);
+                
+                vec3 col = pS(cuv.x * 0.2 + T * 0.15);
+                sC[k] = mix(col[k] * 0.2, col[k], fill) + col[k] * glow * 1.5 + line;
+            }
+            c += sC;
+        }
+    }
+    return c / float(aa * aa);
+}
+
+vec3 aces(vec3 x) {
+    return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
+}
+
+void mainImage(out vec4 O, in vec2 U) {
+    vec2 uv = (U * 2.0 - R) / R.y;
+    vec2 m = iMouse.xy / R;
+    vec2 p = (2.0 * U - R) / R.y;
     
-    colFinal.r = rendu(uv + vec2(decalage, 0)).r;
-    colFinal.g = rendu(uv).g;
-    colFinal.b = rendu(uv - vec2(decalage, 0)).b;
+    vec3 ro = 4.0 * normalize(vec3(sin(3.0 * m.x), 0.8 * m.y, cos(3.0 * m.x))) - vec3(0.0, 0.1, 0.0);
+    vec3 ta = vec3(0.0, -1.0, 0.0);
+    mat3 ca = setCam(ro, ta, 0.07 * cos(0.25 * T));
+    vec3 rd = ca * normalize(vec3(p, 1.5));
     
-    colFinal *= 1.2 - dot(uv, uv) * 0.5;
-    colFinal = pow(colFinal, vec3(0.8));
+    vec3 bg = bgR(ro, rd, U);
     
-    fragColor = vec4(colFinal, 1.0);
+    vec2 nuv = U / R - 0.5;
+    vec2 coff = normalize(nuv) * 10. * length(nuv) * length(nuv);
+    
+    vec3 fg = fgR(uv, coff);
+    
+    vec3 comp = bg + fg;
+    comp *= 0.8 - smoothstep(0.4, 1.5, length(nuv) * 1.5);
+    comp = aces(comp * 1.4);
+    
+    comp += (h12(U + T) - 0.5) * 0.05;
+    
+    O = vec4(comp, 1.0);
 }

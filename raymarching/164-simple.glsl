@@ -1,92 +1,117 @@
 // ==== Image (image) ====
-float C(float a){
-  return fract(sin(a*127.1)*4.3758547e4);
-}
-float j(float a){
-  float d=floor(a),e=fract(a);
-  return mix(C(d),C(d+1.),smoothstep(0.,1.,e));
-}
-void mainImage(out vec4 G,in vec2 I){
-  vec2 J=(I-.5*iResolution.xy)/iResolution.y;
-  vec3 g=vec3(0.),p=vec3(0.,0.,-1.5),q=normalize(vec3(J,1.));
-  float D=cos(iTime*.25),v=sin(iTime*.25);
-  mat2 E=mat2(D,v,-v,D);
-  p.xy*=E;
-  q.xy*=E;
-  float k=0.,r=16.4;
-  int F=0;
-  float w=iTime*21.6,u=w*.015;
-  vec2 x=vec2((j(u)*2.-1.)*6.,(j(u+19.34)*2.-1.)*4.5);
-  q.xy+=vec2((j(u+.1)*2.-1.)*6.,(j(u+19.44)*2.-1.)*4.5)-x;
-  q=normalize(q);
-  for(int c=0;c<18;c++){
-    F=c;
-    vec3 A=p+q*k,b=A;
-    b.z+=w;
-    float s=b.z*.015;
-    b.xy-=vec2((j(s)*2.-1.)*6.,(j(s+19.34)*2.-1.)*4.5)-x;
-    b=mod(b,4.)-2.;
-    vec3 e=abs(b)-vec3(1.84,.87,1.);
-    float a=length(max(e,0.))+min(max(e.x,max(e.y,e.z)),0.);
-    vec3 h=abs(b)-vec3(1.,1.75,0.);
-    a=min(a,length(max(h,0.))+min(max(h.x,max(h.y,h.z)),0.));
-    vec3 i=abs(b)-vec3(0.,0.,.92);
-    a=min(a,length(max(i,0.))+min(max(i.x,max(i.y,i.z)),0.));
-    float l=0.;
-    vec3 f=b;
-    for(int n=0;n<1;n++){
-      float t=0.+float(n)*0.,o=cos(t),s1=sin(t);
-      f.xy*=mat2(o,s1,-s1,o);
-      f.zy*=mat2(0.,0.,-.247404,.968912);
-      f=abs(f)-0.*l;
-      vec3 d=abs(f)-vec3(0.*l);
-      float B=length(max(d,0.))+min(max(d.x,max(d.y,d.z)),0.);
-      a=max(a,-B);
-      l*=0.;
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    float angle = iTime * (2.0 * 3.14159265359 / 40.0);
+    float tCos = cos(angle);
+    float tSin = sin(angle);
+    vec3 color = vec3(0.0);
+    vec2 uv = (fragCoord * 2.0 - iResolution.xy) / iResolution.y;
+    vec3 ro = vec3(0.0, 0.0, -2.5);
+    vec3 rd = normalize(vec3(uv, 1.1));
+    float cCam = cos(tCos * 0.5), sCam = sin(tCos * 0.5);
+    mat2 cameraRot = mat2(cCam, -sCam, sCam, cCam);
+    rd.xz *= cameraRot;
+    float cCamY = cos(tSin * 0.3), sCamY = sin(tSin * 0.3);
+    rd.xy *= mat2(cCamY, -sCamY, sCamY, cCamY);
+    ro.xz *= cameraRot;
+    vec4 accum = vec4(0.0);
+    float t = 0.1;
+    float max_t = 20.0;
+    float cR1 = cos(3.7), sR1 = sin(3.7);
+    mat2 rMat1 = mat2(cR1, -sR1, sR1, cR1);
+    for (int i = 0; i < 50; i++) {
+        if (t > max_t || accum.a > 0.95) break;
+        vec3 p = ro + rd * t;
+        vec3 block = floor((p + 3.0) / 6.0);
+        vec3 center = block * 6.0 + vec3(sin(block.x * 3.0) * tCos, cos(block.y * 2.0) * tSin, sin(block.z * 4.0) * tCos) * 0.4;
+        vec3 dCoord = p - center;
+        float rLocal = length(dCoord);
+        if (rLocal < 0.04) { 
+            t += 0.15; 
+            continue; 
+        }
+        float localAngle = atan(dCoord.y, dCoord.x + 1e-6);
+        float petals = (sin(localAngle * 7.0 + dCoord.z * 1.5) * tCos + cos(localAngle * 7.0 - dCoord.z * 1.5) * tSin) * 0.2;
+        vec3 pFold = vec3(log(max(0.0001, length(dCoord.xy))) - petals, (dCoord.z * dCoord.z * 0.5) / (rLocal + 0.1) - (localAngle * 0.1 * tSin), localAngle);
+        pFold = abs(pFold);
+        pFold.xy *= mat2(1.000, 0.000, 0.472, 0.000);
+        pFold = abs(pFold);
+        float eSDF = length(pFold.yz) - 0.15;
+        float iterS = 2.0;
+        for(int j = 0; j < 1; j++) {
+            pFold.xz *= mat2(0.921, 0.389, -0.389, 0.921);
+            eSDF += (sin(pFold.x * iterS) * tCos + cos(pFold.y * iterS) * tSin) * (0.1 / iterS);
+            iterS *= 1.8;
+        }
+        vec2 l = dCoord.xy * 0.2;
+        vec2 n = vec2(0.0);
+        float sField = 3.5;
+        float hField = 0.0;
+        for (int k = 0; k < 1; k++) {
+            l *= rMat1;
+            float cRot1 = cos(5.2), sRot1 = sin(5.2);
+            float cRot2 = cos(tCos * 0.15), sRot2 = sin(tCos * 0.15);
+            n = n * (mat2(cRot1, -sRot1, sRot1, cRot1) + mat2(cRot2, -sRot2, sRot2, cRot2) * 0.03);
+            vec2 q = l * sField * (float(k) * 0.05 + 1.0) + n + vec2(tCos * 0.5, tSin * 0.5);
+            hField += dot(vec2(1.0), (sin(q) * tCos + cos(q) * tSin) / sField * 6.0);
+            n -= cos(q - n);
+            sField *= 1.035;
+        }
+        hField = -hField * 0.25 - dot(dCoord.xy, dCoord.xy);
+        vec3 sp = vec3(log(rLocal) - tCos * 0.5, rLocal * 0.5 - tSin * 0.3, localAngle * 1.5915);
+        vec2 pFBM = sp.xz * 1.5;
+        float vFBM = 0.0, aFBM = 0.5;
+        mat2 RFBM = mat2(0.87758256, 0.47942554, -0.47942554, 0.87758256);
+        for (int m = 0; m < 4; m++) {
+            vFBM += aFBM * dot(cos(pFBM * 2.6), sin(pFBM.yx * 6.0 + rLocal));
+            pFBM = RFBM * pFBM * 2.1 + 20.0;
+            aFBM *= 0.48;
+        }
+        float eVol = sp.y - 0.6 + vFBM * 0.6;
+        float finalDensityEval = max(abs(eVol) * 0.15, 0.005 * t) + max(0.0, eSDF * 0.02);
+        if (finalDensityEval < 0.08) {
+            float dens = smoothstep(0.08, 0.0, finalDensityEval);
+            float valSDF = clamp((eSDF * iterS + 0.5) / 10.0, 0.0, 1.0) * smoothstep(2.5, 0.5, rLocal);
+            vec4 w = smoothstep(vec4(0.0, 0.1, 0.3, 0.6), vec4(0.2, 0.4, 0.7, 0.95), vec4(valSDF));
+            vec3 fractalCol = mix(vec3(0.01, 0.02, 0.05), vec3(0.9, 0.1, 0.4), w.x);
+            fractalCol = mix(fractalCol, vec3(0.95, 0.3, 0.1), w.y);
+            fractalCol = mix(fractalCol, vec3(1.0, 0.8, 0.0), w.z);
+            fractalCol = mix(fractalCol, vec3(1.0, 1.0, 0.8), w.w);
+            fractalCol *= (0.8 + 0.2 * tCos);
+            fractalCol = mix(fractalCol, vec3(1.5, 1.4, 1.3), smoothstep(0.9, 1.0, valSDF));
+            vec3 dynamicCosCol = 0.5 + 0.5 * cos(hField * 1.5 + vec3(0.0, 0.4, 1.0) + tCos * 2.0);
+            dynamicCosCol += vec3(pow(max(0.0, 1.0 - abs(hField * 0.2)), 8.0) * 0.3);
+            vec3 baseC = 0.5 + 0.5 * sin(vec3(0.0, 2.0, 4.0) + block.z * 1.0 + tCos * 3.0);
+            vec3 volCol = mix(baseC, vec3(0.1, 0.5, 0.9), dens) * dynamicCosCol;
+            vec3 blendedColor = mix(volCol * dens * 0.15, fractalCol * valSDF * 0.4, valSDF);
+            blendedColor *= exp(-t * 0.04);
+            accum.rgb += blendedColor * (1.0 - accum.a);
+            accum.a += dens * 0.01 + valSDF * 0.04;
+        }
+        t += max(finalDensityEval * 1.00, 0.03);
     }
-    if(abs(a)<.0015||k>r)break;
-    k+=a*1.;
-  }
-  if(k<r){
-    vec3 A=p+q*k,m=vec3(1.);
-    for(int c=0;c<1;c++){
-      vec3 K=A+vec3((c==0?0.:(c==1?.292:0.)),(c==2?.05:0.),(c==3?.002:0.)),b=K;
-      b.z+=w;
-      float s=b.z*.015;
-      b.xy-=vec2((j(s)*2.-1.)*6.,(j(s+19.34)*2.-1.)*4.5)-x;
-      b=mod(b,0.)-0.;
-      vec3 e=abs(b)-vec3(1.84,0.,0.);
-      float a=length(max(e,0.))+min(max(e.x,max(e.y,e.z)),0.);
-      vec3 h=abs(b)-vec3(0.,1.84,0.);
-      a=min(a,length(max(h,0.))+min(max(h.x,max(h.y,h.z)),0.));
-      vec3 i=abs(b)-vec3(0.,0.,1.84);
-      a=min(a,length(max(i,0.))+min(max(i.x,max(i.y,i.z)),0.));
-      float l=0.;
-      vec3 f=b;
-      for(int n=0;n<1;n++){
-        float t=0.+float(n)*0.,o=cos(t),s1=sin(t);
-        f.xy*=mat2(o,s1,-s1,o);
-        f.zy*=mat2(.53,.545,3.460384,.695);
-        f=abs(f)-0.*l;
-        vec3 d=abs(f)-vec3(0.*l);
-        float B=length(max(d,0.))+min(max(d.x,max(d.y,d.z)),0.);
-        a=max(a,-B);
-        l*=0.;
-      }
-      if(c==0)m.x+=a;
-      if(c==1)m.x-=a;
-      if(c==2)m.y+=a;
-      if(c==3)m.z+=a;
+    accum.rgb += vec3(0.005, 0.01, 0.02) * (1.0 - exp(-t * 0.05));
+    color = accum.rgb;
+    float ifsE = 2.2;
+    float ifsS = 1.9;
+    vec2 ifsMotion = uv * (0.2 + tCos * 0.02) + vec2(-0.2, 0.0);
+    vec3 ifsP = vec3(ifsMotion, 0.0);
+    for (int j = 0; j < 1; j++) {
+        ifsP.xy = 1.14 - abs(ifsP.xy);
+        float u = dot(ifsP, ifsP);
+        ifsS /= u;
+        ifsP /= -u;
+        ifsP.y = -ifsP.y;
+        ifsP.xy = abs(ifsP.yx + 0.21);
+        ifsE = min(ifsE, ifsP.y / ifsS + 0.0 / ifsS);
     }
-    m=normalize(m);
-    float L=max(dot(m,normalize(vec3(0.,3.,-2.))),0.);
-    g=vec3(.08,1.,0.)*(L+0.);
-    float M=pow(float(F)/90.,2.2),H=exp(-k*.2);
-    g+=vec3(0.,.79,.8)*(M*.3+H*.8)*1.6;
-    g=mix(g,vec3(0.),smoothstep(12.,r,k));
-  }
-  else g=vec3(.002,.002,.005);
-  g=pow(g,vec3(.91));
-  g=clamp(g,0.,1.);
-  G=vec4(g,1.);
+    vec4 K = vec4(1.0, 8.0 / -9.2, 1.0 / 3.0, 3.0);
+    vec3 hsvFract = abs(fract(vec3(ifsP.y) + K.xyz) * 20.0 - K.www);
+    vec3 ifsCos = mix(K.xxx, clamp(hsvFract - K.xxx, 0.0, 1.0), 1.0);
+    vec3 ifsColorEval = vec3(0.02 / exp(ifsE * 66.9)) * ifsCos;
+    color += ifsColorEval * (1.0 - clamp(accum.a, 0.0, 1.0));
+    color = clamp((color * 1.4 * (4.25 * color * 1.4 + 0.03)) / (color * 1.4 * (1.99 * color * 1.4 + 1.00) + 1.00), 0.0, 1.0);
+    vec2 dUv = fragCoord / iResolution.xy;
+    float vignette = 64.0 * dUv.x * dUv.y * (1.0 - dUv.x) * (1.0 - dUv.y);
+    color *= mix(0.5, 1.0, pow(vignette, 0.25));
+    fragColor = vec4(pow(color, vec3(0.4545)), 1.0);
 }

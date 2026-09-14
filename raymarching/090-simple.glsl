@@ -1,34 +1,34 @@
 // ==== Image (image) ====
-// https://github.com/Patrickjaillet
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    vec3 ro = vec3(0.0, 0.0, 0.1);
-    vec3 rd = normalize(vec3(uv, 1.0));
-    vec3 p = ro;
-    float totalDist = 0.0;
-    vec3 col = vec3(0.0);
-    float t = iTime;
-    float s = sin(2.3), c = cos(2.3);
-    mat2 rot = mat2(c, -s, s, c);
-    for (int i = 0; i < 58; i++) {
-        vec3 q = p;
-        q.yz *= rot;
-        float v = 0.5;
-        for (int j = 0; j < 12; j++) {
-            float l = length(q.xy);
-            v *= l;
-            q = vec3(
-                log2(max(v, 0.0000)) - q.z / (l + 0.0000) * 1.0 - t,
-                atan(q.y, q.x) * 8.0,
-                q.z / (l + 0.01) + 0.2
-            );
-            q.xy = fract(q.xy + q.x) - 0.5;
+// https://patrickjaillet.github.io/sandefjord-software
+
+void mainImage(out vec4 n,in vec2 o){
+    vec2 g=iResolution.xy,p=o;
+    float d=iTime,q=1.+sin(d*.35)*.8;
+    vec3 r=vec3(.25*sin(d*.4),q,-3.2);
+    vec2 s=(.5*g-p.xy)/g.y;
+    float h=0.;
+    vec3 i=vec3(0.);
+    for(float j=0.;j<82.;++j){
+        vec3 a=vec3(s*1.6,h-.9)+r;
+        float k=d*.22,l=sin(k),m=cos(k);
+        mat2 t=mat2(m,-l,l,m);
+        a.xz*=t;
+        float b=3.5,e=b,c;
+        for(int f=0;f<12;f++){
+            if(f>3){
+                float u=length(a)/c*.6;
+                b=min(b,length(a.xz+u)/e-.0065);
+                a.xz=abs(a.xz)-.68;
+            }
+            else a=abs(a)-.9;
+            c=dot(a,a);
+            e/=c;
+            a/=c;
+            a.y=1.75-a.y;
         }
-        float d = q.z * v;
-        if (abs(d) < 0.0001 || totalDist > 10.0) break;
-        p += rd * d;
-        totalDist += d;
-        col += vec3(0.3, 0.0, 0.6) * 0.05 / (0.9 + d * d);
+        h+=b;
+        vec3 v=vec3(4.,2.5,1.5);
+        i+=v*.008/exp(a.y/e+b*60.);
     }
-    fragColor = vec4(col, 1.0);
+    n=vec4(i,1.);
 }

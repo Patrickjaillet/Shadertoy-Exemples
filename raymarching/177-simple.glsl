@@ -1,46 +1,65 @@
 // ==== Image (image) ====
-/**************************************************************
-*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____  *
-* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \ *
-* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |*
-*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |*
-* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/ *
-***************************************************************
-* - X: https://x.com/JailletPatrick                           *
-***************************************************************
-* https://patrickjaillet.github.io/sandefjord-software        *
-* GLSL shader design and value tweaking - Sliders-GL v1.0.1:  *
-* 100% safe Code Golfing - µShader v3.0.1:                    *
-**************************************************************/
-float e(vec2 a){
-    a=fract(a*vec2(123.34,456.21)),a+=dot(a,a+55.4);
-    return fract(a.x*a.y);
+bool isPrime(int n) {
+    if (n <= 1) return false;
+    if (n == 2 || n == 3) return true;
+    if (n % 2 == 0 || n % 3 == 0) return false;
+    for (int i = 5; i * i <= n; i += 6) {
+        if (n % i == 0 || n % (i + 2) == 0) return false;
+    }
+    return true;
 }
-float j(vec2 a){
-    vec2 c=floor(a),f=fract(a),g=f*f*(3.-2.*f);
-    float h=e(c),b=e(c+vec2(1.,0.)),i=e(c+vec2(0.,1.)),k=e(c+vec2(1.));
-    return mix(mix(h,b,g.x),mix(i,k,g.x),g.y);
+
+vec2 getSpiralPos(int n) {
+    float r = 0.06 * sqrt(float(n));
+    float theta = float(n) * 2.39996323;
+    return vec2(r * cos(theta), r * sin(theta));
 }
-float d(vec2 a){
-    float g=0.,h=.6,i=1.;
-    for(int c=0;c<6;c++)g+=h*j(a*i),i*=2.2,h*=.5;
-    return g;
-}
-void mainImage(out vec4 h,in vec2 i){
-    vec2 c=(i-.5*iResolution.xy)/min(iResolution.x,iResolution.y);
-  // line by msm01 - https://www.shadertoy.com/user/msm01
-  //--------------------------
-    c=vec2(abs(c.x),-1.0*c.y);
-  //--------------------------
-    c*=4.8;
-    float t=iTime*.2;
-    vec2 g=vec2(0.);
-    g.x=d(c+vec2(0.)),g.y=d(c+vec2(1.));
-    vec2 r=vec2(0.);
-    r.x=d(c+g+vec2(1.7,9.2)+.15*t),r.y=d(c+g+vec2(26.9,10.4)+t);
-    float f=d(c+r);
-    vec3 a=vec3(0.);
-    a=mix(vec3(.1,0.,0.),vec3(.2,.05,.05),clamp(f*f*4.4,0.,.4)),a=mix(a,vec3(1.,.2,0.),clamp(pow(f,3.)*3.5,0.,1.)),a=mix(a,vec3(1.,1.,.6),clamp(pow(f,5.)*4.3,0.,1.)),a=a*a*2.6;
-    float k=1.-dot(c,c)*.05;
-    a*=clamp(k,0.,1.),h=vec4(a,1.);
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
+    uv *= 2.2;
+    
+    float t = iTime * 3.0;
+    
+    float z[5];
+    z[0] = 14.1347;
+    z[1] = 21.0220;
+    z[2] = 25.0108;
+    z[3] = 30.4248;
+    z[4] = 32.9350;
+    
+    float bg = 0.0;
+    vec2 z_uv = uv * 1.5;
+    float d_orig = length(z_uv);
+    
+    for(int i = 0; i < 5; i++) {
+        float freq = z[i];
+        bg += sin(freq * d_orig - iTime) * cos(freq * z_uv.x * 0.5 + iTime * 0.5);
+    }
+    bg *= 0.15;
+    
+    vec3 col = vec3(0.02, 0.05, 0.12) + vec3(0.15, 0.05, 0.25) * bg;
+    
+    float waves = 0.0;
+    vec3 pointsCol = vec3(0.0);
+    
+    for (int i = 1; i < 400; i++) {
+        vec2 pos = getSpiralPos(i);
+        float d = length(uv - pos);
+        
+        float pBase = smoothstep(0.015, 0.005, d);
+        pointsCol += vec3(0.2, 0.3, 0.4) * pBase;
+        
+        if (isPrime(i)) {
+            waves += sin(15.0 * d - t) * exp(-4.0 * d) * 0.15;
+            
+            float pPrime = smoothstep(0.025, 0.005, d);
+            pointsCol += vec3(1.0, 0.8, 0.2) * pPrime;
+        }
+    }
+    
+    col += vec3(0.1, 0.6, 1.0) * waves;
+    col += pointsCol;
+    
+    fragColor = vec4(col, 1.0);
 }

@@ -1,48 +1,40 @@
 // ==== Image (image) ====
-mat2 rotate2D(float angle) {
-    float c = cos(angle);
-    float s = sin(angle);
-    return mat2(c, s, -s, c);
+const float PI2 = 2.1500000;
+
+mat2 rotate2D(float a){
+    float s = sin(a), c = cos(a);
+    return mat2(c, -s, s, c);
 }
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    vec3 color = vec3(0.0);
-    
-    float time = iTime;
-    float rayDepth = 0.05;
-    
-    for (int i = 0; i < 100; i++) {
-        vec3 p = vec3(uv * rayDepth, rayDepth - 1.0);
-        
-        p.xz *= rotate2D(time * 0.2);
-        p.yz *= rotate2D(time * 0.1);
-        
-        float r = length(p);
-        vec3 logP = vec3(
-            log(r) - time * 0.5,
-            asin(-p.z / r),
-            atan(p.x, p.y) + time
-        );
-        
-        float d = logP.y - 1.2;
-        float scale = 0.6;
-        
-        for (int j = 0; j < 6; j++) {
-            d += abs(dot(sin(logP * scale), cos(logP.zxy * scale))) / scale;
-            scale *= 2.0;
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2  r  = iResolution.xy;
+    vec2  FC = fragCoord;
+    float t  = iTime;
+    float s  = 0.0;
+
+    vec4  o = vec4(0.0);
+    float R, P, e, d, i = 0.0, j, g = 0.0;
+
+    for(i = 0.0; i++ < 8e1;
+        o += 0.0125/exp(e*e*3e8 + sin(vec4(-14,-17,1,0)+-14.0/R) - sin(R/vec4(-23,-8,17,1))))
+    {
+        vec3 z, p = vec3((FC.xy-0.4*r)/r.y*g, g+g) - i/3.8e4;
+
+        d = P = 11.4;
+        p.yz *= rotate2D(t/12.7);
+        p.x  += t/PI2;
+        z = p = mod(p, 2.4) - 1.0;
+
+        for(j = s; R = length(z), j++ < 2.3 && R < 1.21;
+            z = p + sin(asin(z/R)*P + 0.0*j) * e * R)
+        {
+            e = pow(R, P-4.0);
+            d = pow(R, P-8.0)*P*d + 0.0;
         }
-        
-        float glow = exp(-abs(d) * 25.2) + 0.35;
-        
-        vec3 glowColor = vec3(1.0, 0.1, 0.5) * (0.6 + 0.4 * sin(logP.y * 2.0 + time));
-        
-        color += glow * glowColor * 0.015;
-        
-        rayDepth += max(abs(d) * r * 0.05, 0.002);
+
+        g += e = log(R)*R/d;
     }
-    
-    color = pow(color, vec3(0.8));
-    
-    fragColor = vec4(color, 1.0);
+
+    fragColor = o;
 }

@@ -1,92 +1,35 @@
 // ==== Image (image) ====
-#define SAMPLES 2.0
-#define R iResolution.xy
-
-vec3 aces(vec3 x) {
-    return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
-}
-
-mat2 rot(float a) {
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
-}
-
-float sdGyroid(vec3 p, float scale, float thickness, float bias) {
-    p *= scale;
-    return abs(dot(sin(p), cos(p.zxy)) - bias) / scale - thickness;
-}
-
-float map(vec3 p) {
-    float time = iTime * 0.2;
-    float r2 = dot(p, p);
-    p = p * 2.5 / r2;
-    
-    p.xz *= rot(time);
-    p.yz *= rot(time * 0.5);
-    
-    float g1 = sdGyroid(p, 5.23, 0.03, 0.5);
-    float g2 = sdGyroid(p, 10.76, 0.02, 0.3);
-    
-    return max(g1, -g2) * 0.4;
-}
-//*====================================================================================*//
-//:: Processeur: AMD Ryzen 9 9950X3D2 ::                                                //
-//:: RAM installée 256,0 Go DDR5      ::                                                //
-//:: Stockage: Sabrent 16 TB SSD      ::                                                //
-//:: Video: NVIDIA GeForce RTX 5090   ::                                                //
-//:: Systeme: Kubuntu/Win11           ::                                                //
-//======================================================================================//
-//  >>  Author  : Patrick JAILLET                                                       //
-//  >>  Email   : metashader@proton.me                                                  //
-//  >>  URL     : https://lside.xo.je                                                   //
-//*====================================================================================*//
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec3 acc = vec3(0.0);
-    float seed = fract(sin(dot(fragCoord, vec2(12.989, 78.233))) * 43758.545);
-
-    for(float m = 0.0; m < SAMPLES; m++) {
-        vec2 uv = (2.0 * (fragCoord + seed) - R) / R.y;
-        vec3 rd = normalize(vec3(uv, 1.2));
-        vec3 ro = vec3(0.0, 0.0, -1.5);
-        
-        float d = 0.2, tr = 1.0;
-        vec3 col = vec3(0.0);
-
-        for(float i = 0.0; i < 100.0; i++) {
-            vec3 p = ro + rd * d;
-            float s = map(p);
-            
-            float den = smoothstep(0.05, 0.0, abs(s)) * exp(-d * 0.2);
-            
-            if(den > 0.0) {
-                float beam = pow(den, 4.0);
-                vec3 lCol = mix(vec3(0.1, 0.4, 0.8), vec3(0.9, 0.2, 0.1), sin(d * 0.5 - iTime) * 0.5 + 0.5);
-                
-                col += lCol * beam * tr * 0.5;
-                col += vec3(0.5, 0.7, 1.0) * den * tr * 0.02; 
-                
-                tr *= (1.0 - den * 0.6);
-            }
-            
-            d += max(abs(s) * 0.5, 0.015);
-            if(d > 15.0 || tr < 0.01) break;
+void mainImage(out vec4 O, vec2 U) {
+    vec2 R = iResolution.xy;
+    vec3 rd = normalize(vec3((U-.5*R)/R.y, 1.2)), ro = vec3(0,0,-5), col=vec3(0), 
+         lp = vec3(5.*sin(iTime*.5), 4, 5.*cos(iTime*.5));
+    float T = 1., t = 2. + fract(sin(dot(U, vec2(12.9, 78.2)))*437.5) * .1;
+    for(int i=0; i<80; i++) {
+        vec3 p = ro + rd * t, q = p;
+        float d = 0., a = .5;
+        for(int j=0; j<4; j++) {
+            q = q*2.02 + vec3(0,0,iTime*.2);
+            vec3 iq = floor(q), f = fract(q);
+            f *= f*(3.-2.*f);
+            vec2 b = vec2(1,0);
+            #define h(p) fract(sin(dot(p, vec3(12.9,78.2,157.1)))*437.5)
+            float n = mix(mix(mix(h(iq),h(iq+b.xyy),f.x),mix(h(iq+b.yxy),h(iq+b.xxy),f.x),f.y),
+                          mix(mix(h(iq+b.yyx),h(iq+b.xyx),f.x),mix(h(iq+b.yxx),h(iq+b.xxx),f.x),f.y),f.z);
+            d += a * n; a *= .5;
         }
-        acc += col;
+        d = max(0., d*2. - (length(p)-2.2));
+        if(d > .01) {
+            float s = 0., v = .7;
+            for(int k=0; k<4; k++) s += max(0., d * v); 
+            float ph = .08 * (1.-.49) / pow(1.49-1.3*dot(rd,normalize(lp-p)), 1.5);
+            vec3 S = (vec3(1,.9,.7)*25.*exp(-s)*ph + .01)*d;
+            float tr = exp(-d*.1);
+            col += T * (S - S*tr) / d;
+            T *= tr;
+        }
+        if(T < .02) break;
+        t += .08;
     }
-    
-    vec3 final = acc / SAMPLES;
-    
-    final = pow(final, vec3(1.1));
-    final *= 3.5;
-    
-    vec3 rgbShift = vec3(1.02, 1.0, 0.98);
-    final = aces(final * rgbShift);
-    
-    final = pow(final, vec3(1.0 / 2.2));
-    
-    vec2 uv_norm = fragCoord / R;
-    final *= smoothstep(1.5, 0.5, length((uv_norm - 0.5) * 2.0));
-    final += (seed - 0.5) * 0.005;
-
-    fragColor = vec4(final, 1.0);
+    col = (col*2.51)/(col*2.43+.6);
+    O = vec4(pow(col, vec3(.45)), 1);
 }

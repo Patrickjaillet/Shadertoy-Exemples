@@ -1,25 +1,38 @@
 // ==== Image (image) ====
-void mainImage(out vec4 O, vec2 f) {
-    vec3 c = vec3(0, 1.00, -2.7), R = iResolution, p;
-    float a = 0.0, e = 0.0, v, u, g; 
-
-    float zoom = 1.50 + sin(iTime * 0.8) * 0.25;
+void mainImage(out vec4 O, vec2 U) {
+    O = vec4(.08, .07, 0, 1);
     
-    for (O *= a; a < 171.0; a += 1.0) {
-        p = c += e * vec3((f - 0.5*R.xy) / R.y, zoom);
+    float d = 0., 
+          t = iTime, 
+          c = cos(t *= .25), 
+          s = sin(t), 
+          m, l;
+          
+    vec3 p, k = vec3(4.8, 1.1, 3.5);
+
+    for (int i = 0; i++ < 35;) {
+        p = vec3((U + U - iResolution.xy) / iResolution.y * (.52 + .13 * sin(t * 3.2)), d - .6);
+        p.yz *= mat2(c, -s, s, c);
+        m = .7;
         
-        p.xz *= mat2(cos(0.52*iTime - vec4(0, 11, 33, 0)));
-        p.xz += sin(iTime * 2.5 + p.y * 1.5 + vec2(0., 1.57)) * 0.06 * max(0., p.y);
-        e = v = 7.4;
-        for (g = 0.; g++ < 10.; )
-            v /= u = dot(p,p),
-            p /= u + 0.04,
-            p.y = 1.61 - p.y,
-            e = min(min(e, max(p.y, length(p.xz = abs(p.xz*mat2(1, -0.4, 0.6, 1)) - 0.61) - 0.055/u) / v), c.y - 0.00);
-        
-        O += (2.3 + cos(v*0.01 + vec4(0, 2, 1, 0))) / exp(e*565.8 + a*0.015 + 4.9);
+        for (int j = 0; j++ < 39;)
+            m *= l = max(1.02, 10.9 / dot(p, p)),
+            p = vec3(-.2, k.z, 2.2) - abs(abs(p) * l - k);
+            
+        d += length(p.xy) / m;
+        l = log2(m) / d / 13385.6;
+        O.rgb += (vec3(.6, .45, .1) + clamp(l + l, 0., 1.) * vec3(.4, .4, .2)) * l;
     }
 }
+/* TWIGL.APP GEEKEST (300 es)
+float d = 0., T = t / 4., c = cos(T), s = sin(T), m, l;vec3 p;for (int i = 0;
+i++ < 35;) {p = vec3((FC.xy * 2. - r) / r.y * (.52 + .13 * sin(t * .8)), 
+d - .6);p.yz *= mat2(c, -s, s, c);m = .7;for (int j = 0; 
+j++ < 39;)m *= l = max(1.02, 11. / dot(p, p)),
+p = vec3(-.2, 3.5, 2.2) - abs(abs(p) * l - vec3(4.8, 1.1, 3.5));
+d += length(p.xy) / m;l = log2(m) / d / 1e4;o += l * vec4(1, .8, .2, 0);}
+*/
+
 /***********************************************************************************
 *  ____    _    _   _ ____  _____ _____   _  ___  ____  ____                       *
 * / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \                      *

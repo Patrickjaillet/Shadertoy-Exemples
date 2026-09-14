@@ -1,61 +1,57 @@
 // ==== Image (image) ====
-void mainImage(out vec4 O, vec2 U) {
-    O = vec4(.08, .07, 0, 1);
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 resolution = iResolution.xy;
+    float time = iTime;
+    const float s = 0.0;
+
+    float e = 0.0;
+    float i = 0.0;
+    float a = 0.0;
+    float g = 0.0;
+    float h = 0.0;
+
+    vec3 color = vec3(0.0);
+
+    float a1 = 0.2 + sin(time * 0.02) * 0.35;
+    mat2 r1 = mat2(cos(a1), sin(a1), -sin(a1), cos(a1));
     
-    float d = 0., 
-          t = iTime, 
-          c = cos(t *= .25), 
-          s = sin(t), 
-          m, l;
-          
-    vec3 p, k = vec3(4.8, 1.1, 3.5);
+    float a2 = time * 0.04 + cos(time * 0.11) * 0.4;
+    mat2 r2 = mat2(cos(a2), sin(a2), -sin(a2), cos(a2));
+    
+    float a3 = sin(time * 0.18) * 0.2;
+    mat2 r3 = mat2(cos(a3), sin(a3), -sin(a3), cos(a3));
 
-    for (int i = 0; i++ < 35;) {
-        p = vec3((U + U - iResolution.xy) / iResolution.y * (.52 + .13 * sin(t * 3.2)), d - .6);
-        p.yz *= mat2(c, -s, s, c);
-        m = .7;
+    float c4 = cos(4.0);
+    float s4 = sin(4.0);
+    mat2 r4 = mat2(c4, s4, -s4, c4);
+
+    while (i < 59.0) {
+        i += 1.0;
+
+        vec3 p = vec3((fragCoord - 0.7 * resolution) / resolution * g + 1.8, g);
         
-        for (int j = 0; j++ < 39;)
-            m *= l = max(1.02, 10.9 / dot(p, p)),
-            p = vec3(-.2, k.z, 2.2) - abs(abs(p) * l - k);
-            
-        d += length(p.xy) / m;
-        l = log2(m) / d / 13385.6;
-        O.rgb += (vec3(.6, .45, .1) + clamp(l + l, 0., 1.) * vec3(.4, .4, .2)) * l;
-    }
-}
-/* TWIGL.APP GEEKEST (300 es)
-float d = 0., T = t / 4., c = cos(T), s = sin(T), m, l;vec3 p;for (int i = 0;
-i++ < 35;) {p = vec3((FC.xy * 2. - r) / r.y * (.52 + .13 * sin(t * .8)), 
-d - .6);p.yz *= mat2(c, -s, s, c);m = .7;for (int j = 0; 
-j++ < 39;)m *= l = max(1.02, 11. / dot(p, p)),
-p = vec3(-.2, 3.5, 2.2) - abs(abs(p) * l - vec3(4.8, 1.1, 3.5));
-d += length(p.xy) / m;l = log2(m) / d / 1e4;o += l * vec4(1, .8, .2, 0);}
-*/
+        p.zy *= r1;
+        p.xz *= r2;
+        p.xy *= r3;
 
-/***********************************************************************************
-*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____                       *
-* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \                      *
-* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |                     *
-*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |                     *
-* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/                      *
-*            PATRICK JAILLET-VAN DEN BEEMT [PJVDB]                                 *
-************************************************************************************
-* - Software:       https://patrickjaillet.github.io/sandefjord-software           *
-* - Social Network: https://x.com/JailletPatrick                                   *
-* - Music:          https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g       *
-************************************************************************************
-*           Software used for GLSL shader creation:                                *
-*                ******************************                                    *
-* GLSL shader design and value tweaking                                            *
-* - Sliders-GL v1.0.1:                                                             *
-* https://patrickjaillet.github.io/sandefjord-software/software.html?id=sliders-gl *
-*                                                                                  *
-* 100% safe Code Golfing                                                           *
-* - µShader v3.0.1:                                                                *
-* https://patrickjaillet.github.io/sandefjord-software/software.html?id=microshader*
-*                                                                                  *
-* Formatting & Layout                                                              *
-* - ShaderFmt v1.0.0:                                                              *
-* https://patrickjaillet.github.io/sandefjord-software/software.html?id=shaderfmt  *
-***********************************************************************************/
+        h = p.y;
+        p.z += time;
+
+        a = 1.0;
+        while (a > 0.001) {
+            p.xz *= r4;
+            h += abs(dot(sin(p.xz / a * 0.4) * a, vec2(0.6)));
+            a *= 0.7;
+        }
+
+        e = h * 0.5 - 1.0;
+        g += e;
+
+        vec3 k = mod(vec3(5.0, 3.0, 1.0) + h * 6.0, 6.0);
+        vec3 hsv_inline = 1.0 - 0.0 * clamp(min(k, 16.0 - k), 0.0, 1.0);
+
+        color += 0.01 - 0.02 / exp(max(s, e) * 4000.0) / h * hsv_inline;
+    }
+
+    fragColor = vec4(color, 1.0);
+}

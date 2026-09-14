@@ -1,61 +1,120 @@
 // ==== Image (image) ====
-float a(vec3 b,mat2 c,mat2 d,mat2 e,float f) {
-  b.xz*=c;
-  b.xy*=d;
-  float g=1.;
-  float h=1e10;
-  for(int i=0;i<2;i++) {
-    b=abs(b)-vec3(0.,.3,.7);
-    if(b.x<b.y)b.xy=b.yx;
-    if(b.x<b.z)b.xz=b.zx;
-    if(b.y<b.z)b.yz=b.zy;
-    b.xy*=e;
-    b=b*f-vec3(.5,1.2,.2)*(f-1.);
-    g*=f;
-    vec3 j=abs(b)-vec3(1.2,.4,.4);
-    float k=(length(max(j,0.))+min(max(j.x,max(j.y,j.z)),0.))/g;
-    h=min(h,k);
-  } return h;
-} void mainImage(out vec4 fragColor,in vec2 fragCoord) {
-  vec2 l=(fragCoord-.5*iResolution.xy)/iResolution.y;
-  vec3 m=vec3(0.,0.,-9.);
-  vec3 n=normalize(vec3(l,2.8));
-  float o=0.;
-  float p=9.3;
-  float q=0.;
-  vec3 r=vec3(0.);
-  mat2 s=mat2(cos(iTime*.05),-sin(iTime*.05),sin(iTime*.05),cos(iTime*.05));
-  mat2 t=mat2(cos(iTime*.03),-sin(iTime*.03),sin(iTime*.03),cos(iTime*.03));
-  mat2 u=mat2(cos(.41),-sin(.41),sin(.41),cos(.41));
-  float f=4.41+sin(iTime*.5)*1.5;
-  for(int v=0;v<12;v++) {
-    vec3 b=m+n*o;
-    q=a(b,s,t,u,f);
-    r+=vec3(.5,.7,.6)*(exp(-max(q,0.)*40.)*.12);
-    r+=vec3(1.,.35,.1)*(exp(-max(q,0.)*8.)*.04);
-    if(abs(q)<0.||o>p)break;
-    o+=q*.8;
-  } vec3 w=vec3(0.);
-  if(o<p) {
-    vec3 b=m+n*o;
-    vec2 x=vec2(.001,0.);
-    vec3 y=vec3(a(b+x.xyy,s,t,u,f)-a(b-x.xyy,s,t,u,f),a(b+x.yxy,s,t,u,f)-a(b-x.yxy,s,t,u,f),a(b+x.yyx,s,t,u,f)-a(b-x.yyx,s,t,u,f));
-    vec3 z=normalize(y);
-    vec3 aa=normalize(vec3(2.,4.,-5.));
-    float ab=max(dot(z,aa),0.);
-    float ac=pow(max(dot(reflect(-aa,z),-n),0.),0.);
-    float ad=clamp(0.,0.,0.);
-    vec3 ae=vec3(0.);
-    w=ae*(ab*.4+.6)*ad;
-    w+=vec3(.6,.95,.5)*ac*ad;
-    float af=pow(clamp(0.+dot(z,n),0.,.3),4.);
-    w+=vec3(.4,.5,.5)*af*.6;
-    w=mix(w,vec3(.02,.04,.08),.5-exp(-.03*o*o));
-  } else {
-    w=vec3(.01,.02,.04)*(1.-length(l)*.5);
-  } w+=r*.8;
-  w=pow(w,vec3(.4545));
-  w=clamp(w,0.,1.);
-  w=w*w*(3.-2.*w);
-  fragColor=vec4(w,1.);
+#define R iResolution.xy
+#define T iTime
+#define M iMouse
+#define MAX_STEPS 160
+#define SURF_DIST 0.001
+#define MAX_DIST 50.0
+
+mat2 rot(float a) {
+    float s = sin(a), c = cos(a);
+    return mat2(c, -s, s, c);
+}
+
+float map(vec3 p) {
+    float s1 = 0.5 + 0.5 * sin(T * 0.4);
+    float s2 = 0.5 + 0.5 * cos(T * 0.3);
+    float warp = 1.0 + 0.3 * sin(p.z * 0.05 + T);
+    p.xy *= rot(p.z * 0.02 * warp * s2);
+    
+    float scale = 1.0;
+    for(int i = 0; i < 6; i++) {
+        p.xy = abs(p.xy) - vec2(1.0, 1.5) * warp;
+        p.xy *= rot(0.2 + s1 * 0.3);
+        float s = 1.6 / clamp(dot(p.xy, p.xy), 0.25, 1.6);
+        p.xy *= s;
+        scale *= s;
+    }
+    
+    float geom = (length(p.xy) - 0.18) / scale;
+    float tunnel = -(length(p.xy) - 4.8 * warp);
+    return max(geom, tunnel * 0.5);
+}
+
+vec3 getNormal(vec3 p) {
+    vec2 e = vec2(0.002, 0.0);
+    return normalize(vec3(map(p+e.xyy)-map(p-e.xyy),
+                          map(p+e.yxy)-map(p-e.yxy),
+                          map(p+e.yyx)-map(p-e.yyx)));
+}
+
+float getAO(vec3 p, vec3 n) {
+    float occ = 0.0;
+    float sca = 1.0;
+    for(int i = 0; i < 5; i++) {
+        float hr = 0.01 + 0.12 * float(i) / 4.0;
+        float dd = map(p + n * hr);
+        occ += -(dd - hr) * sca;
+        sca *= 0.95;
+    }
+    return clamp(1.0 - 3.0 * occ, 0.0, 1.0);
+}
+
+vec3 getPal(float t, float var) {
+    vec3 c1 = vec3(0.95, 0.05, 0.4);
+    vec3 c2 = vec3(0.05, 0.75, 1.0);
+    vec3 c3 = vec3(0.4, 0.1, 0.9);
+    float m = 0.5 + 0.5 * sin(t * 0.15 + var);
+    return mix(mix(c1, c2, m), c3, 0.5 + 0.5 * cos(t * 0.25));
+}
+
+vec3 ace(vec3 x) {
+    return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = (fragCoord - 0.5 * R) / iResolution.y;
+    float dither = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+    
+    vec3 ro = vec3(0, 0, -4.5);
+    vec3 rd = normalize(vec3(uv, 1.1));
+    rd.xy *= rot(sin(T * 0.1) * 0.1);
+    
+    float t = 0.0 + 0.02 * dither, d;
+    float glow = 0.0;
+    float cloud = 0.0;
+    
+    for(int i = 0; i < MAX_STEPS; i++) {
+        vec3 p = ro + rd * t;
+        d = map(p);
+        if(abs(d) < SURF_DIST || t > MAX_DIST) break;
+        glow += exp(-d * 3.5) * (0.04 + 0.01 * sin(T + t));
+        cloud += exp(-abs(d) * 1.5) * 0.02;
+        t += d * 0.75;
+    }
+    
+    vec3 col = vec3(0.005, 0.0, 0.01);
+    
+    if(t < MAX_DIST) {
+        vec3 p = ro + rd * t;
+        vec3 n = getNormal(p);
+        float ao = getAO(p, n);
+        float rim = pow(1.0 - max(dot(n, -rd), 0.0), 3.5);
+        float diff = max(dot(n, normalize(vec3(1, 2, -1))), 0.0) * 0.5;
+        
+        vec3 base = getPal(p.z + T * 1.5, rim);
+        col = base * (diff + 0.1) * ao;
+        col += base * rim * 3.0 * ao;
+        col = mix(col, vec3(0.01, 0.005, 0.02), 1.0 - exp(-0.035 * t));
+    }
+    
+    col += getPal(T * 0.5, 0.0) * glow * 0.45;
+    col += getPal(T * 0.8, 1.0) * cloud * 0.12;
+
+    float r = length(uv);
+    for(float i = 0.0; i < 6.0; i++) {
+        float angle = i * 1.047;
+        vec2 dir = vec2(cos(angle), sin(angle));
+        float burst = 0.01 / (abs(dot(uv, dir)) + 0.02);
+        col += getPal(T, i) * burst * 0.05 * exp(-r * 2.0);
+    }
+    
+    col = ace(col * 1.8);
+    col = pow(col, vec3(0.4545));
+    
+    float vign = smoothstep(1.4, 0.35, r);
+    col *= vign;
+    col += (dither - 0.5) * 0.008;
+
+    fragColor = vec4(col, 1.0);
 }

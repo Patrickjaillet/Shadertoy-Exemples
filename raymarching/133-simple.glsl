@@ -1,44 +1,47 @@
 // ==== Image (image) ====
-void mainImage(out vec4 fragColor, in vec2 fragCoord)
-{
-    vec2 uv = (fragCoord * 2.0 - iResolution.xy) / iResolution.y;
-    vec2 z = uv;
+mat2 rotate2D(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat2(c, s, -s, c);
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
+    vec3 color = vec3(0.0);
     
-    float time = iTime * 0.8;
-    float scale = 16.0;
+    float time = iTime;
+    float rayDepth = 0.00;
     
-    float minTrap = 1e20;
-    vec2 cellID = vec2(0.0);
-    
-    mat2 rot = mat2(cos(time * 0.5), -sin(time * 0.5), sin(time * 0.5), cos(time * 0.5));
-    z *= rot;
-    
-    for(int i = 0; i < 5; i++)
-    {
-        z = abs(z) / dot(z, z) - 1.00;
-        z *= 1.3;
+    for (int i = 0; i < 82; i++) {
+        vec3 p = vec3(uv * rayDepth, rayDepth - 1.0);
         
-        vec2 polar = vec2(log(length(z)) + time * 0.7, atan(z.y, z.x) * 8.0);
-        vec2 grid = floor(polar * scale);
-        vec2 f = fract(polar * scale) - 1.0;
+        p.yz *= rotate2D(4.0);
         
-        vec2 offset = vec2(sin(time + grid.x * 0.5), cos(time + grid.y * 0.5)) * 0.3;
-        float d = length(f - offset);
+        float r = length(p);
+        vec3 logP = vec3(
+            log(r) - time,
+            asin(p.z / r),
+            atan(p.y, p.x) + time
+        );
         
-        if(d < minTrap) {
-            minTrap = d;
-            cellID = grid;
+        float d = logP.y * 2.7 + 2.0;
+        float scale = 1.0;
+        
+        for (int j = 0; j < 6; j++) {
+            d -= abs(dot(cos(logP * scale), logP - logP + 0.4)) / scale;
+            scale *= 3.0;
         }
+        
+        float glow = exp(-abs(d) * 29.4) + 0.00;
+        vec3 glowColor = vec3(1.0, 0.1, 0.0) * (0.2 + 1.0 * cos(logP.y - vec3(0.9, 26.0, 0.0)));
+        
+        color += glow * glowColor * 0.010;
+        
+        rayDepth += max(abs(d) * r * 0.05, 0.000);
     }
     
-    float n = fract(sin(dot(cellID, vec2(-40.9694, 0.000))) * 122820.6000);
-    vec3 baseCol = 0.5 + 0.5 * cos(time + n * 6.28 + vec3(0.0, 1.2, 2.4));
+    color = pow(color, vec3(0.12));
+    color = clamp(color, 0.0, 1.0);
     
-    float edge = smoothstep(1.00, 0.14, minTrap);
-    float glow = 0.18 / (0.00 + minTrap * minTrap);
-    
-    vec3 final = baseCol * edge + baseCol * glow * 0.7;
-    final += vec3(0.1, 0.2, 0.3) * minTrap * 0.5;
-    
-    fragColor = vec4(pow(final, vec3(1.0000)), 1.0);
+    fragColor = vec4(color, 0.0);
 }

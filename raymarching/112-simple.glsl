@@ -1,64 +1,28 @@
 // ==== Image (image) ====
-float hache(vec2 p) {
-    vec2 p2 = fract(p * vec2(123.34, 456.21));
-    p2 = p2 + dot(p2, p2 + 45.32);
-    return fract(p2.x * p2.y);
-}
-
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
+    vec4 o = vec4(0.0);
+    float i = 0.0, e = 0.0, R = 0.0, s = 0.0;
+    vec3 q = vec3(0.0), p = vec3(0.0), d = vec3(fragCoord.xy / iResolution.y * 0.6 - vec2(0.4, -0.6), 0.5);
+    q.zy -= 1.0;
     
-    float temps4D = iTime * 0.7 + sin(iTime * 1.5) * 0.3; 
-    float dist4D = length(uv);
-    float angle4D = atan(uv.y, uv.x);
-    
-    dist4D = tan(dist4D * 2.5 - temps4D); 
-    vec2 uv4D = vec2(cos(angle4D), sin(angle4D)) * dist4D;
-    
-    vec2 gv = uv4D * (8.0 + sin(temps4D) * 4.0); 
-    vec2 id = floor(gv);
-    gv = fract(gv) - 0.5;
-    
-    float h = hache(id);
-    float dCentre = length(gv);
-    float masqueSponge = smoothstep(0.45, 0.4, dCentre);
-    
-    float pores = step(0.6, hache(id + floor(gv * 12.0)));
-    vec3 colSponge = vec3(1.0, 0.85, 0.1); 
-    colSponge = mix(colSponge, vec3(0.4, 0.3, 0.0), pores * 0.8);
-    
-    vec3 couleurBase = vec3(0.0);
-    if (masqueSponge > 0.5) {
-        couleurBase = colSponge * (0.8 + 0.5 * h);
-        couleurBase += vec3(1.0, 0.4, 0.0) * (1.0 - dCentre * 2.0) * 0.5;
-    }
-    
-    vec3 bloom = vec3(0.0);
-    float poidsTotal = 0.0;
-    
-    for(float x = -2.0; x <= 2.0; x += 1.0) {
-        for(float y = -2.0; y <= 2.0; y += 1.0) {
-            vec2 offset = vec2(x, y) * 0.02;
-            float dist_attenuation = exp(-length(vec2(x, y)) * 1.5);
-            
-            float d_sample = length(fract(gv + offset) - 0.5);
-            float m_sample = smoothstep(0.45, 0.1, d_sample);
-            
-            if(m_sample > 0.1) {
-                bloom += vec3(1.0, 0.6, 0.1) * m_sample * dist_attenuation;
-                poidsTotal += dist_attenuation;
-            }
+    for(; i++ < 70.0;) {
+        float hue = 0.55 + q.z * 0.04;
+        float sat = 1.0 - e * 0.3;
+        float val = min(e * s, 1.0) / 64.0;
+        
+        vec3 c = clamp(abs(mod(hue * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+        vec3 hsvColor = val * mix(vec3(1.0), c, sat);
+        o.rgb += hsvColor;
+        
+        s = 3.0;
+        p = q += d * e * R * 0.5 + 1e-4;
+        R = length(p);
+        p = vec3(log(R) - iTime * 0.2, exp(-p.z / R) + 0.23, atan(p.y, p.x));
+        
+        e = --p.y;
+        for(; s < 1e3; s += s) {
+            e += dot(cos(p.zxx * s), 0.7 + sin(p.yzy * s)) / s * 0.5;
         }
     }
-    
-    if(poidsTotal > 0.0) {
-        bloom /= poidsTotal;
-    }
-    
-    vec3 finalCol = couleurBase + bloom * 0.7;
-    
-    finalCol += vec3(0.1, 0.05, 0.2) * exp(-length(uv) * 2.0);
-    finalCol *= (0.9 + 0.1 * sin(iTime * 15.0));
-    
-    fragColor = vec4(pow(finalCol, vec3(0.8)), 1.0);
+    fragColor = vec4(o.rgb, 1.0);
 }

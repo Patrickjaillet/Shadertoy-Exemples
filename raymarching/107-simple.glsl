@@ -1,44 +1,44 @@
 // ==== Image (image) ====
-void mainImage(out vec4 O, vec2 U) {
-    vec2 R = iResolution.xy;
-    vec2 p = (U - 0.5 * R) / min(R.x, R.y);
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    vec2 uv = (fragCoord * 2.0 - iResolution.xy) / iResolution.y;
+    vec2 z = uv;
     
-    float tm = iTime * 0.3;
+    float time = iTime * 0.8;
+    float scale = 16.0;
     
-    // Zoom avant/arrière infini basé sur le temps
-    float zoom = 1.0 + 0.5 * sin(tm * 0.5);
-    p *= zoom;
-
-    vec2 z2 = p;
-    float r = length(z2);
-    float a = atan(z2.y, z2.x);
+    float minTrap = 1e20;
+    vec2 cellID = vec2(0.0);
     
-    r = log(r + 0.3);
-    z2 = vec2(r * cos(a + tm), r * sin(a + tm));
+    mat2 rot = mat2(cos(time * 0.5), -sin(time * 0.5), sin(time * 0.5), cos(time * 0.5));
+    z *= rot;
     
-    vec3 z = vec3(z2, tm * 0.0);
-    float scale = 1.0;
-    float accum = 0.0;
-    
-    for(int i = 0; i < 22; i++) {
-        z = abs(z) - vec3(0.3, 0.3, 0.3);
+    for(int i = 0; i < 5; i++)
+    {
+        z = abs(z) / dot(z, z) - 1.00;
+        z *= 1.3;
         
-        if (z.x < z.y) z.xy = z.yx;
-        if (z.x < z.z) z.xz = z.zx;
-        if (z.y < z.z) z.yz = z.zy;
+        vec2 polar = vec2(log(length(z)) + time * 0.7, atan(z.y, z.x) * 8.0);
+        vec2 grid = floor(polar * scale);
+        vec2 f = fract(polar * scale) - 1.0;
         
-        z *= 2.9;
-        z -= vec3(1.0, 1.0, 0.2);
-        scale *= 1.8;
+        vec2 offset = vec2(sin(time + grid.x * 0.5), cos(time + grid.y * 0.5)) * 0.3;
+        float d = length(f - offset);
         
-        float d = dot(z, z);
-        z *= clamp(0.0 / max(d, 0.1), 0.8, 1.2);
-        
-        accum += length(z) / scale;
+        if(d < minTrap) {
+            minTrap = d;
+            cellID = grid;
+        }
     }
     
-    float hue = fract(accum * 0.0 + tm * 0.2);
-    vec3 col = clamp(abs(fract(hue + vec3(0.0, 0.0/-2.4, -2.7/2.0)) * 4.9 - -11.0) - 1.0, 0.0, 1.0);
+    float n = fract(sin(dot(cellID, vec2(-40.9694, 0.000))) * 122820.6000);
+    vec3 baseCol = 0.5 + 0.5 * cos(time + n * 6.28 + vec3(0.0, 1.2, 2.4));
     
-    O = vec4(col / (accum + 0.1), 1.0);
+    float edge = smoothstep(1.00, 0.14, minTrap);
+    float glow = 0.18 / (0.00 + minTrap * minTrap);
+    
+    vec3 final = baseCol * edge + baseCol * glow * 0.7;
+    final += vec3(0.1, 0.2, 0.3) * minTrap * 0.5;
+    
+    fragColor = vec4(pow(final, vec3(1.0000)), 1.0);
 }

@@ -1,87 +1,79 @@
 // ==== Image (image) ====
-void mainImage(out vec4 o, in vec2 FC) {
-    vec3 r = iResolution;
-    float t = iTime;
-    vec2 uv = (FC - r.xy * 0.5) / r.y;
-    
-    vec3 ro = vec3(t * 0.4, 0.2 * sin(t * 0.3), t * 0.8);
-    vec3 target = ro + vec3(sin(t * 0.15) * 0.3, cos(t * 0.1) * 0.2, 1.0);
-    vec3 cz = normalize(target - ro);
-    vec3 cx = normalize(cross(vec3(sin(t * 0.1), 1.0, 0.0), cz));
-    vec3 cy = cross(cz, cx);
-    vec3 rd = normalize(uv.x * cx + uv.y * cy + 0.8 * cz);
-    
-    float c = cos(t * 0.1), s = sin(t * 0.1);
-    mat3 rz = mat3(c, s, 0.0, -s, c, 0.0, 0.0, 0.0, 1.0);
-    mat3 rx = mat3(1.0, 0.0, 0.0, 0.0, c, s, 0.0, -s, c);
-    mat3 rotfbm = rz * rx;
+/**************************************************************
+*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____  *
+* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \ *
+* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |*
+*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |*
+* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/ *
+***************************************************************
+* - X: https://x.com/JailletPatrick                           *
+***************************************************************
+* https://patrickjaillet.github.io/sandefjord-software        *
+* GLSL shader design and value tweaking - Sliders-GL v1.0.1:  *
+* 100% safe Code Golfing - µShader v3.0.1:                    *
+**************************************************************/
+vec3 H(vec3 p, float t, inout float e) {
+    float a = iTime * .05 + t * .02, v = .8, q;
+    p.xz *= mat2(cos(a), sin(a), -sin(a), cos(a));
+    e = 5.6;
+    for (int j = 0; j < 15; j++) {
+        q = dot(p, p) + .002;
+        v /= q; p /= q;
+        p.y = .4 - p.y - sin(iTime * .8 + float(j));
+        if (j > 2) {
+            e = min(e, length(p.xz + length(p) / q * .35) / v);
+            p.xz = abs(p.xz);
+        } else p = abs(p) - .8;
+    }
+    vec3 h = vec3(sin(log(v) + iTime * .2) * .25 + .33, .85, 1);
+    return mix(vec3(1), clamp(abs(fract(h.x + vec3(0, 4.33333333, 2.66666667)) * 6. - 3.) - 1., 0., 1.), .85);
+}
 
-    float d = 0.0, t_dist = 0.01, max_d = 20.0;
-    float glow = 0.0, d_inf = 1.0;
-    vec3 p;
-    
-    for (int i = 0; i < 140; i++) {
-        if (t_dist > max_d) break;
-        p = ro + rd * t_dist;
-        
-        vec3 p_inf = vec3(fract(p.x) - 0.5, p.y, fract(p.z) - 0.5);
-        d_inf = min(length(p_inf.xz) - 0.06, 0.35 - abs(p_inf.y));
-        
-        float m = 1.0, noise = 0.0;
-        vec3 q = p * 1.2;
-        for (int j = 0; j < 7; j++) {
-            q = rotfbm * q;
-            noise += dot(sin(q * m + vec3(t * 1.5, t, t * 0.8)), vec3(0.333)) / m;
-            m *= 1.85;
-        }
-        
-        d_inf -= abs(noise) * 0.14 * (1.0 - smoothstep(0.2, 0.5, abs(p.y)));
-        glow += exp(-max(d_inf, 0.0) * 12.0) * (0.015 + 0.01 * sin(t + p.z));
-        
-        if (d_inf < 0.0008) {
-            d = t_dist;
-            break;
-        }
-        t_dist += d_inf * 0.45;
+void mainImage(out vec4 O, vec2 C) {
+    vec2 r = iResolution.xy, uv = (C - .5 * r) / r.y;
+    float t = iTime * .25, g = 0., i = 0., e, w, gR = 0., iR = 0., dC = length(uv);
+    vec3 ro = vec3(2.5 * cos(t), 3.5 * sin(t), 3. * sin(t)),
+         ww = normalize(vec3(0, -.1, 0) - ro),
+         uu = normalize(cross(ww, vec3(0, 1, 0))),
+         d = normalize(uv.x * uu + uv.y * cross(uu, ww) + .8 * ww),
+         lA = vec3(0), rA = vec3(0),
+         tF = max((-7. - ro) / d, (7. - ro) / d), p, hP, n;
+
+    w = min(min(tF.x, tF.y), tF.z);
+
+    for (; i++ < 47. && g < 20.;) {
+        if (w > 0. && g > w) break;
+        vec3 c = H(ro + d * g, g, e);
+        float s = max(e * .4, 0.);
+        g += s;
+        lA += c * exp(-e * 45.) * s * 8.5;
     }
 
-    vec3 col = vec3(0.002, 0.005, 0.012) * (1.0 - length(uv) * 0.5);
-    col += vec3(0.1, 0.4, 0.8) * glow;
+    if (w > 0. && (g >= w || i >= 47.)) {
+        hP = ro + d * w;
+        vec3 aP = abs(hP / 7.);
+        n = -sign(d) * step(aP.yzx, aP.xyz) * step(aP.zxy, aP.xyz);
+        vec3 rD = reflect(d, n);
 
-    if (d > 0.0) {
-        vec2 eps = vec2(0.001, 0.0);
-        vec3 n = normalize(vec3(
-            (min(length(fract((p + eps.xyy).xz) - 0.5) - 0.06, 0.35 - abs((p + eps.xyy).y))) - d_inf,
-            (min(length(fract((p + eps.yxy).xz) - 0.5) - 0.06, 0.35 - abs((p + eps.yxy).y))) - d_inf,
-            (min(length(fract((p + eps.yyx).xz) - 0.5) - 0.06, 0.35 - abs((p + eps.yyx).y))) - d_inf
-        ));
-        
-        float occ = 0.0, sca = 1.0;
-        for (int step = 1; step <= 5; step++) {
-            float hr = 0.01 + 0.12 * float(step) / 5.0;
-            vec3 aopos = p + n * hr;
-            float ao_d = min(length(fract(aopos.xz) - 0.5) - 0.06, 0.35 - abs(aopos.y));
-            occ += (hr - ao_d) * sca;
-            sca *= 0.85;
+        for (; iR++ < 30. && gR < 15.;) {
+            vec3 c = H(hP + rD * gR, gR, e);
+            float s = max(e * .4, 0.);
+            gR += s;
+            rA += c * exp(-e * 45.) * s * 8.5;
         }
-        float ao = clamp(1.0 - occ * 4.0, 0.0, 1.0);
-        
-        vec3 l_dir = normalize(vec3(sin(t), 1.5, cos(t)));
-        float dif = clamp(dot(n, l_dir), 0.0, 1.0);
-        float spe = pow(clamp(dot(reflect(rd, n), l_dir), 0.0, 1.0), 32.0);
-        float fre = pow(clamp(1.0 + dot(n, rd), 0.0, 1.0), 4.0);
-        
-        vec3 mat = mix(vec3(0.05, 0.1, 0.18), vec3(0.7, 0.85, 1.0), smoothstep(-0.1, 0.1, sin(p.z * 4.0) * cos(p.x * 4.0)));
-        mat += vec3(0.5, 0.1, 0.9) * (1.0 - smoothstep(0.0, 0.04, abs(p.y - 0.34)));
-        
-        col = mat * (dif * vec3(1.0, 0.9, 0.8) + 0.15) + spe * 0.4 + fre * vec3(0.3, 0.6, 1.0) * 0.5;
-        col *= ao;
-        col = mix(col, vec3(0.005, 0.01, 0.02), smoothstep(4.0, max_d, d));
+
+        vec2 u = abs(n.x) > .5 ? hP.yz : (abs(n.y) > .5 ? hP.xz : hP.xy);
+        float gr = smoothstep(.03, 0., abs(fract(u.x * .25) - .5)) + smoothstep(.03, 0., abs(fract(u.y * .25) - .5)),
+              fr = pow(1. - max(dot(-d, n), 0.), 3.);
+        lA += (vec3(.015, .015, .03) + gr * .04 + rA * mix(.4, .9, fr)) * exp(-w * .05);
     }
 
-    col += vec3(0.9, 0.4, 0.2) * pow(max(0.0, dot(rd, normalize(vec3(0.5, 0.2, 1.0)))), 8.0) * 0.3;
-    col = pow(col, vec3(0.4545));
-    col = clamp(col * 1.1 - 0.05, 0.0, 1.0);
-    
-    o = vec4(col, 1.0);
+    vec3 c = lA + max(lA - .15, 0.) * (.45 / (.1 + dC * .6));
+    c *= vec3(1. + dC * .02, 1, 1. - dC * .02);
+    c = pow(c, vec3(1.2));
+    c = mix(c, vec3(c.r * .299), -.75);
+    c = pow(c / (1. + c), vec3(1. / 2.2)) * smoothstep(5.2, 0., dC);
+    c += (fract(sin(dot(C + iTime, vec2(12.9898, 78.233))) * 43758.5453) - .5) * .025;
+
+    O = vec4(clamp(c, 0., 1.), 0);
 }

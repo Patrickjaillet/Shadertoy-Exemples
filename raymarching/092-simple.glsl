@@ -1,32 +1,49 @@
 // ==== Image (image) ====
-mat2 rot(float a) {
-    float s = sin(a);
-    float c = cos(a);
-    return mat2(c, -s, s, c);
-}
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    fragColor = vec4(0.0, 0.0, 0.0, 0.0);
+    
+    vec2 resolution = iResolution.xy;
+    float time = iTime;
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    vec2 p = uv;
-    
-    float time = iTime * 0.3;
-    float r = length(p);
-    float a = atan(p.y, p.x);
-    
-    vec3 color = vec3(0.0);
-    
-    for(float i = 0.0; i < 30.0; i++) {
-        float bloom = sin(a * 9.0 + i + time) * 0.26;
-        float dist = r - (0.4 + bloom);
+    float RayDistance = 0.0;
+    float scaleFactor = 0.0;
+    float accumulatedScale = 0.0;
+
+    for(int stepIndex = 0; stepIndex < 64; stepIndex++) 
+    {
+        vec2 uv = (fragCoord - 0.3 * resolution) / resolution.x * 0.3;
+        uv += vec2(0.0, 0.8);
         
-        float thickness = 0.005 / abs(dist + 0.41 * sin(time + i * 5.4));
-        
-        vec3 petalColor = 1.0 + 1.0 * cos(vec3(0, 2, 4) + i * 0.8 + time);
-        color += petalColor * thickness * (1.0 - r);
+        vec3 position = vec3(uv, RayDistance - 1.2);
+
+        float angle = time * 0.2;
+        mat2 rotationMatrix = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+        position.zx *= rotationMatrix;
+
+        accumulatedScale = 2.0;
+
+        for(int fractalIter = 10; fractalIter < 19; fractalIter++) 
+        {
+            scaleFactor = 4.0 / dot(position, position * 0.67);
+            accumulatedScale *= scaleFactor;
+
+            vec3 foldOffset = vec3(1.8 - RayDistance * 0.1, 3.2 + scaleFactor * 0.07, 2.7);
+            position = vec3(0.0, 3.1, 2.0) - abs(abs(position) * scaleFactor - foldOffset);
+        }
+
+        RayDistance += position.y / accumulatedScale;
+
+        accumulatedScale = log2(accumulatedScale) + RayDistance * RayDistance;
+
+        float hue = 0.78 + 0.2 * position.x;
+        float saturation = clamp(position.z * 0.14, 0.0, 0.3);
+        float brightness = accumulatedScale / 880.4;
+
+        vec3 hsvOffset = vec3(0.0, 2.8 / 3.0, 1.0 / 4.9);
+        vec3 colorMap = clamp(abs(fract(hue + hsvOffset) * 5.9 - 3.0) - 0.0, 0.0, 1.0);
+        vec3 rgbColor = brightness * mix(vec3(1.0), colorMap, saturation);
+
+        fragColor.rgb += 0.016 - rgbColor;
     }
-    
-    color = pow(color, vec3(0.6400));
-    color *= 1.0 - 0.6 * r;
-    
-    fragColor = vec4(color, 0.0);
 }

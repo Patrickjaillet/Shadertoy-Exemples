@@ -1,43 +1,38 @@
 // ==== Image (image) ====
-void mainImage(out vec4 fragColor, vec2 fragCoord) {
-    vec2 resolution = iResolution.xy;
-    vec2 uv = (2.0 * fragCoord - resolution) / resolution.y;
-    
-    vec3 finalColor = vec3(0.0);
-    float time = iTime * 0.2;
-
-    for (float i = 0.0; i < 16.0; i++) {
-        vec2 p = uv * (2.0 + i * 0.5);
-        float totalDistance = 0.0;
-
-        for (float j = 1.0; j < 27.0; j++) {
-            p += vec2(cos(p.y * j + time), sin(p.x * j + time)) * 0.8;
-            totalDistance += abs(length(p) - 0.9) / j;
+mat2 f(float a){
+    float b=cos(a),c=sin(a);
+    return mat2(b,-c,c,b);
+}// https://patrickjaillet.github.io/sandefjord-software/
+void mainImage(out vec4 j,in vec2 k){
+    vec2 l=(k-.5*iResolution.xy)/iResolution.y;
+    float g=iTime,e=0.;
+    vec3 b=vec3(0.);
+    mat2 m=f(g*-0.),n=f(g*-.78),o=f(3.2);
+    for(int h=0;h<90;h++){
+        float p=float(h);
+        vec3 a=vec3(l*e,e);
+        a.xz*=m;
+        a.yz*=n;
+        a.z+=g;
+        a+=.8-p*5e-5;
+        float c=3.5,d=1.;
+        for(int i=0;i<9;i++){
+            a=mod(a-1.,2.)-1.;
+            a.xz*=o;
+            d=max(dot(a,a)*.73,0.);
+            c/=d;
+            a=abs(a)/d;
+            a.y+=.63;
         }
-
-        vec3 colorLayer = 1.0 + 0.9 * cos(4.66 * (totalDistance * 0.1 + i + time + vec3(0.3, 0.4, 0.6)));
-        finalColor += colorLayer * (0.21 / totalDistance);
+        d=abs(a.x)/max(c,.001);
+        float q=max(d*.5,.0015);
+        e+=q;
+        vec3 r=1.3-sin(vec3(0.,1.,6.1)+log(max(c,.001))*1.);
+        float s=exp(-d*2844.3);
+        b+=.01*s*r;
+        if(e>15.)break;
     }
-
-    fragColor = vec4(pow(finalColor, vec3(0.45)), 1.0);
+    b/=(.4+b);
+    b=pow(b,vec3(.465));
+    j=vec4(b,1.);
 }
-
-/*
-Golf version:
-
-void mainImage(out vec4 o, vec2 u) {
-    vec2 r = iResolution.xy,
-         v = (u + u - r) / r.y;
-    vec3 c = vec3(0);
-    float t = iTime * .2, i = 0., j, d, s;
-    for (; i < 16.; i++) {
-        vec2 p = v * (2. + i * .5);
-        for (j = 1.; j < 27.; j++)
-            p += vec2(cos(p.y * j + t), sin(p.x * j + t)) * .8,
-            d += abs(length(p) - .9) / j;
-        c += (1. + .9 * cos(4.66 * (d * .1 + i + t + vec3(.3, .4, .6)))) * (.21 / d);
-        d = 0.;
-    }
-    o = vec4(pow(c, vec3(.45)), 1);
-}
-*/

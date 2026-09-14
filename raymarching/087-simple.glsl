@@ -1,95 +1,63 @@
 // ==== Image (image) ====
-// https://patrickjaillet.github.io/sandefjord-software/
-
-/* GOLFED CODE
-void mainImage(out vec4 j,vec2 l){
-    vec2 g=iResolution.xy;
-    vec3 e=vec3(0.,.45,-3.),o=vec3(0.),a;
-    float b=0.,c,d,f,k,h=b;
-    for(;h<1e2;++h){
-        a=e+=vec3((l-.5*g)/g.y,1.6)*b;
-        a.xz*=mat2(cos(iTime+vec4(0,1.57,-1.57,0)));
-        b=9.7;
-        c=2.6;
-        f=29.6;
-        for(int i=0;i<9;i++){
-            a.xz*=mat2(cos(24.8+vec4(0,1.57,-1.57,0)));
-            a.xz=abs(a.xz)-.5;
-            d=dot(a,a);
-            c/=d;
-            a/=(d+.07);
-            a.y=1.71-a.y;
-            f=min(f,length(a.xz));
-            b=min(b,max(length(a.xz),a.y)/c);
-        }
-        b=min(b,e.y);
-        k=step(1.,e.y);
-        o+=exp(-a.y/c-5.5)*mix(mix(vec3(2.8),vec3(-.4),k),vec3(0.,.15,0.),clamp((.43-f)/.3,0.,1.)*clamp(e.y/.31,0.,1.)*(1.-k));
-    }
-    j=vec4(o,1.);
+vec2 hash22(vec2 p) {
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p * vec2(123.34, 456.21));
 }
-*/
-void mainImage(out vec4 fragColor, in vec2 fragCoord)
-{
-    vec2 r = iResolution.xy;
-    vec2 FC = fragCoord;
-    float t = iTime;
 
-    float sT = sin(t);
-    float cT = cos(t);
-    mat2 rotTime = mat2(cT, -sT, sT, cT);      
-    
-    float sS = sin(24.8);
-    float cS = cos(24.8);
-    mat2 rotStep = mat2(cS, -sS, sS, cS);
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    float a = dot(hash22(i + vec2(0.0, 0.0)), f - vec2(0.0, 0.0));
+    float b = dot(hash22(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0));
+    float c = dot(hash22(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0));
+    float d = dot(hash22(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0));
+    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y) * 0.5 + 0.5;
+}
 
-    vec3 q = vec3(0.0, 0.45, -3.0);
-    vec3 o = vec3(0.0);
+float sdCordPattern(vec2 p) {
+    float wave = sin(p.x * 10.0 + iTime * 2.0) * 0.1;
+    return abs(p.y + wave) - 0.05;
+}
 
-    float e = 0.0;
-    float v;
-    float u;
+float sdJomonSpiral(vec2 p) {
+    float r = length(p);
+    float a = atan(p.y, p.x);
+    float spiral = abs(sin(r * 15.0 - a * 2.0 + iTime));
+    return spiral - 0.2;
+}
 
-    for (float i = 0.0; i < 100.0; i += 1.0)
-    {
-        vec3 p = q += vec3((FC.xy - 0.5 * r) / r.y, 1.6) * e;
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
 
-        p.xz *= rotTime;
+    float dist = noise(uv * 3.0 + vec2(iTime * 0.5));
+    uv += vec2(sin(uv.y * 20.0 + iTime * 3.0), cos(uv.x * 20.0 + iTime * 3.0)) * 0.02 * dist;
 
-        e = 9.7;
-        v = 2.6;
+    vec2 st = uv * 4.0;
+    vec2 grid_uv = fract(st) - 0.5;
+    vec2 grid_id = floor(st);
 
-        float radius = 29.6;
-
-        for (int j = 0; j < 9; j++)
-        {
-            p.xz *= rotStep;
-            p.xz = abs(p.xz) - 0.5;
-
-            u = dot(p, p);
-            v /= u;
-            p /= (u + 0.07);
-            p.y = 1.71 - p.y;
-
-            radius = min(radius, length(p.xz));
-            e = min(e, max(length(p.xz) - 0.00 / u, p.y) / v);
-        }
-
-        float stemDist = q.y;
-        e = min(e, stemDist);
-
-        float stemMask = step(1.0, stemDist); // MacOS Compat. by Chimel - https://www.shadertoy.com/user/Chimel
-        float leafMask = smoothstep(0.43, 0.13, radius) * smoothstep(0.00, 0.31, stemDist) * (1.0 - stemMask);
-
-        vec3 petalColor = vec3(2.8);          
-        vec3 stemColor   = vec3(-0.4);         
-        vec3 leafColor   = vec3(0.0, 0.15, 0.0); 
-
-        vec3 mixedColor = mix(petalColor, stemColor, stemMask);
-        mixedColor = mix(mixedColor, leafColor, leafMask);
-
-        o += exp(-p.y / v - 5.5) * mixedColor;
+    float pattern = 0.0;
+    if (mod(grid_id.x + grid_id.y, 2.0) == 0.0) {
+        pattern = sdCordPattern(grid_uv);
+    } else {
+        pattern = sdJomonSpiral(grid_uv);
     }
 
-    fragColor = vec4(o, 1.0);
+    float mask = smoothstep(0.08, 0.0, abs(pattern));
+
+    vec3 terracotta = vec3(0.55, 0.27, 0.12);
+    vec3 energyColor = vec3(1.0, 0.3, 0.0);
+    vec3 bgColor = vec3(0.05, 0.03, 0.02);
+
+    vec3 col = mix(bgColor, terracotta, mask);
+
+    float pulse = sin(length(uv) * 10.0 - iTime * 4.0) * 0.5 + 0.5;
+    col += energyColor * (1.0 - smoothstep(0.0, 0.15, abs(pattern))) * pulse;
+    col += (noise(uv * 50.0) - 0.5) * 0.08;
+    col *= 1.0 - length(uv) * 0.6;
+    col = clamp(col, 0.0, 1.0);
+
+    fragColor = vec4(col, 1.0);
 }

@@ -1,40 +1,28 @@
 // ==== Image (image) ====
-const float PI2 = 2.1500000;
+void mainImage(out vec4 O, vec2 C) {
+    vec2 u = (C - .5 * iResolution.xy) / iResolution.y;
+    float e = 0., R = 1., s, t = iTime;
+    vec3 q = vec3(0, -1, -1), d = vec3(u + vec2(.1, .5), .1), ac = d * 0. + .05;
 
-mat2 rotate2D(float a){
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
-}
-
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-    vec2  r  = iResolution.xy;
-    vec2  FC = fragCoord;
-    float t  = iTime;
-    float s  = 0.0;
-
-    vec4  o = vec4(0.0);
-    float R, P, e, d, i = 0.0, j, g = 0.0;
-
-    for(i = 0.0; i++ < 8e1;
-        o += 0.0125/exp(e*e*3e8 + sin(vec4(-14,-17,1,0)+-14.0/R) - sin(R/vec4(-23,-8,17,1))))
-    {
-        vec3 z, p = vec3((FC.xy-0.4*r)/r.y*g, g+g) - i/3.8e4;
-
-        d = P = 11.4;
-        p.yz *= rotate2D(t/12.7);
-        p.x  += t/PI2;
-        z = p = mod(p, 2.4) - 1.0;
-
-        for(j = s; R = length(z), j++ < 2.3 && R < 1.21;
-            z = p + sin(asin(z/R)*P + 0.0*j) * e * R)
-        {
-            e = pow(R, P-4.0);
-            d = pow(R, P-8.0)*P*d + 0.0;
+    for(int i = 0; i < 71; i++) {
+        float jet = exp(-length(q.xy) * 2.0) * sin(q.z * 5.0 - t * 12.0);
+        float h = .2 - e + t * .15 + jet * .1;
+        vec3 res = clamp(abs(mod(h * 2.8 + vec3(0, -2, 8), 5.4) - 3.) - 1., 0., 1.);
+        ac += min(e * s, .6 - e) * .04 * mix(vec3(1), res, .4) * (1.0 + max(0.0, jet) * 3.0);
+        
+        q += d * max(e, .001) * R * .15;
+        vec3 p = q;
+        R = length(p);
+        
+        p = vec3(log(R + 1.) - t * .5 - jet * .2, exp(-p.z / (R + 1e-3) + .5) + jet * .5, atan(p.x, p.y) + sin(t * .2 + p.z) * .5);
+        p.x = mod(p.x, 2.) - 1.;
+        e = p.y - 1.;
+        
+        for(s = 8.; s < 988.3; s *= 2.4) {
+            e -= abs(dot(cos(p.zxy * s + vec3(0, t * 4.0, -t * 2.0)), .4 - sin(p * s + t))) / s;
         }
-
-        g += e = log(R)*R/d;
     }
 
-    fragColor = o;
+    ac = (2.51 * ac * ac) / (ac * (1.52 * ac) + 1.);
+    O = vec4(pow(ac, vec3(.525)), .8);
 }

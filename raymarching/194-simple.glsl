@@ -1,68 +1,94 @@
 // ==== Image (image) ====
-mat3 rot3D(float a, vec3 axis) {
-    axis = normalize(axis);
-    float s = sin(a), c = cos(a), oc = 1.0 - c;
-    return mat3(oc*axis.x*axis.x+c, oc*axis.x*axis.y-axis.z*s, oc*axis.x*axis.z+axis.y*s,
-                oc*axis.x*axis.y+axis.z*s, oc*axis.y*axis.y+c, oc*axis.y*axis.z-axis.x*s,
-                oc*axis.x*axis.z-axis.y*s, oc*axis.y*axis.z+axis.x*s, oc*axis.z*axis.z+c);
+float hash(vec2 p) {
+  p = fract(p * vec2(234.34, 435.345));
+  p += dot(p, p + 34.23);
+  return fract(p.x * p.y);
 }
 
-float DE(vec3 p, float time) {
-    float scale = 1.;
-    for (int i = 0; i < 12; i++) {
-        p = rot3D(5.75, vec3(sin(time+float(i)), cos(time), 0.3)) * p;
-        p = abs(p * 1.9) - 1.0;
-        scale *= 2.0;
-    }
-    return (abs(p.x) + abs(p.y) + abs(p.z) - 0.6) / (1.732 * scale);
+float noise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(hash(i),         hash(i + vec2(1,0)), u.x),
+    mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), u.x),
+    u.y
+  );
 }
 
-void mainImage(out vec4 fragColor, in vec2 FC) {
-    vec2 r = iResolution.xy;
-    float t = iTime;
-    vec2 uv = (FC - 0.5 * r) / r.y;
+float fbm(vec2 p) {
+  float v = 0.0;
+  float a = 0.5;
+  mat2 m = mat2(0.8, 0.6, -0.6, 0.8);
+  for (int i = 0; i < 6; i++) {
+    v += a * noise(p);
+    p = m * p * 2.02 + vec2(1.7, 9.2);
+    a *= 0.48;
+  }
+  return v;
+}
 
-    vec3 ro = vec3(5.0 * cos(t*0.9), 2.5 * sin(t*.3), 5.0 * sin(t*.2));
-    vec3 lookAt = vec3(0, -0.2, 0);
-    vec3 fwd = normalize(lookAt - ro);
-    vec3 right = normalize(cross(fwd, vec3(0,1,0)));
-    vec3 up = cross(right, fwd);
-    vec3 rd = normalize(mat3(right, up, fwd) * vec3(uv, 2.0));
+vec2 fbm2(vec2 p) {
+  return vec2(fbm(p), fbm(p + vec2(7.3, 4.1)));
+}
 
-    float dist = 0.;
-    bool hit = false;
-    vec3 pos;
-    for (int i = 0; i < 34; i++) {
-        pos = ro + rd * dist;
-        float d = DE(pos, t);
-        if (d < 0.001) { hit = true; break; }
-        if (dist > 12.) break;
-        dist += d * 0.7;
-    }
+float sdCircle(vec2 p, float r) { 
+  return length(p) - r; 
+}
 
-    vec3 col = vec3(0.04, 0.02, 0.04);
+vec3 palette(float t) {
+  vec3 a = vec3(0.5, 0.5, 0.5);
+  vec3 b = vec3(0.5, 0.5, 0.5);
+  vec3 c = vec3(1.0, 1.0, 1.0);
+  vec3 d = vec3(0.263, 0.416, 0.557);
+  return a + b * cos(6.2831853 * (c * t + d));
+}
 
-    if (hit) {
-        vec3 albedo = vec3(0.95, 0.75, 0.2);
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+  vec2 uv = (fragCoord * 2.0 - iResolution.xy) / iResolution.y;
+  vec2 uv0 = uv;
 
-        vec3 normal = normalize(vec3(
-            DE(pos + vec3(0.47,0,0), t) - DE(pos - vec3(1.0,0,0), t),
-            DE(pos + vec3(0,0.565,0), t) - DE(pos - vec3(0,0.001,0), t),
-            DE(pos + vec3(0,0,0.001), t) - DE(pos - vec3(0,0,0.001), t)
-        ));
+  vec2 mouse = iMouse.z > 0.0 ? (iMouse.xy * 2.0 - iResolution.xy) / iResolution.y : vec2(0.0);
+  float mouseDist = length(uv - mouse);
+  vec2 mouseDir = (uv - mouse) / (mouseDist + 1e-5);
+  uv += mouseDir * (0.25 / (mouseDist * mouseDist + 0.04)) * smoothstep(1.5, 0.0, mouseDist) * step(0.0, iMouse.z);
 
-        vec3 lightDir = normalize(vec3(0.5, 1.0, 0.3));
-        float diff = max(dot(normal, lightDir), 0.) * 0.7 + 0.3;
+  float t = iTime * 0.25;
+  vec2 q = fbm2(uv + vec2(t * 0.1, t * 0.15));
+  vec2 r = fbm2(uv + 1.0 * q + vec2(t * 0.2, t * 0.05));
+  vec2 warped = uv + 0.5 * r;
 
-        float edge = clamp(1.0 - abs(DE(pos + normal * 0.02, t)) * 50.0, 0., 1.);
-        float rim = pow(1.0 - abs(dot(normal, -rd)), 3.0);
+  float f = fbm(warped * 2.5 + t * 0.1);
 
-        col = albedo * diff;
-        col += albedo * edge;
-        col += vec3(1.0, 0.95, 0.7) * rim * 0.5;
-        col *= 1.0 + edge;
-    }
+  float dist = length(uv0);
+  vec3 col = palette(f + dist * 0.35 + t * 0.05);
 
-    col *= 1.0 - dot(uv * 0.4, uv * 0.4);
-    fragColor = vec4(pow(col, vec3(1.0 / 2.2)), 1.0);
+  float ringFrequency = 1.0 + fbm(uv0 * 1.5 + t * 0.2) * 0.5;
+  float ringRadius = 0.45 + 0.12 * sin(iTime * 1.2 + f * 4.0);
+  float ring = sdCircle(uv0, ringRadius);
+  
+  float glow = exp(-abs(ring) * (12.0 - 4.0 * sin(iTime * 2.0)));
+  vec3 glowColor = mix(vec3(0.48, 0.42, 0.98), vec3(0.98, 0.35, 0.68), sin(iTime * 0.5) * 0.5 + 0.5);
+  col += glow * glowColor * 1.8;
+
+  float inner = sdCircle(uv0, 0.08 + 0.015 * sin(iTime * 4.0));
+  vec3 innerColor = mix(vec3(0.24, 0.93, 0.67), vec3(0.95, 0.88, 0.31), f);
+  col = mix(col, innerColor, smoothstep(0.015, 0.0, inner));
+
+  float edgeGlow = exp(-abs(inner) * 24.0);
+  col += edgeGlow * innerColor * 0.6;
+
+  float vignette = smoothstep(1.6, 0.4, dist);
+  col *= mix(0.15, 1.0, vignette);
+
+  float pulse = 0.97 + 0.03 * sin(float(iFrame) * 0.07 + iTimeDelta);
+  col *= pulse;
+
+  float hour = iDate.w / 86400.0;
+  vec2 corner = smoothstep(vec2(0.4), vec2(1.1), fragCoord / iResolution.xy);
+  col = mix(col, palette(hour + f * 0.2), corner.x * corner.y * 0.35);
+
+  col = pow(col, vec3(0.4545));
+
+  fragColor = vec4(col, 1.0);
 }

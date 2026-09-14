@@ -1,127 +1,64 @@
 // ==== Image (image) ====
-// https://github.com/Patrickjaillet/Z-GL
-
-#define ITERATIONS 6
-#define MAX_STEPS 80
-#define SURF_DIST 0.002
-#define MAX_DIST 80.
-
-float g_glow = 0.0;
-vec3 g_orbit = vec3(0.0);
-
-mat2 rot(float a) {
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
+mat2 m(float a){
+    float b=sin(a),d=cos(a);
+    return mat2(d,-b,b,d);
 }
-
-vec3 palette(float t) {
-    return 0.5 + 0.5 * cos(6.28318 * (vec3(1.0, 1.0, 1.0) * t + vec3(0.26, 0.41, 0.55)));
+vec3 i(in float e,in vec3 a,in vec3 b,in vec3 d,in vec3 c){
+    return a+b*cos(6.28318*(d*e+c));
 }
-
-float mandelbox(vec3 p) {
-    vec3 p0 = p;
-    float s = 1.0;
-    g_orbit = vec3(0.0);
-    for (int i = 0; i < ITERATIONS; i++) {
-        p = clamp(p, -1.0, 1.0) * 2.0 - p;
-        float r2 = dot(p, p);
-        float k = max(1.15 / clamp(r2, 0.12, 1.0), 0.15);
-        p *= k;
-        s *= k;
-        p += p0;
-        if(i < 4) g_orbit += abs(p);
+void mainImage(out vec4 n,in vec2 j){
+    vec3 o=vec3(.5),p=o,q=vec3(1.),r=vec3(0.,.33,.67),s=vec3(.8,.5,.4),t=vec3(.2,.4,.2),u=vec3(2.,1.,1.),v=vec3(0.,.25,.25),w=vec3(.8,.2,.05);
+    vec2 g=iResolution.xy,x=(j.xy-.5*g)/g.y;
+    float k=iTime;
+    vec4 b=vec4(0.);
+    float c=0.;
+    for(float l=0.;l<80.;++l){
+        vec3 a=vec3(x*c*1.2,c-6.);
+        a.xz*=m(k*.2);
+        float d=2.,e=d,f;
+        for(int h=0;h<12;h++){
+            f=dot(a,a)+.001;
+            e/=f;
+            a/=f;
+            a.y=1.7-a.y;
+            if(h>3){
+                d=min(d,length(a.xz+length(a)/f*.55)/e-.006);
+                a.xz=abs(a.xz)-.7;
+            }
+            else a=abs(a)-.86;
+        }
+        float step=max(d,.001);
+        c+=step;
+        if(c>30.)break;
+        float z=log(e)*.1+k*.05;
+        vec3 A=i(z,o,p,q,r),B=i(length(a.xz)*.5,s,t,u,v);
+        b.rgb+=.01*exp(-d*1e2)*A;
+        b.rgb+=w*.005/exp(a.y/e*2.)*B;
     }
-    return (length(p) - 0.05) / s;
+    b.rgb=b.rgb/(1.+b.rgb);
+    float C=1.-.3*length((j/g)-.5);
+    b.rgb*=C;
+    b.rgb=pow(b.rgb,vec3(1./2.2));
+    n=vec4(b.rgb,1.);
 }
-
-float map(vec3 p) {
-    p.z += iTime * 0.8;
-    vec3 p_inf = p;
-    p_inf.z = mod(p.z, 18.0) - 9.0;
-    p_inf.xy *= rot(p.z * 0.05);
-
-    float d = mandelbox(p_inf / 3.5) * 3.5;
-    float tunnels = length(p_inf.xy) - 5.8;
-    d = max(d, -tunnels);
-    
-    g_glow += 0.015 / (0.02 + d * d);
-    return d;
-}
-
-vec3 getNormal(vec3 p) {
-    vec2 e = vec2(0.005, 0.0);
-    return normalize(vec3(
-        map(p + e.xyy) - map(p - e.xyy),
-        map(p + e.yxy) - map(p - e.yxy),
-        map(p + e.yyx) - map(p - e.yyx)
-    ));
-}
-
-float getAO(vec3 p, vec3 n) {
-    float occ = 0.0;
-    float sca = 1.0;
-    for (int i = 0; i < 4; i++) {
-        float hr = 0.05 + 0.2 * float(i) / 3.0;
-        float d = map(p + n * hr);
-        occ += (hr - d) * sca;
-        sca *= 0.8;
-    }
-    return clamp(1.0 - 3.0 * occ, 0.0, 1.0);
-}
-
-vec3 render(vec2 uv) {
-    float t = iTime * 2.0;
-    vec3 ro = vec3(0.0, 0.0, t);
-    vec3 target = vec3(sin(t * 0.1) * 2.0, cos(t * 0.1) * 2.0, t + 1.0);
-    
-    vec3 f = normalize(target - ro);
-    vec3 r = normalize(cross(vec3(0, 1, 0), f));
-    vec3 u = cross(f, r);
-    vec3 rd = normalize(uv.x * r + uv.y * u + f * 1.2);
-
-    float dO = 0.0;
-    float dS;
-    for (int i = 0; i < MAX_STEPS; i++) {
-        dS = map(ro + rd * dO);
-        if (abs(dS) < SURF_DIST * (1.0 + dO * 0.1) || dO > MAX_DIST) break;
-        dO += dS * 1.1;
-    }
-    
-    vec3 col = vec3(0.0);
-    
-    if (dO < MAX_DIST) {
-        vec3 p = ro + rd * dO;
-        vec3 n = getNormal(p);
-        float ao = getAO(p, n);
-        
-        float depthLayer = floor(p.z / 18.0);
-        vec3 mat = palette(depthLayer * 0.15 + length(g_orbit) * 0.02);
-        
-        float diff = max(dot(n, normalize(vec3(1, 2, -1))), 0.0);
-        float fresnel = pow(clamp(1.0 + dot(rd, n), 0.0, 1.0), 4.0);
-        
-        col = mat * diff + (0.1 * ao);
-        col += fresnel * mat * 0.5;
-        col *= ao;
-        
-        float fog = 1.0 - exp(-0.0004 * dO * dO);
-        col = mix(col, vec3(0.005, 0.005, 0.01), fog);
-    }
-    
-    vec3 glowCol = palette(floor((ro.z + rd.z * dO) / 18.0) * 0.15 + iTime * 0.05);
-    col += glowCol * g_glow * 0.015;
-    
-    return col;
-}
-
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    g_glow = 0.0;
-    
-    vec3 col = render(uv);
-    
-    col = col / (1.0 + col);
-    col = pow(col, vec3(0.4545));
-    
-    fragColor = vec4(col, 1.0);
-}
+/*%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£%*
+ù  ____    _    _   _ ____  _____ _____   _  ___  ____  ____   ù
+ù / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \  ù
+ù \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | | ù
+ù  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| | ù
+ù |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/  ù
+ù            PATRICK JAILLET-VAN DEN BEEMT [PJVDB]             ù
+ù**************************************************************ùùùùùùùùùùùùùùùù
+ù - Logiciels:     https://patrickjaillet.github.io/sandefjord-software       ù
+ù - réseau social: https://x.com/JailletPatrick                               ù
+ù - Musiques:      https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g   ù
+ù**************************************************************ùùùùùùùùùùùùùùùù
+ù Logiciels utilisés pour la création de shaders GLSL:         ù
+ù                -----------------------------                 ù
+ù Conception de shaders GLSL et modification des valeurs       ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù
+ù - Sliders-GL v1.0.1: https://patrickjaillet.github.io/sandefjord-software/software.html?id=sliders-gl ù
+ù Golfing Code 100% safe                                                                                ù
+ù - µShader v3.0.1: https://patrickjaillet.github.io/sandefjord-software/software.html?id=microshader   ù
+ù Formatage & Mise en page                                                                              ù
+ù - ShaderFmt v1.0.0: https://patrickjaillet.github.io/sandefjord-software/software.html?id=shaderfmt   ù
+$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*/

@@ -1,108 +1,140 @@
 // ==== Image (image) ====
-vec2 rotate(vec2 v, float a) {
-    float s = sin(a);
-    float c = cos(a);
-    return vec2(c * v.x - s * v.y, s * v.x + c * v.y);
+#define MAX_STEPS 256
+#define MAX_DIST 80.0
+#define SURF_DIST 0.0001
+
+mat2 rot(float a) {
+    float s = sin(a), c = cos(a);
+    return mat2(c, -s, s, c);
 }
 
-float circle(vec2 uv, float radius, float thickness) {
-    float d = length(uv) - radius;
-    return smoothstep(thickness, thickness - 0.005, abs(d));
+float smin(float a, float b, float k) {
+    float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+    return mix(b, a, h) - k * h * (1.0 - h);
 }
 
-vec3 glyphRing(vec2 uv, float radius, float angle_offset, vec3 ringColor) {
-    vec2 p = rotate(uv, angle_offset);
-    float rOuter = circle(p, radius, 0.003);
-    float rInner = circle(p, radius * 0.9, 0.001);
+float sdBox(vec3 p, vec3 b) {
+    vec3 q = abs(p) - b;
+    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
+}
+
+float kifs(vec3 p) {
+    float s = 1.0;
+    float t = iTime * 0.15;
     
-    float glyphPoints = 0.0;
-    float angleStep = 6.2831853 / 16.0;
-    for(int i = 0; i < 16; i++) {
-        float angle = float(i) * angleStep;
-        vec2 gp = p - vec2(cos(angle), sin(angle)) * radius * 0.95;
-        glyphPoints += smoothstep(0.004, 0.002, length(gp));
+    for(int i = 0; i < 8; i++) {
+        p = abs(p) - vec3(1.2, 1.8, 1.1);
+        
+        if(p.x < p.y) p.xy = p.yx;
+        if(p.x < p.z) p.xz = p.zx;
+        if(p.y < p.z) p.yz = p.zy;
+        
+        p.xy *= rot(0.45 + sin(t * 0.8 + float(i) * 0.5) * 0.12);
+        p.yz *= rot(0.35);
+        
+        float scale = 1.55 + sin(t * 0.5) * 0.05;
+        p *= scale;
+        s *= scale;
+        p -= vec3(0.3, 1.2, 0.5) * (sin(t) * 0.1 + 1.0);
     }
+    return sdBox(p, vec3(0.5, 4.0, 0.2)) / s;
+}
+
+float map(vec3 p) {
+    vec3 p_rot = p;
+    p_rot.xz *= rot(iTime * 0.1);
+    p_rot.zy *= rot(iTime * 0.05);
     
-    return ringColor * (rOuter + rInner + glyphPoints * 2.4375);
+    float d = kifs(p_rot);
+    
+    float core = length(p) - 1.3;
+    float pulse = sin(length(p) * 4.0 - iTime * 5.0) * 0.04;
+    core += pulse;
+    
+    float rings = abs(length(p.xz) - 3.5) - 0.02;
+    rings = max(rings, abs(p.y) - 0.01);
+    
+    float res = smin(d, core, 0.6);
+    res = smin(res, rings, 0.1);
+    
+    return res;
+}
+
+vec3 getNormal(vec3 p) {
+    vec2 e = vec2(0.0001, 0.0);
+    return normalize(vec3(
+        map(p + e.xyy) - map(p - e.xyy),
+        map(p + e.yxy) - map(p - e.yxy),
+        map(p + e.yyx) - map(p - e.yyx)
+    ));
+}
+
+float getAO(vec3 p, vec3 n) {
+    float occ = 0.0;
+    float sca = 1.0;
+    for(int i = 0; i < 5; i++) {
+        float h = 0.01 + 0.15 * float(i) / 4.0;
+        float d = map(p + n * h);
+        occ += (h - d) * sca;
+        sca *= 0.9;
+    }
+    return clamp(1.0 - 4.0 * occ, 0.0, 1.0);
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    // Fix by FabriceNeyret2
-    vec2 p = (2. * fragCoord - iResolution.xy) / iResolution.y;
-    vec2 uv = fragCoord.xy / iResolution.xy;
-    // Old lines
-    // vec2 p = (uv - 0.5) * 2.0;
-    // p.x *= iResolution.x / iResolution.y;
+    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
     
-    float t = iTime * 0.5;
+    vec3 ro = vec3(0.0, 0.0, -10.0);
+    vec3 rd = normalize(vec3(uv, 2.0));
+    
+    float r_ang = iTime * 0.1;
+    ro.yz *= rot(sin(r_ang * 0.5) * 0.4);
+    ro.xz *= rot(r_ang);
+    rd.yz *= rot(sin(r_ang * 0.5) * 0.4);
+    rd.xz *= rot(r_ang);
+    
+    float dO = 0.0;
+    float dS;
+    vec3 p;
+    float glow = 0.0;
+    
+    for(int i = 0; i < MAX_STEPS; i++) {
+        p = ro + rd * dO;
+        dS = map(p);
+        glow += 0.015 / (0.02 + abs(dS));
+        if(dO > MAX_DIST || abs(dS) < SURF_DIST) break;
+        dO += dS * 0.75;
+    }
+    
     vec3 col = vec3(0.0);
     
-    vec2 grid_p = rotate(p * 1.5, 0.1);
-    float grid = 0.0;
-    
-    float rGrid = length(grid_p);
-    float idxG = floor((rGrid - 0.5) / 0.4 + 0.5);
-    if (idxG >= 0.0 && idxG < 64.0) {
-        grid += circle(grid_p, 0.5 + idxG * 0.4, 0.0015);
-    }
-    
-    float angle = atan(grid_p.y, grid_p.x);
-    float radialStep = 6.2831853 / 8.0;
-    float wRadial = smoothstep(0.4, 0.5, rGrid) * smoothstep(1.3, 1.2, rGrid) * 3.75;
-    for(int i = 0; i < 8; i++) {
-        float ra = float(i) * radialStep;
-        grid += smoothstep(0.015, 0.0, abs(sin(angle - ra))) * wRadial;
-    }
-    col += vec3(0.3, 0.3, 0.4) * grid;
-    
-    float num_fibers = 8.0;
-    for(float i = 0.0; i < 8.0; i++) {
-        float idx = i / num_fibers;
-        float a = idx * 6.2831853 + t * 0.2;
-        vec2 fp = p;
+    if(dO < MAX_DIST) {
+        vec3 n = getNormal(p);
+        vec3 r = reflect(rd, n);
         
-        float path = sin(angle * 3.0 + t + i) * -1.9;
-        fp += vec2(cos(a), sin(a)) * path;
+        vec3 env = texture(iChannel0, r).rgb;
+        vec3 diff = textureLod(iChannel0, n, 4.0).rgb;
         
-        vec3 fColor = 0.5 + 0.5 * cos(t + idx * 6.2831853 + vec3(0.0, 2.0, 4.0));
-        //Fix by jorge2017a3
-        float fLength = abs(length(fp * 0.8) - 1.0)-0.01;
-        //float fLength = abs(length(fp * 0.8) - 1.0);
+        float fre = pow(clamp(1.0 + dot(n, rd), 0.0, 1.0), 5.0);
+        float occ = getAO(p, n);
         
-        col += fColor * smoothstep(0.005, 0.001, fLength);
-        col += fColor * smoothstep(0.04, 0.0, fLength) * 0.15;
+        vec3 base = mix(vec3(0.01, 0.02, 0.05), vec3(0.7, 0.85, 1.0), fre);
+        col = base * diff + env * (fre + 0.15);
+        
+        float spec = pow(max(dot(r, normalize(vec3(1.0, 3.0, -2.0))), 0.0), 256.0);
+        col += spec * env * 2.0;
+        col *= occ;
+    } else {
+        col = texture(iChannel0, rd).rgb * 0.4;
+        col += pow(max(dot(rd, normalize(vec3(1, 1, -1))), 0.0), 64.0) * vec3(0.6, 0.7, 1.0);
     }
     
-    vec3 ringColor = vec3(0.0, 0.8, 1.0);
-    col += glyphRing(p * 1.5, 0.6, 0.0, ringColor);
-    col += glyphRing(p * 1.5, 0.5, -0.2, ringColor * 0.7);
+    vec3 gCol = mix(vec3(0.0, 0.3, 1.0), vec3(0.8, 0.1, 0.5), sin(iTime * 0.3) * 0.5 + 0.5);
+    col += gCol * glow * 0.012;
     
-    col += ringColor * circle(p, 0.9, 0.004);
-    col += ringColor * circle(p, 0.9, 0.015) * 0.2;
-    
-    float arcA = atan(p.y, p.x);
-    float arcStep = 6.2831853 / 12.0;
-    float d_arc_base = circle(p, 1.15, 0.002);
-    for(int i = 0; i < 12; i++) {
-        float fi = float(i);
-        float ra = fi * arcStep + t * 0.1;
-        float d_arc = d_arc_base * smoothstep(0.9, 0.8, abs(sin(arcA - ra)));
-        col += ringColor * d_arc * (0.8 + 0.2 * sin(t + fi)) * 9.4166;
-    }
-    
-    for(int i = 0; i < 40; i++) {
-        float fI = float(i);
-        float a = fI / 30.0 * 6.2831853 + fI * 0.5 + t * 1.0;
-        float dist = fract(fI * 0.456 + t * 0.2) * 0.45;
-        vec2 ep = p - vec2(cos(a), sin(a)) * dist;
-        
-        float shard = smoothstep(0.015, 0.0, length(ep)) * smoothstep(0.2, 0.0, abs(dist - 0.2));
-        vec3 sColor = 0.5 + 0.5 * cos(t + fI * 0.2 + vec3(0.0, 2.0, 4.0));
-        col += sColor * shard * (0.5 + 0.5 * sin(t * 3.0 + fI)) * smoothstep(0.45, 0.4, dist) * 7.5;
-    }
-    
-    col *= 1.0 - 0.3 * length(uv - 0.5);
-    col = pow(max(col, 0.0), vec3(1.2));
+    col = smoothstep(-0.02, 1.02, col);
+    col = pow(col, vec3(0.4545));
+    col *= 1.1 - length(uv) * 0.4;
     
     fragColor = vec4(col, 1.0);
 }

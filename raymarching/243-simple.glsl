@@ -1,56 +1,100 @@
 // ==== Image (image) ====
-/**************************************************************
-*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____  *
-* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \ *
-* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |*
-*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |*
-* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/ *
-***************************************************************
-* - X: https://x.com/JailletPatrick                           *
-***************************************************************
-* https://patrickjaillet.github.io/sandefjord-software        *
-* GLSL shader design and value tweaking - Sliders-GL v1.0.1:  *
-* 100% safe Code Golfing - µShader v3.0.1:                    *
-**************************************************************/
-void mainImage(out vec4 v, in vec2 w) {
-    vec2 l = iResolution.rg, A = (w * 2. - l) / l.g;
-    
- 
-    float b = iTime * .4, m = floor(b * .2), B = m + 1., C = smoothstep(0., 1., fract(b * .2)), f = floor(m), g = floor(B), c = 0.;
-    vec3 D = vec3(fract(sin(f * .1031) * 43758.5453), fract(sin((f + 1.) * .1031) * 43758.5453), fract(sin((f + 2.) * .1031) * 43758.5453)) * 2. - 1., E = vec3(fract(sin(g * .1031) * 43758.5453), fract(sin((g + 1.) * .1031) * 43758.5453), fract(sin((g + 2.) * .1031) * 43758.5453)) * 2. - 1., h = mix(D, E, C), i = vec3(.02), F = vec3(0., 0., -3.), G = normalize(vec3(A, 1.));
-    
-    for (int n = 0; n < 120; n++) {
-        vec3 a = F + G * (c + .2);
-        float o = b * 1.4 + h.r, p = cos(o), s1 = sin(o);
-        a.rb = mat2(p, -s1, s1, p) * a.rb;
-        float q = b + h.g, s = cos(q), s2 = sin(q);
-        a.rg = mat2(s, -s2, s2, s) * a.rg;
-        
-        vec3 t = a;
-        
-        // --- NOUVELLE BOUCLE DE FOLDING (Mandelbox / Spherical Inversion) ---
-        float d = 1.0;
-        for (int fractalIteration = 0; fractalIteration < 9; fractalIteration++) {
-            float squaredDistanceToOrigin = dot(a, a);
-            float currentScaleFactor = max(0.95, 9.0 / max(squaredDistanceToOrigin, 1e-4));
-            d *= currentScaleFactor;
-            vec3 scaledPosition = abs(a) * currentScaleFactor;
-            vec3 foldedPosition = abs(scaledPosition - vec3(1.0, 1.2, 3.0));
-            a = vec3(1.5, 4.0, 3.0) - foldedPosition;
-        }
-        
-        float k = distance(a.rb, a.gr) / d;
-        k = max(k, 1e-4);
-        
-        float e = k, H = length(t.gg), I = mod(H, t.g) / d * .5;
-        e += I, c += e * .35;
-        
-        float J = .59, K = .4 - e, L = d / 4e3;
-        vec3 M = mod(J * 6. + vec3(0., 4., 2.), 6.), N = clamp(abs(M - 3.) - 1., 0., 1.), O = L * mix(vec3(1.), N, K);
-        float P = exp(-e * 45.) * exp(-c * .1);
-        i += O * P;
-        
-        if (c > 30. || i.r > 15.) break;
+#define MAX_STEPS 100
+#define SURF_DIST .001
+#define MAX_DIST 20.
+
+mat2 Rot(float a) {
+    float s=sin(a), c=cos(a);
+    return mat2(c, -s, s, c);
+}
+
+float sdCapsule(vec3 p, vec3 a, vec3 b, float r) {
+    vec3 pa = p - a, ba = b - a;
+    float h = clamp(dot(pa,ba)/dot(ba,ba), 0.0, 1.0);
+    return length(pa - ba*h) - r;
+}
+
+float getKey(int ascii) {
+    return texelFetch(iChannel0, ivec2(ascii, 0), 0).x;
+}
+
+float GetDist(vec3 p, vec3 offset) {
+    vec3 vertex = vec3(0) + offset;
+    float d1 = sdCapsule(p, vertex, vec3(2, 4, 2), 0.025);
+    float d2 = sdCapsule(p, vertex, vec3(-2, 4, 2), 0.025);
+    float d3 = sdCapsule(p, vertex, vec3(0, 4, -3), 0.025);
+    float lines = min(d1, min(d2, d3));
+    float planeCycle = mod(iTime * 0.4, 2.0);
+    float planes = 100.0;
+    for(float i = 1.0; i <= 3.0; i++) {
+        float h = i * 1.3 + planeCycle * 0.6;
+        float thickness = 0.015;
+        float pDist = abs(p.y - h) - thickness;
+        float limit = length(p.xz - offset.xz) - (h * 0.65);
+        pDist = max(pDist, limit);
+        planes = min(planes, pDist);
     }
-    v = vec4(i, 1.);
+    return min(lines, planes);
+}
+
+float RayMarch(vec3 ro, vec3 rd, vec3 offset) {
+    float dO=0.0;
+    for(int i=0; i<MAX_STEPS; i++) {
+        vec3 p = ro + rd*dO;
+        float dS = GetDist(p, offset);
+        dO += dS;
+        if(dO>MAX_DIST || abs(dS)<SURF_DIST) break;
+    }
+    return dO;
+}
+
+vec3 GetNormal(vec3 p, vec3 offset) {
+    float d = GetDist(p, offset);
+    vec2 e = vec2(.001, 0);
+    vec3 n = d - vec3(
+        GetDist(p-e.xyy, offset),
+        GetDist(p-e.yxy, offset),
+        GetDist(p-e.yyx, offset));
+    return normalize(n);
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+    vec2 uv = (fragCoord-.5*iResolution.xy)/iResolution.y;
+    vec2 m = iMouse.xy/iResolution.xy;
+    vec3 offset = vec3(0);
+    offset.x += getKey(39) * 2.0; 
+    offset.x -= getKey(37) * 2.0; 
+    offset.z += getKey(38) * 2.0; 
+    offset.z -= getKey(40) * 2.0; 
+    vec3 ro = vec3(0, 4, -7);
+    if(iMouse.z > 0.0) {
+        ro.yz *= Rot(-m.y * 3.14 + 1.5);
+        ro.xz *= Rot(-m.x * 6.28);
+    } else {
+        ro.xz *= Rot(iTime * 0.15);
+    }
+    vec3 lookat = vec3(0, 2.5, 0) + offset;
+    vec3 f = normalize(lookat-ro);
+    vec3 r = normalize(cross(vec3(0,1,0), f));
+    vec3 u = cross(f,r);
+    vec3 rd = normalize(f + uv.x*r + uv.y*u);
+    vec3 col = vec3(0.96, 0.94, 0.90);
+    float noise = fract(sin(dot(uv, vec2(12.9898,78.233))) * 43758.5453);
+    col -= noise * 0.02;
+    col *= 1.0 - dot(uv, uv) * 0.15;
+    float d = RayMarch(ro, rd, offset);
+    if(d < MAX_DIST) {
+        vec3 p = ro + rd * d;
+        vec3 n = GetNormal(p, offset);
+        vec3 ref = reflect(rd, n);
+        vec3 lightPos = vec3(2, 5, -3);
+        vec3 l = normalize(lightPos - p);
+        float dif = clamp(dot(n, l), 0.0, 1.0);
+        float spec = pow(max(0.0, dot(ref, l)), 32.0);
+        vec3 material = vec3(0.85, 0.7, 0.3);
+        col = material * (dif + 0.3) + spec * 0.6;
+        col *= mix(0.8, 1.0, clamp(p.y / 5.0, 0.0, 1.0));
+    }
+    col = pow(col, vec3(.4545));
+    fragColor = vec4(col, 1.0);
 }

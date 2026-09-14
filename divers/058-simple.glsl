@@ -1,122 +1,143 @@
 // ==== Image (image) ====
-// https://github.com/Patrickjaillet/Z-GL-Shadertoy
-#define R iResolution.xy
-#define T iTime
-#define WEB_DENSITY 14.0
-#define SNAP_THRESHOLD 0.35
-#define ELASTIC_RECOIL 0.6
-#define LINE_WIDTH 0.004
-
-float hash12(vec2 p) {
-    vec3 p3 = fract(vec3(p.xyx) * .1031);
+float h12(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
     p3 += dot(p3, p3.yzx + 33.33);
     return fract((p3.x + p3.y) * p3.z);
 }
 
-float noise(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hash12(i), hash12(i + vec2(1, 0)), f.x),
-               mix(hash12(i + vec2(0, 1)), hash12(i + vec2(1, 1)), f.x), f.y);
+float digit(int n, vec2 p) {
+    if (p.x < 0.0 || p.x > 3.0 || p.y < 0.0 || p.y > 5.0) return 0.0;
+    ivec2 ip = ivec2(p);
+    int b = (4 - ip.y) * 3 + ip.x;
+    int m = 0;
+    if (n == 1) m = 18724;
+    else if (n == 4) m = 23586;
+    return float((m >> b) & 1);
 }
 
-float fbm(vec2 p) {
-    float v = 0.0, a = 0.5;
-    for (int i = 0; i < 3; i++) {
-        v += a * noise(p);
-        p *= 2.1; a *= 0.5;
-    }
-    return v;
+vec3 palette(int idx) {
+    if (idx == 0) return vec3(0.08, 0.01, 0.01);
+    if (idx == 1) return vec3(0.22, 0.04, 0.02);
+    if (idx == 2) return vec3(0.42, 0.10, 0.03);
+    if (idx == 3) return vec3(0.62, 0.20, 0.05);
+    if (idx == 4) return vec3(0.82, 0.38, 0.10);
+    if (idx == 5) return vec3(0.95, 0.58, 0.25);
+    if (idx == 6) return vec3(0.98, 0.78, 0.42);
+    if (idx == 7) return vec3(0.12, 0.32, 0.52);
+    if (idx == 8) return vec3(0.28, 0.58, 0.82);
+    if (idx == 9) return vec3(0.18, 0.82, 0.32);
+    if (idx == 10) return vec3(0.88, 0.18, 0.12);
+    if (idx == 11) return vec3(0.92, 0.92, 0.96);
+    if (idx == 12) return vec3(0.48, 0.50, 0.56);
+    return vec3(0.0);
 }
 
-float sdLine(vec2 p, vec2 a, vec2 b) {
-    vec2 pa = p - a, ba = b - a;
-    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
-    return length(pa - ba * h);
-}
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 res = vec2(320.0, 200.0);
+    vec2 p = floor(fragCoord.xy / iResolution.xy * res);
 
-float checkTear(vec2 p1, vec2 p2, vec2 m, float isDown) {
-    vec2 mid = mix(p1, p2, 0.5);
-    float d = length(mid - m);
-    float fragility = fbm(mid * 8.0 + 44.0);
-    float stress = exp(-d * 4.5) * isDown;
-    return step(SNAP_THRESHOLD + fragility * 0.4, stress);
-}
+    vec3 col = mix(palette(3), palette(5), clamp(p.y / 180.0, 0.0, 1.0));
+    if (mod(p.y, 2.0) < 1.0) col *= 0.92;
 
-vec2 elasticDeform(vec2 p, vec2 m, float isDown, float broken) {
-    float d = length(p - m);
-    float force = exp(-d * 4.0) * isDown * ELASTIC_RECOIL * (1.0 - broken);
-    return p + normalize(p - m) * force;
-}
-
-void mainImage(out vec4 O, vec2 C) {
-    vec2 uv = (2.0 * C - R) / R.y;
-    vec2 m = (2.0 * iMouse.xy - R) / R.y;
-    float isDown = step(0.01, iMouse.z);
-    
-    float d = 1e10;
-    float dDew = 1e10;
-    float aStep = 6.2831 / WEB_DENSITY;
-
-    for(float i = 0.0; i < WEB_DENSITY; i++) {
-        float a = i * aStep;
-        vec2 dir = vec2(cos(a), sin(a));
-        vec2 p1 = vec2(0);
-        vec2 p2 = dir * 2.2;
-        
-        float broken = checkTear(p1, p2, m, isDown);
-        if(broken < 0.5) {
-            vec2 dP1 = elasticDeform(p1, m, isDown, broken);
-            vec2 dP2 = elasticDeform(p2, m, isDown, broken);
-            d = min(d, sdLine(uv, dP1, dP2));
+    float farH = 45.0 + floor(sin(floor(p.x / 8.0) * 12.3) * 15.0);
+    if (p.y < farH) {
+        col = palette(2);
+        if (mod(p.x, 2.0) < 1.0 && mod(p.y, 3.0) < 1.0 && h12(floor(p / vec2(2.0, 3.0))) > 0.4) {
+            col = palette(5);
         }
     }
 
-    for(float r = 0.15; r < 1.6; r += 0.09) {
-        for(float i = 0.0; i < WEB_DENSITY; i++) {
-            float a1 = i * aStep;
-            float a2 = (i + 1.0) * aStep;
-            
-            vec2 p1 = vec2(cos(a1), sin(a1)) * r;
-            vec2 p2 = vec2(cos(a2), sin(a2)) * r;
-            
-            float broken = checkTear(p1, p2, m, isDown);
-            
-            float naturalHole = step(0.12, hash12(vec2(r, i)));
-            
-            if(broken < 0.5 && naturalHole > 0.5) {
-                vec2 dP1 = elasticDeform(p1, m, isDown, broken);
-                vec2 dP2 = elasticDeform(p2, m, isDown, broken);
-                
-                vec2 mid = mix(dP1, dP2, 0.5);
-                mid -= normalize(mid) * (0.03 * r);
-                
-                float segment = min(sdLine(uv, dP1, mid), sdLine(uv, mid, dP2));
-                d = min(d, segment);
-                
-                if(hash12(vec2(r, i + 13.0)) > 0.94) {
-                    dDew = min(dDew, length(uv - mid));
+    float midBld = floor(p.x / 24.0);
+    float midH = 65.0 + floor(h12(vec2(midBld, 3.14)) * 75.0);
+    float inBldX = mod(p.x, 24.0);
+    if (p.y < midH && inBldX > 0.0 && inBldX < 23.0) {
+        col = (inBldX > 12.0) ? palette(1) : palette(2);
+        if (mod(p.x, 3.0) < 1.0 && mod(p.y, 5.0) < 2.0) {
+            if (h12(floor(p / vec2(3.0, 5.0))) > 0.35) {
+                col = palette(4);
+            }
+        }
+    }
+
+    if (p.x > 220.0 && p.x < 315.0 && p.y < 85.0) {
+        col = palette(1);
+        if (p.y < 55.0) {
+            col = (p.x > 265.0) ? palette(0) : palette(1);
+            if (mod(p.x, 3.0) < 1.0 && mod(p.y, 4.0) < 2.0) {
+                col = palette(4);
+            }
+        }
+        if (p.y >= 55.0 && p.y <= 68.0) {
+            vec2 hp = p - vec2(265.0, 61.0);
+            if (abs(hp.x) < 30.0 && abs(hp.y) < 6.0) {
+                col = palette(2);
+                float r = length(hp * vec2(1.0, 2.2));
+                if (abs(r - 10.0) < 1.2 || (abs(hp.x) < 2.0 && abs(hp.y) < 4.0) || (abs(hp.x) < 5.0 && abs(hp.y) < 1.2)) {
+                    col = palette(5);
                 }
             }
         }
     }
 
-    vec3 col = vec3(0.005, 0.008, 0.012);
-    
-    float thread = smoothstep(LINE_WIDTH, 0.0, d);
-    float sheen = pow(max(0.0, 1.0 - d * 60.0), 20.0) * 0.4;
-    vec3 silkCol = vec3(0.7, 0.85, 1.0) * (0.5 + sheen);
-    
-    col = mix(col, silkCol, thread);
-    col += vec3(0.4, 0.6, 1.0) * 0.0012 / (d + 0.004);
-    
-    float drop = smoothstep(0.012, 0.0, dDew);
-    float dropSpec = pow(max(0.0, 1.0 - dDew * 80.0), 50.0);
-    col = mix(col, vec3(0.9, 0.95, 1.0), drop);
-    col += dropSpec * 0.6;
+    if (p.x > 130.0 && p.x < 200.0 && p.y < 165.0) {
+        col = (p.x > 165.0) ? palette(0) : palette(1);
+        if (mod(p.x, 3.0) < 1.0 && mod(p.y, 4.0) < 2.0) {
+            col = palette(3);
+        }
+    }
 
-    O.rgb = pow(col * 1.6, vec3(0.4545));
-    O.rgb *= smoothstep(1.6, 0.5, length(uv));
-    O.a = 1.0;
+    if (p.x > 80.0 && p.x < 145.0 && p.y < 200.0) {
+        col = (p.x > 110.0) ? palette(0) : palette(1);
+        if (mod(p.x, 2.0) < 1.0) col *= 1.15;
+        if (mod(p.y, 2.0) < 1.0) col *= 0.85;
+    }
+
+    if (abs(p.x - 104.0) < 1.0 || abs(p.x - 216.0) < 1.0) {
+        col = palette(8);
+    }
+
+    vec2 plat = p - vec2(100.0, 42.0);
+    if (plat.x >= 0.0 && plat.x <= 120.0) {
+        if (plat.y >= 0.0 && plat.y <= 3.0) {
+            col = palette(6);
+        }
+        if ((plat.y >= 3.0 && plat.y <= 22.0) && (plat.x <= 2.0 || plat.x >= 118.0 || abs(plat.x - 60.0) <= 1.0)) {
+            col = palette(8);
+        }
+        if ((abs(plat.y - 12.0) <= 1.0 || abs(plat.y - 22.0) <= 1.0) && plat.y <= 22.0) {
+            col = palette(8);
+        }
+        if (plat.x >= 12.0 && plat.x <= 26.0 && plat.y >= 4.0 && plat.y <= 10.0) {
+            col = palette(12);
+            if (plat.x >= 14.0 && plat.x <= 17.0 && plat.y >= 7.0) col = palette(10);
+            if (plat.x >= 20.0 && plat.x <= 23.0 && plat.y >= 7.0) col = palette(9);
+        }
+        if (plat.x >= 92.0 && plat.x <= 112.0 && plat.y >= 4.0 && plat.y <= 16.0) {
+            col = palette(11);
+            if (plat.x >= 94.0 && plat.x <= 110.0 && plat.y >= 6.0 && plat.y <= 14.0) {
+                col = palette(7);
+                float d1 = digit(1, plat - vec2(96.0, 7.0));
+                float d2 = digit(4, plat - vec2(102.0, 7.0));
+                if (d1 + d2 > 0.5) col = palette(9);
+            }
+        }
+        if (plat.x >= 54.0 && plat.x <= 66.0 && plat.y >= 3.0 && plat.y <= 28.0) {
+            vec2 cp = plat - vec2(60.0, 3.0);
+            if (cp.y >= 0.0 && cp.y <= 6.0 && abs(cp.x) <= 3.0) col = palette(7);
+            if (cp.y >= 6.0 && cp.y <= 18.0 && abs(cp.x) <= 2.0) col = palette(11);
+            if (cp.y >= 18.0 && cp.y <= 22.0 && abs(cp.x) <= 4.0) col = palette(11);
+            if (cp.y >= 22.0 && cp.y <= 26.0 && abs(cp.x) <= 3.0) col = palette(11);
+        }
+        if (plat.x >= 68.0 && plat.x <= 76.0 && plat.y >= -4.0 && plat.y <= 3.0) {
+            col = palette(11);
+            if (plat.y < 0.0 && mod(plat.x + plat.y, 2.0) < 1.0) col = palette(8);
+        }
+    }
+
+    vec2 grid = mod(p, vec2(32.0, 32.0));
+    if (grid.x < 2.0 || grid.y < 2.0) {
+        col *= 0.25;
+    }
+
+    fragColor = vec4(col, 1.0);
 }

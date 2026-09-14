@@ -1,86 +1,81 @@
 // ==== Image (image) ====
-#define MAX_STEPS 64
-#define MAX_DIST 20.0
-#define SURF_DIST 0.001
+#define AA 2.
+#define I 1e3
+#define P 3.14159
 
-mat2 rot(float a) {
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
+float H(vec2 p) {
+    uvec2 x = floatBitsToUint(p);
+    uint h = (x.x ^ (x.y >> 3u)) * 1103515245u + 12345u;
+    return float(h & 0xFFFFFFu) / 16777216.0;
 }
 
-float sdBox(vec3 p, vec3 b) {
-    vec3 q = abs(p) - b;
-    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
+float N(vec2 p) {
+    vec2 i = floor(p), f = fract(p);
+    f *= f * (3. - 2. * f);
+    vec4 v = vec4(H(i), H(i + vec2(1, 0)), H(i + vec2(0, 1)), H(i + vec2(1, 1)));
+    return mix(mix(v.x, v.y, f.x), mix(v.z, v.w, f.x), f.y);
 }
 
-float map(vec3 p, float iterations) {
-    p.xz *= rot(iTime * 0.2);
-    p.xy *= rot(iTime * 0.15);
-    
-    float scale = 1.0;
-    float dist = 100.0;
-    float floorIter = floor(iterations);
-    float fractIter = fract(iterations);
-    
-    for(int i = 0; i < 10; i++) {
-        if(float(i) > floorIter) break;
-        p = abs(p) - vec3(0.9, 0.5, 0.6);
-        p.xz *= rot(1.0);
-        p.xy *= rot(0.6);
-        
-        float k = 1.7 / clamp(dot(p, p), 0.0, 0.9);
-        p *= k;
-        scale *= k;
-        
-        float d = sdBox(p, vec3(1.0)) / scale;
-        if(float(i) >= floorIter) {
-            dist = mix(dist, d, fractIter);
-        } else {
-            dist = d;
-        }
+float F(vec2 p) {
+    float v = 0.0, a = 0.5;
+    mat2 r = mat2(1.6, 1.2, -1.2, 1.6);
+    for(int i = 0; i < 8; i++) {
+        v += a * N(p);
+        p = r * p * 2.1;
+        a *= 0.45;
     }
-    
-    return dist;
+    return v;
 }
 
-vec3 getNormal(vec3 p, float iterations) {
-    vec2 e = vec2(0.000, 0.0);
-    return normalize(vec3(
-        map(p + e.xyy, iterations) - map(p - e.xyy, iterations),
-        map(p + e.yxy, iterations) - map(p - e.yxy, iterations),
-        map(p + e.yyx, iterations) - map(p - e.yyx, iterations)
-    ));
+vec3 C(float t) {
+    return .5 + .5 * cos(2. * P * (vec3(1, 1, .8) * t + vec3(0, .15, .25) + (.5 + .5 * sin(iTime * .04)) * .4));
 }
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    vec3 ro = vec3(0, 0, -3);
-    vec3 rd = normalize(vec3(uv, 1.0));
-    
-    float iterations = 5.5 + 4.5 * sin(iTime * 0.3);
-    
-    float dO = 0.0;
-    float acc = 0.0;
-    
-    for(int i = 0; i < MAX_STEPS; i++) {
-        vec3 p = ro + rd * dO;
-        float dS = map(p, iterations);
-        dO += dS;
-        if(abs(dS) < SURF_DIST || dO > MAX_DIST) break;
-        acc += exp(-dS * 19.8);
+mat3 K(float t, out float p) {
+    p = sin(t * .6) * .5;
+    vec3 a = vec3(.5 * sin(t * .4), .15 * cos(t * .25), .1 * sin(t * .2));
+    vec3 c = cos(a), s = sin(a);
+    return mat3(c.x, 0, s.x, 0, 1, 0, -s.x, 0, c.x) * mat3(1, 0, 0, 0, c.y, s.y, 0, -s.y, c.y) * mat3(c.z, s.z, 0, -s.z, c.z, 0, 0, 0, 1);
+}
+
+vec3 R(vec2 c, float z, float t) {
+    vec2 s = vec2(0), d = s;
+    float m = 1e10, i = 0.;
+    for(int j = 0; j < int(I); j++) {
+        if(dot(s, s) > 131072.0) break;
+        d = 2. * vec2(s.x * d.x - s.y * d.y, s.x * d.y + s.y * d.x) + vec2(1, 0);
+        s = vec2(s.x * s.x - s.y * s.y, 2. * s.x * s.y) + c;
+        m = min(m, abs(length(s) - .2));
+        i++;
     }
-    
-    vec3 p = ro + rd * dO;
-    vec3 n = getNormal(p, iterations);
-    vec3 l = normalize(vec3(1, 2, -3));
-    
-    float diff = clamp(dot(n, l), 0.0, 1.0);
-    float spec = pow(max(dot(reflect(-l, n), -rd), 0.0), 32.0);
-    
-    vec3 col = vec3(0.1, 0.2, 0.5) * diff + spec;
-    col += acc * 0.05 * vec3(0.8, 0.4, 0.2);
-    
-    col = pow(col, vec3(0.4545));
-    
-    fragColor = vec4(col, 1.0);
+    if(i >= I) return vec3(0);
+    float de = .5 * sqrt(dot(s, s) / dot(d, d)) * log(dot(s, s));
+    vec3 n = normalize(vec3(de, de, .5 / z)), 
+         l = normalize(vec3(sin(t * .3), 1, cos(t * .3))),
+         b = C((i - log2(log2(dot(s, s))) + 4.) * .008 + t * .01);
+    float df = max(dot(n, l), 0.), 
+          sp = pow(max(dot(reflect(-l, n), vec3(0, 0, 1)), 0.), 120.),
+          fr = pow(1. - max(dot(n, vec3(0, 0, 1)), 0.), 4.);
+    return (b * (df + .3) + sp * .8 + fr * .4 + C(m * .3 + t * .15) * exp(-m * 15.) * 4.5) * smoothstep(0., .05 / z, de);
+}
+
+void mainImage(out vec4 O, vec2 U) {
+    vec3 ac = vec3(0);
+    float t = iTime, pz;
+    mat3 m = K(t, pz);
+    float zm = (800. + 35000. * pow(.5 + .5 * cos(t * .05), 4.)) * (1. + pz * .8);
+    for(float i = 0.; i < AA * AA; i++) {
+        vec2 jt = vec2(H(U + i), H(U + i + 1.)) - .5,
+             uv = (U + jt - .5 * iResolution.xy) / iResolution.y;
+        vec3 rd = m * normalize(vec3(uv, 2.2 + pz * .5));
+        vec2 p = rd.xy / max(rd.z, 1e-4);
+        vec3 cl = R(vec2(-.7452, .1862) + p / zm, zm, t);
+        ac += mix(cl, C(t * .1) * .5, smoothstep(0., 4., length(p)) * .2 * F(p * 2. + t * .1));
+    }
+    ac /= (AA * AA);
+    vec2 s = U / iResolution.xy;
+    ac += C(F(s * 4. - t * .05)) * .04;
+    ac = clamp((ac * (2.51 * ac + .03)) / (ac * (2.43 * ac + .59) + .14), 0., 1.);
+    ac *= mix(.3, 1., pow(16. * s.x * s.y * (1. - s.x) * (1. - s.y), .35));
+    O = vec4(pow(ac + (vec3(H(s + t), H(s + t + 1.), 0.) - .5) * .02, vec3(.4545)), 1);
 }

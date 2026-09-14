@@ -1,87 +1,130 @@
 // ==== Image (image) ====
-void mainImage(out vec4 l,in vec2 m){
-  vec2 n=iResolution.xy;
-  float b=iTime*.3;
-  const float o=1./3.14159265359;
-  float h=b*.1,i=sin(h),ka=cos(h);
-  mat2 j=mat2(ka,-i,i,ka);
-  float p=sin(b*.5)*.4+cos(b*.25)*.2,q=cos(b*.4)*.3+sin(b*1.)*.1,r=b*o,e=0.,c=0.,d=0.,f=0.;
-  const int s=117;
-  for(int g=0;g<s;g++){
-    float t=float(g);
-    vec3 a=vec3(m/n.y*e,e);
-    a.xz*=j;
-    a.yz*=j;
-    a.x-=p;
-    a.y-=q;
-    a.z+=r;
-    a+=.9-t/20000.;
-    a.xy=mod(a.xy-1.,8.)-1.;
-    d=4.;
-    for(int k=0;k<5;k++){
-      a=mod(a-.9,2.)-1.;
-      c=length(a*a)*.8;
-      d/=c;
-      a=abs(a)/c;
-      a.y+=.2;
-    }
-    c=a.x/d;
-    e+=abs(c);
-    f+=.0001/(.012+abs(c)*4.8);
-    if(f>=1.)break;
-  }
-  vec3 u=pow(clamp(vec3(f),0.,1.),vec3(3.3));
-  l=vec4(u,1.);
+mat2 h(float v) {
+    float c = cos(v), s = sin(v);
+    return mat2(c, -s, s, c);
 }
-/*
-void mainImage(out vec4 o, in vec2 p){
-    vec2 g = iResolution.xy;
-    float b = iTime * 0.3;
-    const float TAU_INV = 1.0/3.14159265359;
 
-    float ia = b*0.1;
-    float ja = sin(ia), ka = cos(ia);
-    mat2 rot = mat2(ka,-ja,ja,ka);
-    float sOff = sin(b*0.5)*0.4 + cos(b*0.25)*0.2;
-    float tOff = cos(b*0.4)*0.3 + sin(b*1.0)*0.1;
-    float zAdd = b*TAU_INV;
+vec3 l(float c, float s, float d) {
+    vec3 a = clamp(abs(mod(c * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+    return d * mix(vec3(1.0), a, s);
+}
 
-    float e=0.0, c=0.0, d=0.0;
-    float h=0.0;
+float map(vec3 p, float t) {
+    float sphere_dist = length(p) - 1.5;
 
-    const int MAX_STEPS = 117;
-    for(int f=0; f<MAX_STEPS; f++){
-        float r = float(f);
-        vec3 a = vec3(p/g.y*e, e);
+    vec3 p_fold = p;
+    p_fold.zx *= h(t * 1.2);
+    p_fold.xy *= h(t * 0.8);
+    
+    float scale = 1.0;
+    float e = 1.0;
+    for(int k = 0; k < 8; k++) {
+        p_fold = 2.2 - abs(p_fold * e - 0.4 / max(e, 0.001)) - sin(t * 0.5) * 0.05;
+        float q = dot(p_fold * (2.0 - sin(t * 0.2) * 0.3), p_fold * 1.5);
+        e = max(1.15, 4.5 / max(q, 0.005));
+        scale *= e;
+    }
+    
+    float fractal_dist = distance(p_fold.xz, p_fold.yx) / scale;
+    fractal_dist = max(fractal_dist, 0.001);
 
-        a.xz *= rot;
-        a.yz *= rot;
+    return max(sphere_dist, fractal_dist * 0.4); 
+}
 
-        a.x -= sOff;
-        a.y -= tOff;
-        a.z += zAdd;
-        a += 0.9 - r/20000.0;
+vec3 calcNormal(vec3 p, float t) {
+    float eps = 0.001;
+    vec2 k = vec2(1.0, -1.0);
+    return normalize(
+        k.xyy * map(p + k.xyy * eps, t) +
+        k.yyx * map(p + k.yyx * eps, t) +
+        k.yxy * map(p + k.yxy * eps, t) +
+        k.xxx * map(p + k.xxx * eps, t)
+    );
+}
 
-        a.xy = mod(a.xy-1.0,8.0)-1.0;
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
+    float t = iTime * 0.25;
+    
+    vec3 ro = vec3(0.0, 0.0, -3.5);
+    vec3 rd = normalize(vec3(uv, 1.0));
+    
+    vec3 col = vec3(0.0);
+    float t_march = 0.0;
+    
+    for(int g = 0; g < 160; g++) {
+        vec3 p = ro + rd * t_march;
+        float d = map(p, t);
 
-        d = 4.0;
-        for(int n=0; n<5; n++){
-            a = mod(a-0.9,2.0)-1.0;
-            c = length(a*a)*0.8;
-            d /= c;
-            a = abs(a)/c;
-            a.y += 0.2;
+         vec3 p_fold = p;
+        p_fold.zx *= h(t * 1.2); p_fold.xy *= h(t * 0.8);
+        float scale = 1.0; float e = 1.0;
+        for(int k = 0; k < 8; k++) {
+            p_fold = 2.2 - abs(p_fold * e - 0.4 / max(e, 0.001)) - sin(t * 0.5) * 0.05;
+            float q = dot(p_fold * (2.0 - sin(t * 0.2) * 0.3), p_fold * 1.5);
+            e = max(1.15, 4.5 / max(q, 0.005)); scale *= e;
         }
+        float fractal_dist_pure = distance(p_fold.xz, p_fold.yx) / scale;
 
-        c = a.x/d;
-        e += abs(c);
-
-        h += 0.0001/(0.012+abs(c)*4.8);
-
-        if(h >= 1.0) break; 
+        float r = exp(-fractal_dist_pure * 24.0) * exp(-t_march * 0.15);
+        col += l(1.5 + float(g) * 0.01 - t * 0.3, 0.85, r * 0.18);
+        
+        if(t_march > 30.0 || d < 0.001) break;
+        t_march += d * 0.6;
+    }
+    
+    vec3 final_col = col;
+    float sphere_t = 0.0;
+    float sphere_dist_travelled = 0.0;
+    bool hit_sphere = false;
+    for(int i = 0; i < 80; i++) {
+        vec3 p = ro + rd * sphere_t;
+        float d = length(p) - 1.5; 
+        if(d < 0.001) { hit_sphere = true; break; }
+        sphere_t += d;
+        if(sphere_t > 30.0) break;
     }
 
-    vec3 v = pow(clamp(vec3(h),0.,1.), vec3(3.3));
-    o = vec4(v,1.0);
+    if(hit_sphere) {
+        vec3 p = ro + rd * sphere_t;
+        vec3 n = normalize(p);
+        vec3 ref = reflect(rd, n);
+        
+        float fresnel = pow(1.0 - max(dot(-rd, n), 0.0), 3.0);
+        float specular = pow(max(dot(ref, normalize(vec3(1.0, 2.0, -1.0))), 0.0), 32.0);
+        
+        final_col = col * 0.5 + fresnel * 0.5 + specular * 0.8;
+        final_col *= 0.9 + 0.1 * n.y; 
+        
+        if(sphere_t > 1.5) final_col *= 0.1;
+    }
+
+    final_col = pow(final_col, vec3(0.4545));
+    fragColor = vec4(final_col, 1.0);
 }
-*/
+/***********************************************************************************
+*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____                       *
+* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \                      *
+* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |                     *
+*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |                     *
+* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/                      *
+*            PATRICK JAILLET-VAN DEN BEEMT [PJVDB]                                 *
+************************************************************************************
+* - Software:       https://patrickjaillet.github.io/sandefjord-software           *
+* - Social Network: https://x.com/JailletPatrick                                   *
+* - Music:          https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g       *
+************************************************************************************
+*           Software used for GLSL shader creation:                                *
+*                ******************************                                    *
+* GLSL shader design and value tweaking                                            *
+* - Sliders-GL v1.0.1:                                                             *
+* https://patrickjaillet.github.io/sandefjord-software/software.html?id=sliders-gl *
+*                                                                                  *
+* 100% safe Code Golfing                                                           *
+* - µShader v3.0.1:                                                                *
+* https://patrickjaillet.github.io/sandefjord-software/software.html?id=microshader*
+*                                                                                  *
+* Formatting & Layout                                                              *
+* - ShaderFmt v1.0.0:                                                              *
+* https://patrickjaillet.github.io/sandefjord-software/software.html?id=shaderfmt  *
+***********************************************************************************/

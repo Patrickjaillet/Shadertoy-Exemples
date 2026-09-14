@@ -1,214 +1,268 @@
 // ==== Image (image) ====
-mat2 rot(float a) {
-    float s = sin(a);
-    float c = cos(a);
-    return mat2(c, -s, s, c);
+// Cubic [@xordev], Cubic [@xordev], Untitled 10 [@Zozuar], Untitled 10 [@Zozuar] - worldbreeder.io
+
+#define FC gl_FragCoord
+
+const float PI = 3.141592653589793;
+const float PI2 = PI * 2.0;
+const float F4 = 4.0;
+
+vec3 hsv(float h, float s, float v) {
+  vec4 t = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+  vec3 p = abs(fract(vec3(h) + t.xyz) * 6.0 - vec3(t.w));
+  return v * mix(vec3(t.x), clamp(p - vec3(t.x), 0.0, 1.0), s);
 }
 
-vec2 opU(vec2 d1, vec2 d2) {
-    return (d1.x < d2.x) ? d1 : d2;
+mat2 rotate2D(float r) {
+  return mat2(cos(r), sin(r), -sin(r), cos(r));
 }
 
-float hash21(vec2 p) {
-    return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+mat3 rotate3D(float angle, vec3 axis) {
+  vec3 a = normalize(axis);
+  float s = sin(angle);
+  float c = cos(angle);
+  float r = 1.0 - c;
+  return mat3(
+    a.x * a.x * r + c,
+    a.y * a.x * r + a.z * s,
+    a.z * a.x * r - a.y * s,
+    a.x * a.y * r - a.z * s,
+    a.y * a.y * r + c,
+    a.z * a.y * r + a.x * s,
+    a.x * a.z * r + a.y * s,
+    a.y * a.z * r - a.x * s,
+    a.z * a.z * r + c
+  );
 }
 
-float path(float z) {
-    return sin(z * 0.05) * 15.0;
+float mod289(float x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec3 permute3(vec3 x) { return mod289(((x * 34.0) + 1.0) * x); }
+float permute4(float x) { return mod289(((x * 34.0) + 1.0) * x); }
+vec4 permute4(vec4 x) { return mod289(((x * 34.0) + 1.0) * x); }
+float taylorInvSqrt(float r) { return 1.79284291400159 - 0.85373472095314 * r; }
+vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+
+float snoise2D(vec2 v) {
+  const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+                      -0.577350269189626, 0.024390243902439);
+  vec2 i = floor(v + dot(v, C.yy));
+  vec2 x0 = v - i + dot(i, C.xx);
+  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec4 x12 = x0.xyxy + C.xxzz;
+  x12.xy -= i1;
+  i = mod289(i);
+  vec3 p = permute3(permute3(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+  vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);
+  m = m * m;
+  m = m * m;
+  vec3 x = 2.0 * fract(p * C.www) - 1.0;
+  vec3 h = abs(x) - 0.5;
+  vec3 ox = floor(x + 0.5);
+  vec3 a0 = x - ox;
+  m *= 1.79284291400159 - 0.85373472095314 * (a0 * a0 + h * h);
+  vec3 g;
+  g.x = a0.x * x0.x + h.x * x0.y;
+  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+  return 130.0 * dot(m, g);
 }
 
-float pathDeriv(float z) {
-    return 0.05 * 15.0 * cos(z * 0.05);
+float snoise3D(vec3 v) {
+  const vec2 C = vec2(1.0 / 6.0, 1.0 / 3.0);
+  const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+  vec3 i = floor(v + dot(v, C.yyy));
+  vec3 x0 = v - i + dot(i, C.xxx);
+  vec3 g = step(x0.yzx, x0.xyz);
+  vec3 l = 1.0 - g;
+  vec3 i1 = min(g.xyz, l.zxy);
+  vec3 i2 = max(g.xyz, l.zxy);
+  vec3 x1 = x0 - i1 + C.xxx;
+  vec3 x2 = x0 - i2 + C.yyy;
+  vec3 x3 = x0 - D.yyy;
+  i = mod289(i);
+  vec4 p = permute4(permute4(permute4(
+    i.z + vec4(0.0, i1.z, i2.z, 1.0))
+    + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+    + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+  float n_ = 0.142857142857;
+  vec3 ns = n_ * D.wyz - D.xzx;
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+  vec4 x_ = floor(j * ns.z);
+  vec4 y_ = floor(j - 7.0 * x_);
+  vec4 x = x_ * ns.x + ns.yyyy;
+  vec4 y = y_ * ns.x + ns.yyyy;
+  vec4 h = 1.0 - abs(x) - abs(y);
+  vec4 b0 = vec4(x.xy, y.xy);
+  vec4 b1 = vec4(x.zw, y.zw);
+  vec4 s0 = floor(b0) * 2.0 + 1.0;
+  vec4 s1 = floor(b1) * 2.0 + 1.0;
+  vec4 sh = -step(h, vec4(0.0));
+  vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
+  vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
+  vec3 p0 = vec3(a0.xy, h.x);
+  vec3 p1 = vec3(a0.zw, h.y);
+  vec3 p2 = vec3(a1.xy, h.z);
+  vec3 p3 = vec3(a1.zw, h.w);
+  vec4 norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));
+  p0 *= norm.x;
+  p1 *= norm.y;
+  p2 *= norm.z;
+  p3 *= norm.w;
+  vec4 m = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);
+  m = m * m;
+  return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
 }
 
-float trainDist(vec3 p, float zOffset, bool isLoco) {
-    float xC = path(zOffset);
-    float a = atan(pathDeriv(zOffset));
-    
-    vec3 lp = p;
-    lp.z -= zOffset;
-    lp.x -= xC;
-    lp.xz *= rot(a);
-    
-    vec3 bp = lp;
-    bp.y -= 2.5;
-    float d = length(max(abs(bp) - vec3(1.4, 1.2, 4.0), 0.0)) - 0.2;
-    
-    if (isLoco) {
-        vec3 cp = lp;
-        cp.y -= 4.0;
-        cp.z += 2.0;
-        float cab = length(max(abs(cp) - vec3(1.5, 1.2, 1.5), 0.0)) - 0.2;
-        
-        vec3 cy = lp;
-        cy.y -= 3.0;
-        cy.z -= 1.5;
-        float boiler = max(length(cy.xy) - 1.2, abs(cy.z) - 2.5);
-        
-        vec3 ch = lp;
-        ch.y -= 5.0;
-        ch.z -= 3.0;
-        float chim = max(length(ch.xz) - 0.4, abs(ch.y) - 1.0);
-        
-        d = min(d, min(cab, min(boiler, chim)));
-    }
-    
-    vec3 wp = lp;
-    float wheelBound = abs(lp.z) - 3.8;
-    wp.z = mod(wp.z + 2.0, 4.0) - 2.0;
-    wp.y -= 1.0;
-    wp.x = abs(wp.x) - 1.2;
-    float wheels = max(length(wp.yz) - 0.6, abs(wp.x) - 0.15);
-    wheels = max(wheels, wheelBound);
-    
-    return min(d, wheels);
+vec4 grad4(float j, vec4 ip) {
+  const vec4 ones = vec4(1.0, 1.0, 1.0, -1.0);
+  vec4 p, s;
+  p.xyz = floor(fract(vec3(j) * ip.xyz) * 7.0) * ip.z - 1.0;
+  p.w = 1.5 - dot(abs(p.xyz), ones.xyz);
+  s = vec4(lessThan(p, vec4(0.0)));
+  p.xyz = p.xyz + (s.xyz * 2.0 - 1.0) * s.www;
+  return p;
 }
 
-vec2 map(vec3 p, float t) {
-    vec2 res = vec2(p.y + 1.0, 1.0);
-    
-    float px = path(p.z);
-    float pDeriv = pathDeriv(p.z);
-    
-    float trackBase = length(max(abs(vec2(p.x - px, p.y - 0.1)) - vec2(2.5, 0.1), 0.0));
-    
-    vec3 sp = p;
-    sp.z = mod(sp.z, 0.8) - 0.4;
-    sp.x -= px;
-    sp.xz *= rot(atan(pDeriv));
-    float sleepers = length(max(abs(vec3(sp.x, p.y, sp.z)) - vec3(2.0, 0.15, 0.1), 0.0));
-    
-    float r1 = length(max(abs(vec2(sp.x - 1.2, p.y - 0.3)) - vec2(0.1, 0.1), 0.0));
-    float r2 = length(max(abs(vec2(sp.x + 1.2, p.y - 0.3)) - vec2(0.1, 0.1), 0.0));
-    
-    res = opU(res, vec2(min(trackBase, min(sleepers, min(r1, r2))), 2.0));
-    
-    float tunZ = mod(p.z + 100.0, 200.0) - 100.0;
-    vec3 tp = p;
-    tp.x -= px;
-    float tunIn = length(tp.xy) - 6.0;
-    float tunOut = length(tp.xy) - 7.0;
-    float tunnel = max(-tunIn, tunOut);
-    tunnel = max(tunnel, -tp.y - 1.0);
-    tunnel = max(tunnel, abs(tunZ) - 25.0);
-    res = opU(res, vec2(tunnel, 3.0));
-    
-    float s = sign(p.x - px);
-    float absX = abs(p.x - px);
-    float idx = floor(absX / 8.0);
-    float idz = floor(p.z / 8.0);
-    float h = hash21(vec2(max(idx, 1.0), idz * s));
-    
-    vec3 trp = p;
-    trp.z = mod(trp.z, 8.0) - 4.0;
-    float cx = px + s * (max(idx, 1.0) * 8.0 + 4.0 + h * 4.0);
-    trp.x -= cx;
-    
-    float trunk = max(length(trp.xz) - 0.3 - h * 0.2, abs(trp.y - 4.0) - 5.0);
-    float leaves = length(trp - vec3(0.0, 6.0 + h * 2.0, 0.0)) - 4.1 - h;
-    float treeSDF = min(trunk, leaves);
-    
-    treeSDF = max(treeSDF, -(abs(tunZ) - 30.0)); 
-    treeSDF = max(treeSDF, 5.0 - absX);
-    
-    res = opU(res, vec2(treeSDF, 4.0));
-    
-    float speed = 25.0;
-    float trainZ = t * speed;
-    float t1 = trainDist(p, trainZ, true);
-    float t2 = trainDist(p, trainZ - 9.0, false);
-    float t3 = trainDist(p, trainZ - 18.0, false);
-    
-    res = opU(res, vec2(min(t1, min(t2, t3)), 5.0));
-    
-    return res;
+float snoise4D(vec4 v) {
+  const vec4 C = vec4(0.138196601125011, 0.276393202250021, 0.414589803375032, -0.447213595499958);
+  vec4 i = floor(v + dot(v, vec4(0.309016994374947451)));
+  vec4 x0 = v - i + dot(i, C.xxxx);
+  vec4 i0;
+  vec3 isX = step(x0.yzw, x0.xxx);
+  vec3 isYZ = step(x0.zww, x0.yyz);
+  i0.x = isX.x + isX.y + isX.z;
+  i0.yzw = 1.0 - isX;
+  i0.y += isYZ.x + isYZ.y;
+  i0.zw += 1.0 - isYZ.xy;
+  i0.z += isYZ.z;
+  i0.w += 1.0 - isYZ.z;
+  vec4 i3 = clamp(i0, 0.0, 1.0);
+  vec4 i2 = clamp(i0 - 1.0, 0.0, 1.0);
+  vec4 i1 = clamp(i0 - 2.0, 0.0, 1.0);
+  vec4 x1 = x0 - i1 + C.xxxx;
+  vec4 x2 = x0 - i2 + C.yyyy;
+  vec4 x3 = x0 - i3 + C.zzzz;
+  vec4 x4 = x0 + C.wwww;
+  i = mod289(i);
+  float j0 = permute4(permute4(permute4(permute4(i.w) + i.z) + i.y) + i.x);
+  vec4 j1 = permute4(permute4(permute4(permute4(
+    i.w + vec4(i1.w, i2.w, i3.w, 1.0))
+    + i.z + vec4(i1.z, i2.z, i3.z, 1.0))
+    + i.y + vec4(i1.y, i2.y, i3.y, 1.0))
+    + i.x + vec4(i1.x, i2.x, i3.x, 1.0));
+  vec4 ip = vec4(1.0 / 294.0, 1.0 / 49.0, 1.0 / 7.0, 0.0);
+  vec4 p0_ = grad4(j0, ip);
+  vec4 p1_ = grad4(j1.x, ip);
+  vec4 p2_ = grad4(j1.y, ip);
+  vec4 p3_ = grad4(j1.z, ip);
+  vec4 p4_ = grad4(j1.w, ip);
+  vec4 norm_ = taylorInvSqrt(vec4(dot(p0_, p0_), dot(p1_, p1_), dot(p2_, p2_), dot(p3_, p3_)));
+  p0_ *= norm_.x;
+  p1_ *= norm_.y;
+  p2_ *= norm_.z;
+  p3_ *= norm_.w;
+  p4_ *= taylorInvSqrt(dot(p4_, p4_));
+  vec3 m0 = max(0.6 - vec3(dot(x0, x0), dot(x1, x1), dot(x2, x2)), 0.0);
+  vec2 m1 = max(0.6 - vec2(dot(x3, x3), dot(x4, x4)), 0.0);
+  m0 = m0 * m0;
+  m1 = m1 * m1;
+  return 49.0 * (dot(m0 * m0, vec3(dot(p0_, x0), dot(p1_, x1), dot(p2_, x2)))
+    + dot(m1 * m1, vec2(dot(p3_, x3), dot(p4_, x4))));
 }
 
-vec3 calcNormal(vec3 p, float t) {
-    vec2 e = vec2(1.0, -1.0) * 0.5773 * 0.0005;
-    return normalize(e.xyy * map(p + e.xyy, t).x + 
-                     e.yyx * map(p + e.yyx, t).x + 
-                     e.yxy * map(p + e.yxy, t).x + 
-                     e.xxx * map(p + e.xxx, t).x);
+float fsnoise(vec2 c) {
+  return fract(sin(dot(c, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-float calcShadow(vec3 ro, vec3 rd, float t) {
-    float res = 1.0;
-    float t2 = 0.5;
-    for(int i = 0; i < 32; i++) {
-        float h = map(ro + rd * t2, t).x;
-        res = min(res, 10.0 * h / t2);
-        t2 += h;
-        if(res < 0.01 || t2 > 30.0) break;
-    }
-    return clamp(res, 0.0, 1.0);
+
+const float SAFE_EPS = 0.0001;
+const float SAFE_DIV_EPS = 0.01;
+const float SAFE_EXP_MAX = 40.0;
+const float SAFE_TAN_LIMIT = 1.35;
+
+float slog(float x) { return log(max(abs(x), SAFE_EPS)); }
+vec2 slog(vec2 x) { return log(max(abs(x), vec2(SAFE_EPS))); }
+vec3 slog(vec3 x) { return log(max(abs(x), vec3(SAFE_EPS))); }
+vec4 slog(vec4 x) { return log(max(abs(x), vec4(SAFE_EPS))); }
+
+float ssqrt(float x) { return sqrt(max(x, 0.0)); }
+vec2 ssqrt(vec2 x) { return sqrt(max(x, vec2(0.0))); }
+vec3 ssqrt(vec3 x) { return sqrt(max(x, vec3(0.0))); }
+vec4 ssqrt(vec4 x) { return sqrt(max(x, vec4(0.0))); }
+
+float sexp(float x) { return exp(clamp(x, -SAFE_EXP_MAX, SAFE_EXP_MAX)); }
+vec2 sexp(vec2 x) { return exp(clamp(x, vec2(-SAFE_EXP_MAX), vec2(SAFE_EXP_MAX))); }
+vec3 sexp(vec3 x) { return exp(clamp(x, vec3(-SAFE_EXP_MAX), vec3(SAFE_EXP_MAX))); }
+vec4 sexp(vec4 x) { return exp(clamp(x, vec4(-SAFE_EXP_MAX), vec4(SAFE_EXP_MAX))); }
+
+float stan(float x) { return tan(clamp(x, -SAFE_TAN_LIMIT, SAFE_TAN_LIMIT)); }
+vec2 stan(vec2 x) { return tan(clamp(x, vec2(-SAFE_TAN_LIMIT), vec2(SAFE_TAN_LIMIT))); }
+vec3 stan(vec3 x) { return tan(clamp(x, vec3(-SAFE_TAN_LIMIT), vec3(SAFE_TAN_LIMIT))); }
+vec4 stan(vec4 x) { return tan(clamp(x, vec4(-SAFE_TAN_LIMIT), vec4(SAFE_TAN_LIMIT))); }
+
+float sasin(float x) { return asin(clamp(x, -1.0 + SAFE_EPS, 1.0 - SAFE_EPS)); }
+vec2 sasin(vec2 x) { return asin(clamp(x, vec2(-1.0 + SAFE_EPS), vec2(1.0 - SAFE_EPS))); }
+vec3 sasin(vec3 x) { return asin(clamp(x, vec3(-1.0 + SAFE_EPS), vec3(1.0 - SAFE_EPS))); }
+vec4 sasin(vec4 x) { return asin(clamp(x, vec4(-1.0 + SAFE_EPS), vec4(1.0 - SAFE_EPS))); }
+
+float sacos(float x) { return acos(clamp(x, -1.0 + SAFE_EPS, 1.0 - SAFE_EPS)); }
+vec2 sacos(vec2 x) { return acos(clamp(x, vec2(-1.0 + SAFE_EPS), vec2(1.0 - SAFE_EPS))); }
+vec3 sacos(vec3 x) { return acos(clamp(x, vec3(-1.0 + SAFE_EPS), vec3(1.0 - SAFE_EPS))); }
+vec4 sacos(vec4 x) { return acos(clamp(x, vec4(-1.0 + SAFE_EPS), vec4(1.0 - SAFE_EPS))); }
+
+float spow(float a, float b) { return pow(max(abs(a), SAFE_EPS), b); }
+vec2 spow(vec2 a, vec2 b) { return pow(max(abs(a), vec2(SAFE_EPS)), b); }
+vec3 spow(vec3 a, vec3 b) { return pow(max(abs(a), vec3(SAFE_EPS)), b); }
+vec4 spow(vec4 a, vec4 b) { return pow(max(abs(a), vec4(SAFE_EPS)), b); }
+vec2 spow(vec2 a, float b) { return pow(max(abs(a), vec2(SAFE_EPS)), vec2(b)); }
+vec3 spow(vec3 a, float b) { return pow(max(abs(a), vec3(SAFE_EPS)), vec3(b)); }
+vec4 spow(vec4 a, float b) { return pow(max(abs(a), vec4(SAFE_EPS)), vec4(b)); }
+
+float sdiv(float a, float b) { return a / max(abs(b), SAFE_DIV_EPS); }
+vec2 sdiv(vec2 a, vec2 b) { return a / max(abs(b), vec2(SAFE_DIV_EPS)); }
+vec3 sdiv(vec3 a, vec3 b) { return a / max(abs(b), vec3(SAFE_DIV_EPS)); }
+vec4 sdiv(vec4 a, vec4 b) { return a / max(abs(b), vec4(SAFE_DIV_EPS)); }
+vec2 sdiv(vec2 a, float b) { return a / max(abs(b), SAFE_DIV_EPS); }
+vec3 sdiv(vec3 a, float b) { return a / max(abs(b), SAFE_DIV_EPS); }
+vec4 sdiv(vec4 a, float b) { return a / max(abs(b), SAFE_DIV_EPS); }
+vec2 sdiv(float a, vec2 b) { return vec2(a) / max(abs(b), vec2(SAFE_DIV_EPS)); }
+vec3 sdiv(float a, vec3 b) { return vec3(a) / max(abs(b), vec3(SAFE_DIV_EPS)); }
+vec4 sdiv(float a, vec4 b) { return vec4(a) / max(abs(b), vec4(SAFE_DIV_EPS)); }
+mat2 sdiv(mat2 a, float b) { return a / max(abs(b), SAFE_DIV_EPS); }
+mat3 sdiv(mat3 a, float b) { return a / max(abs(b), SAFE_DIV_EPS); }
+mat4 sdiv(mat4 a, float b) { return a / max(abs(b), SAFE_DIV_EPS); }
+
+float smod(float a, float b) { return mod(a, max(abs(b), SAFE_DIV_EPS)); }
+vec2 smod(vec2 a, vec2 b) { return mod(a, max(abs(b), vec2(SAFE_DIV_EPS))); }
+vec3 smod(vec3 a, vec3 b) { return mod(a, max(abs(b), vec3(SAFE_DIV_EPS))); }
+vec4 smod(vec4 a, vec4 b) { return mod(a, max(abs(b), vec4(SAFE_DIV_EPS))); }
+vec2 smod(vec2 a, float b) { return mod(a, max(abs(b), SAFE_DIV_EPS)); }
+vec3 smod(vec3 a, float b) { return mod(a, max(abs(b), SAFE_DIV_EPS)); }
+vec4 smod(vec4 a, float b) { return mod(a, max(abs(b), SAFE_DIV_EPS)); }
+
+vec2 snormalize(vec2 v) { float l = length(v); return l > SAFE_EPS ? v / l : vec2(0.0); }
+vec3 snormalize(vec3 v) { float l = length(v); return l > SAFE_EPS ? v / l : vec3(0.0); }
+vec4 snormalize(vec4 v) { float l = length(v); return l > SAFE_EPS ? v / l : vec4(0.0); }
+
+struct WB_CoordOut_e5aae421b099772a08d19408d3d19d21_coordinate_0_2_3faf5780 {
+  highp vec3 coordinate;
+};
+WB_CoordOut_e5aae421b099772a08d19408d3d19d21_coordinate_0_2_3faf5780 WB_evalCoord_e5aae421b099772a08d19408d3d19d21_coordinate_0_2_3faf5780(highp vec3 wb_v_POS, highp float wb_v_t) {
+  /*__WB_SCOPED_DONATION_SAFE_MATH__*/
+  wb_v_POS.yz-=wb_v_t;
+  WB_CoordOut_e5aae421b099772a08d19408d3d19d21_coordinate_0_2_3faf5780 wb_result;
+  wb_result.coordinate = wb_v_POS;
+  return wb_result;
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    float t = iTime;
-    float speed = 25.0;
-    
-    float camZ = t * speed - 30.0;
-    vec3 ro = vec3(path(camZ) - 20.0, 20.0, camZ);
-    vec3 ta = vec3(path(camZ + 30.0), 2.0, camZ + 30.0);
-    
-    vec3 w = normalize(ta - ro);
-    vec3 u = normalize(cross(w, vec3(0.0, 1.0, 0.0)));
-    vec3 v = cross(u, w);
-    vec3 rd = normalize(uv.x * u + uv.y * v + 1.5 * w);
-    
-    vec3 col = vec3(0.5, 0.7, 0.9) - max(rd.y, 0.0) * 0.5;
-    
-    float d = 0.0;
-    float m = -1.0;
-    for(int i = 0; i < 150; i++) {
-        vec2 p = map(ro + rd * d, t);
-        if(p.x < 0.01) {
-            m = p.y;
-            break;
-        }
-        if(d > 250.0) break;
-        d += p.x * 0.75;
-    }
-    
-    if(d < 250.0) {
-        vec3 pos = ro + rd * d;
-        vec3 nor = calcNormal(pos, t);
-        
-        vec3 mate = vec3(0.2);
-        if(m == 1.0) mate = vec3(0.15, 0.25, 0.1) * (1.0 + hash21(pos.xz) * 0.2);
-        else if(m == 2.0) mate = vec3(0.2, 0.18, 0.15);
-        else if(m == 3.0) mate = vec3(0.4, 0.4, 0.45);
-        else if(m == 4.0) mate = pos.y > 2.0 ? vec3(0.1, 0.3, 0.1) : vec3(0.3, 0.15, 0.05);
-        else if(m == 5.0) mate = vec3(0.6, 0.1, 0.1);
-        
-        vec3 sun = normalize(vec3(0.8, 0.6, -0.2));
-        float dif = clamp(dot(nor, sun), 0.0, 1.0);
-        float sha = calcShadow(pos, sun, t);
-        float sky = clamp(0.5 + 0.5 * nor.y, 0.0, 1.0);
-        
-        float tunZ_light = mod(pos.z + 100.0, 200.0) - 100.0;
-        float inTunnel = smoothstep(26.0, 20.0, abs(tunZ_light));
-        
-        dif *= (1.0 - inTunnel);
-        sha *= (1.0 - inTunnel);
-        sky *= mix(1.0, 0.05, inTunnel);
-        
-        vec3 lin = vec3(0.0);
-        lin += dif * vec3(1.2, 1.1, 1.0) * sha;
-        lin += sky * vec3(0.2, 0.3, 0.4);
-        
-        col = mate * lin;
-        
-        if(inTunnel > 0.0 && m == 5.0) {
-             col += vec3(0.2, 0.0, 0.0) * inTunnel;
-        }
-        
-        float fog = exp(-0.00005 * d * d);
-        col = mix(vec3(0.5, 0.7, 0.9), col, fog);
-    }
-    
-    col = pow(col, vec3(0.4545));
-    fragColor = vec4(col, 1.0);
+  vec2 r = iResolution.xy;
+  float t = iTime;
+  vec4 o = vec4(0);
+
+  vec3 RAY,POS,QPOS,ORI,V0,V1,P0;vec2 UV,UV2;float R0,S0,S1,EM,ED;vec4 VO;float II,DEP,STP;float s=0.;float i,a,x,g,h;for(;i++<90.;){vec3 p=vec3(sdiv((FC.xy-.5*r),r.y)*g+2.,g);p=mix(p,WB_evalCoord_e5aae421b099772a08d19408d3d19d21_coordinate_0_2_3faf5780(p,t).coordinate,1.00);p.zy*=rotate2D(.5);DEP=p.y;h=DEP+p.x*.3;p.z+=t;for(a=.6;a>.001;a*=.7)p.xz*=rotate2D(5.),x=sdiv((p.x+p.z),a)+t+t,DEP-=STP=sexp(sin(x)-3.)*a,h+=abs(dot(sin(sdiv(p.xz,a)*.3)*a,sdiv(r,r)));g+=DEP=min(DEP,h*.5-1.);o+=vec4(.01-sdiv(sdiv(.02,sexp(max(s,DEP)*3e3)),h));}
+
+  fragColor = o;
 }

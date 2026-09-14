@@ -1,236 +1,80 @@
 // ==== Image (image) ====
-#define FAR 20.
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    // Initialisation du vecteur de couleur accumulée à zéro
+    vec4 o = vec4(0.0);
+    // Déclaration et initialisation des scalaires pour l'index de marche (i), la densité (e), le rayon logarithmique (R) et le facteur d'échelle de fréquence (s)
+    float i = 0.0, e = 0.0, R = 1.0, s = 0.0;
+    // Initialisation des vecteurs de position pour la marche du rayon (q) et le repère transformé (p)
+    vec3 q = vec3(0.0), p = vec3(0.0);
 
-#define PI 3.14159265358979
-#define TAU 6.28318530718
+    // Normalisation et centrage des coordonnées d'écran avec conservation du ratio d'aspect sur l'axe Y
+    vec2 uv = (fragCoord * 2.0 - iResolution.xy) / iResolution.y;
+    // Définition du vecteur de direction du rayon avec ajustement de la focale / ouverture (0.6)
+    vec3 d = vec3(uv * 0.6, 1.0);
 
-mat2 r2(in float a){ float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }
+    // Déplacement initial de l'origine du rayon sur l'axe Z pour reculer la caméra de la scène
+    q.z -= 1.0;
 
-float hash31(vec3 p){
-    float n = dot(p, vec3(13.163, 157.247, 7.951)); 
-    return fract(sin(mod(n, 6.2831))*43758.5453); 
-}
+    // Boucle principale d'accumulation volumétrique (Raymarching) limitée à un maximum de 80 étapes
+    for(; i++ < 80.0;)
+    {
+        // Réinitialisation de la fréquence de départ pour la boucle de bruit procédural fractal
+        s = 3.0;
+        // Avancement du point de marche q le long du rayon et synchronisation de la variable de transformation p
+        p = q += d * e * R * 0.52;
 
-float smax(float a, float b, float s){
-    float h = clamp( 0.5 + 0.5*(a-b)/s, 0., 1.);
-    return mix(b, a, h) + h*(1.0-h)*s;
-}
+        // Calcul de la distance euclidienne brute du point par rapport à l'origine du repère
+        float rSphere = length(p);
+        // Création d'un masque d'atténuation sphérique lisse pour confiner le volume et éviter les cassures nettes aux bords
+        float sphereMask = smoothstep(4.8, 1.0, rSphere);
 
-vec3 tex3D(sampler2D tex, in vec3 p, in vec3 n){    
-    n = max(n*n - .2, .001);
-    n /= dot(n, vec3(1)); 
-    
-    vec3 tx = texture(tex, p.zy).xyz;
-    vec3 ty = texture(tex, p.xz).xyz;
-    vec3 tz = texture(tex, p.xy).xyz;
-    
-    return mat3(tx*tx, ty*ty, tz*tz)*n;
-} 
+        // Calcul de la distance radiale mise à l'échelle pour la projection logarithmique
+        R = length(p * 1.7);
 
-vec3 gP;
-float gSc;
+        // Projection spatiale tridimensionnelle vers un repère cylindrique/sphérique logarithmique animé temporellement sur l'angle
+        p = vec3(
+            log(R + 1e-4),
+            exp2(-p.z / (R + 1e-4)),
+            atan(p.y, p.x + 1e-4 * step(length(p.xy), 1e-6)) - iTime*0.3
+        );
 
-float Apollonian3D(vec3 p){
-    float scale = 1., r;
-    float d = 1e5;
-    
-    for(int i = 0; i<4; i++) {
-        p = mod(p - 1., 2.) - 1.;
-        r = dot(p, p)*.75;
-        p /= r;
-        scale /= r;
-        if(i<=3){ gP = p; gSc = scale; }
-    }
-    
-    return .25*min(abs(p.y), length(p.xz))/scale - .0015;
-}
+        // Initialisation du champ de potentiel/densité de base dérivé de la coordonnée verticale transformée Y
+        e = --p.y;
 
-vec3 glow;
-int gFlS = 0;
+        // Boucle de calcul du Mouvement Brownien Fractionnaire (FBM) doublant la fréquence à chaque itération jusqu'à la limite supérieure
+        for(; s < 1000.0; s += s)
+            // Accumulation des harmoniques : produit scalaire trigonométrique imbriquant sinus, cosinus et variables temporelles
+            e += cos(dot(sin(p*s), cos(p.yyz*s + iTime*0.9))) / s * 0.45;
 
-float m(vec3 p) {
-    float fl = p.y + .015;
-    float d = Apollonian3D(p);
-    float ball = length(mod(p - 1., 2.) - 1.) - .175;
+        // Normalisation et remappage de la densité accumulée e pondérée par la fréquence maximale s, bornée entre 0.1 et 1.0
+        float val = clamp((e*s - 1.0) / 24.2, 0.1, 1.0);
+        // Application du masque sphérique global à la valeur de densité calculée
+        val *= sphereMask;
 
-    float sD = d;
-    float lnN = 10.;
-    float le = length(gP)/sqrt(3.);
+        // Génération de 4 masques distincts basés sur des transitions lisses pour segmenter les différentes strates de la rampe de couleur
+        vec4 w = smoothstep(vec4(0.0, 0.15, 0.35, 0.65), vec4(0.15, 0.35, 0.65, 0.88), vec4(val));
+        // Interpolation de la première strate : passage d'un rouge très sombre et profond à un rouge vif incandescent
+        vec3 col = mix(mix(vec3(0.30, 0.00, 0.00), vec3(1.00, 0.08, 0.00), w.x), vec3(1.00, 0.45, 0.00), w.y);
+        // Interpolation de la deuxième strate vers des teintes orangées vives
+        // Interpolation de la troisième strate vers un jaune chaud haute intensité
+        col = mix(col, vec3(1.00, 0.95, 0.15), w.z);
+        // Interpolation de la quatrième strate vers un blanc/crème thermique émissif
+        col = mix(col, vec3(1.20, 1.15, 1.05), w.w);
+        // Ajout d'une dernière transition de couleur vers un bleu électrique surréel pour les zones de densité extrême (cœur énergétique)
+        col = mix(col, vec3(0.25, 0.60, 2.00), smoothstep(0.88, 1.0, val));
 
-    float pat = smoothstep(0., .02, (abs(fract(le*lnN + .5) - .5) - .5*.33)/lnN);
-    d -= pat*.01/gSc;
-
-    gFlS = pat==0.? 0 : 1;
-
-    if(ball<d + .5) glow += vec3(1, .08, .02)*.02/(.01 + ball*ball*128.);
-
-    d = min(d, ball);
-    return d;
-}
-
-vec3 nr(in vec3 p) {
-    float sgn = 1.;
-    vec3 e = vec3(.001, 0, 0), mp = e.zzz;
-    for(int i = min(iFrame, 0); i<6; i++){
-        mp.x += m(p + sgn*e)*sgn;
-        sgn = -sgn;
-        if((i&1)==1){ mp = mp.yzx; e = e.zxy; }
-    }
-    return normalize(mp);
-}
-
-float softShadow(vec3 ro, vec3 rd, vec3 n, float lDist, float k){
-    float shade = 1.;
-    float t = 0.;
-    
-    ro += n*.0015 + rd*hash31(ro + rd + n)*.005;
-
-    for (int i = min(0, iFrame); i<64; i++){
-        float d = m(ro + rd*t);
-        shade = min(shade, k*d/t);
-        if (d<0. || t>lDist) break;        
-        t += clamp(d, .01, .15); 
+        // Calcul d'une fonction d'interférence sinusoïdale à haute fréquence spatio-temporelle pour simuler un vacillement/scintillement du fluide
+        float flicker = 0.9 + 0.6 * sin(iTime * 15.0 + q.z * 14.0 + e * 6.0);
+        // Accumulation de la couleur du fragment modulée par la densité, le vacillement et isolée par un filtre à seuil strict (step)
+        o.rgb += col * val * flicker * 0.03 * step(0.001, val);
     }
 
-    return max(shade, 0.); 
-}
+    // Application d'une fonction de mappage des tons (Tone Mapping) de Reinhard pour compresser l'échelle dynamique HDR
+    o.rgb = o.rgb / (1.0 + o.rgb);
+    // Correction gamma non linéaire de l'image (approximation de la courbe standard avec l'exposant 0.6750)
+    o.rgb = pow(o.rgb, vec3(0.6750));
 
-float calcAO(in vec3 p, in vec3 n){
-    float sca = 2., occ = 0.;
-    for( int i = 0; i<5; i++ ){
-        float hr = float(i + 1)*.2/5.;        
-        float d = m(p + n*hr);
-        occ += (hr - d)*sca;
-        sca *= .75;
-    }
-    return clamp(1. - occ, 0., 1.);  
-}
-
-float curve(in vec3 p, in float spr, in float amp, in float offs){
-    spr /= 450.;
-    float sgn = 1.;
-    vec3 e = vec3(spr, 0, 0); 
-    float d = -m(p)*6.;
-    for(int i = min(iFrame, 0); i<6; i++){
-        d += m(p + sgn*e);
-        sgn = -sgn;
-        if((i&1)==1){ e = e.zxy; }
-    }
-    return clamp(d/e.x/e.x*amp/16. + offs, -1., 1.)*.5 + .5;
-}
-
-float trace(in vec3 ro, in vec3 rd){
-    glow = vec3(0);    
-    float d, t = hash31(fract(ro*89.567)*7. + rd)*.5;
-    
-    for(int i = min(0, iFrame); i<160; i++){
-        d = m(ro + rd*t);
-        if(abs(d)<.001 || t>FAR) break;
-        t += min(d*.8, .2);
-    }
-
-    return min(t, FAR);
-}
-
-vec3 getSpec(vec3 F0, float nh, float nr, float nl, float rough) {
-    float a = rough * rough;
-    float a2 = a * a;
-    float d = (nh * a2 - nh) * nh + 1.0;
-    float D = a2 / (PI * d * d + 1e-5);
-    
-    float k = (rough + 1.0) * (rough + 1.0) / 8.0;
-    float G1L = nl / (nl * (1.0 - k) + k);
-    float G1V = nr / (nr * (1.0 - k) + k);
-    float G = G1L * G1V;
-    
-    return (D * G * F0) / max(4.0 * nl * nr, 0.001);
-}
-
-vec3 getDiff(vec3 F0, float nl, float rough, float metallic) {
-    vec3 kD = (vec3(1.0) - F0) * (1.0 - metallic);
-    return kD * nl / PI;
-}
-
-void mainImage(out vec4 fCol, vec2 fCoor){
-    vec2 uv = (fCoor - iResolution.xy*.5)/iResolution.y;
-
-    float tm = iTime/2. + 5.48;
-    vec3 r = normalize(vec3(uv, 1)), 
-         o = vec3(0, .5 + sin(tm)*.15, -1);
-         o.xz = r2(tm)*o.xz;        
-    vec3 l = vec3(0, 1, -1);
-    l.xz = r2(tm)*l.xz;
-    
-    r.yz *= r2(-.35);
-    r.xz *= r2(-tm);
-    r.xy *= r2(-.25);
-
-    float t = trace(o, r);
-
-    vec3 c = vec3(0);
-    int flS = gFlS;    
-    vec3 svP = gP;
-    vec3 svGlow = glow;
-      
-    if(t<FAR){
-        vec3 p = o + r*t, n = nr(p);
-
-        l -= p;
-        float lDist = max(length(l), 0.001);
-        l /= lDist;
-        
-        float atten = 1./(1. + lDist*lDist*.25);
-            
-        float ao = calcAO(p, n);
-        float sh = softShadow(p, l, n, lDist, 12.); 
-         
-        float spr = 2.5, ampC = 1., offs = .0;
-        float crv = curve(p, spr, ampC, offs);
-        
-        svGlow = glow; 
-        
-        vec3 tx = tex3D(iChannel0, p, n);
-        float gr = dot(tx, vec3(.299, .587, .114));
-
-        c = vec3(.66);
-        if(flS==0) c *= .4;
-        c *= tx;
-        
-        float fresRef = .7;
-        float type = .9;
-        float rough = min(gr*2., 1.);
-        
-        vec3 h = normalize(l - r);
-        float ndl = dot(n, l);
-        float nrVal = clamp(dot(n, -r), 0., 1.);
-        float nl = clamp(ndl, 0., 1.);
-        float nh = clamp(dot(n, h), 0., 1.);
-        float vh = clamp(dot(-r, h), 0., 1.);  
-
-        vec3 f0 = vec3(.16*(fresRef*fresRef)); 
-        f0 = mix(f0, c, type);
-        vec3 FS = f0 + (1. - f0)*pow(1. - vh, 5.);
-        
-        vec3 spec = getSpec(FS, nh, nrVal, nl, rough);
-        vec3 diff = getDiff(FS, nl, rough, type);
-       
-        float amb = length(sin(n*2.)*.5 + .5)/sqrt(3.)*smoothstep(-1., 1., n.y); 
-        
-        float bl = max(dot(-normalize(vec3(l.x, 0, l.z)), n), 0.);
-        c = c + c*vec3(1, .4, .2)*bl*8.;
-        
-        c = c*(diff*sh + spec*sh*8. + amb*(sh*.5 + .5)*.3);
-        c *= crv*1.33 + .333;
-        c *= ao*atten;
-
-    }
-    
-    svGlow = mix(svGlow, svGlow.yzx, smoothstep(0., .7, r.y)*.2);
-    c += (c*4. + .5)*svGlow;
-    
-    c = mix(c, vec3(0), smoothstep(0., .9, t/FAR));
-    
-    c = sqrt(max(c, 0.));
-    
-    fCol = vec4(c, t);    
+    // Écriture finale de la couleur convertie dans le tampon de sortie RGBA avec un canal alpha opaque
+    fragColor = vec4(o.rgb, 1.0);
 }

@@ -1,95 +1,173 @@
 // ==== Image (image) ====
-void mainImage(out vec4 fragColor, in vec2 fragCoord)
-{
-    // Résolution et repère normalisé
-    vec2 viewportResolution = iResolution.xy;
-    float globalTime = iTime * 1.6;
+//*====================================================================================*//
+//  											                                        //
+//  _______ _______ _______ _______ _______ _______ _______ _____  _______ ______ 	    //
+// |   |   |    ___|_     _|   _   |     __|   |   |   _   |     \|    ___|   __ \	    //
+// |       |    ___| |   | |       |__     |       |       |  --  |    ___|      <	    //
+// |__|_|__|_______| |___| |___|___|_______|___|___|___|___|_____/|_______|___|__|	    //
+//											                                            //
+//======================================================================================//
+//:: [ GLSL / HLSL / WGSL / MSL / SPIR-V ] ::	                    					//
+//======================================================================================//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░▒░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░▒▒▒▒░░░░░░░░░░░░░░░░ ░░░▒░░░░░░░░░░░░░░░▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░▒▒░░░░░░░░░░░░░░░▒░░░░▒░░▒░░░░░░░░░▒▒░░░░░▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▒▒░░░░░░░░░░░░░░░░░░░░▒▒▒░░▒▒▒░░▒▒▒▒▒▒▒ ▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░░   ░░░░░░░░░▒▒▒░▒▒▒▒░░▒▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▒░░░░░░░░░ ░▒▒▒▒▒░ ░░░░░░░▒░░░░▒░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ ░ ▒░░░░░░░░░▒▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▒▒▒▒░░░░░ ▒▒▓▒▓▒▒▒▒░░ ░░░░░░░▒▒░░░░░░░░░░░ ▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▒▓▓ ░░░ ▒▒▒▓▓▒▒░▓▒░░ ░░░░░░░▒▒▒▒░░░░░░░░░░░ ▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▒▓▒▒░░░▒▒▒▒▓▓▓░▓▓ ░░░░░░░░░▒▒▒▒▒▒░░░░░░░ ░░░░▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▒▓▒▓▓░▒▒▓▓▓▓▓▓░▓▓ ░ ░░░░░░▒▒▒▒▒▒▒▒░░░▒▒▒▒░░░░░▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▓▒▓▓▒▓▓▓▓▓▓▓▒▒▓▓ ░▒░░░░░░▒▒▒▒▒▒▒▒░▒▒▒▒▒░ ░░░░░▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▓░░░░▒░▓▓▓▓▓▓▓▓▒▒▒░░ ░░░░ ░▒▒▒▒▒▒▒▒░▓▒▒░░░▒▒▒▒▒░░▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ ▓▓▓▓▓▓▓▒░░▒▒▒▒▒▒░░▒▒▒░  ▒ ░▒▒▒▒▒▒░▒▒░ ▒▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░   ░▒▒▒▒▒▒▒▒▒▒▒▒░ ░░ ▒ ▒▒░ ░▒▒▒░▒▒▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ░▒▒▒▒▒▒▒▒░ ░░░░░▒ ▒▒░░▒▒░░░  ▒▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░   ░░░░░░░░░░  ░░▒▒▒▒░░ ▒▒▒▒▒▒▒ ▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░ ░    ░░▒▒▒▒▒▒░▒░░░░▒▒▒▒▒  ░░▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░ ░░     ░░░░░░░░ ░▒▒▒░ ░▒░░░▒░░░ ▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░ ░▒▒▒▒▒▒░░░░░░░░░ ░░ ▒▒▒░░▒▒▒░░░░░░▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░▒▒▒▒▒▒▒▒░░░░  ░ ░ ░▒▒░░░░░░░░▒▒▒░░░ ▒▒▒▒▒▒▒▒//
+//======================================================================================//
+//:: [ CREDITS ] ::	                                        							//
+//======================================================================================//
+//  >>  Author  : Patrick JAILLET		                            					//
+//  >>  Email   : metashader@proton.me		                        					//
+//  >>  Engine  : MetaShader				                            				//
+//  >>  URL     : https://0110110101110011.netlify.app	                				//
+//*====================================================================================*//
 
-    // 1.1 — Centered Projection with Oscillating Zoom
-    vec2 normalizedScreenCoordinates = (fragCoord * 2.0 - viewportResolution) / viewportResolution.y;
-    float cameraZoomFactor = 9.0 + cos(globalTime * 0.5) * 3.0;
+#define MAX_STEPS 110
+#define MAX_DIST 50.0
+#define SURF_DIST 0.001
 
-    // Constantes géométriques
-    float phi = 2.58000000000;
-    float tau = 1.20000000000;
+mat2 rot(float a) {
+    float s = sin(a), c = cos(a);
+    return mat2(c, -s, s, c);
+}
 
-    // Raymarching & Accumulation
-    float accumulatedDistance = 0.0;
+float hash12(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
+}
+
+float smin(float a, float b, float k) {
+    float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+    return mix(b, a, h) - k * h * (1.0 - h);
+}
+
+float sdCapsule(vec3 p, vec3 a, vec3 b, float r) {
+    vec3 pa = p - a, ba = b - a;
+    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+    return length(pa - ba * h) - r;
+}
+
+vec2 map(vec3 p) {
+    float t = mod(iTime, 6.0);
+    float approach = smoothstep(0.0, 3.5, t);
+    float pause = smoothstep(3.5, 4.2, t);
+    float jump = smoothstep(4.2, 4.6, t) * (1.0 - smoothstep(5.0, 5.5, t));
     
-    vec3 rayPosition = vec3(normalizedScreenCoordinates * cameraZoomFactor, accumulatedDistance + 0.2);
+    float zPos = mix(18.0, 3.0, approach);
+    zPos = mix(zPos, -5.0, jump);
+    
+    float yJump = jump * 2.2;
+    
+    vec3 q = p;
+    q.z -= zPos;
+    q.y -= 0.6 + yJump;
+    
+    if(jump > 0.01) q.xy *= rot(sin(iTime * 100.0) * 0.08);
 
-    // 2.2 — Successive Multi-Axis Matrix Rotations
-    float angle = iTime / 8.0;
-    mat2 rotationMatrix = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
-    rayPosition.yz *= rotationMatrix * rotationMatrix;
-    rayPosition.xy *= rotationMatrix;
+    float dBody = length(q / vec3(0.5, 0.4, 0.75)) - 1.0;
+    vec3 hP = q - vec3(0.0, -0.1, 0.9);
+    float dHead = length(hP) - 0.28;
+    
+    vec3 mP = hP; mP.x = abs(mP.x);
+    mP.xy *= rot(0.2 + jump * 1.5 + pause * 0.3);
+    float dMand = sdCapsule(mP, vec3(0.1, 0.0, 0.0), vec3(0.2, -0.4, 0.3), 0.03);
+    
+    float d = smin(dBody * 0.4, dHead, 0.15);
+    d = smin(d, dMand, 0.05);
+    
+    vec3 lP = q; 
+    float side = lP.x > 0.0 ? 1.0 : -1.0;
+    lP.x = abs(lP.x);
+    
+    float dLegs = 1e10;
+    for(int i=0; i<4; i++) {
+        float fi = float(i);
+        float stepT = iTime * 24.0 + fi * 2.0 + (side > 0.0 ? 0.0 : 3.14);
+        if(pause > 0.01) stepT *= 0.1;
+        
+        vec3 root = vec3(0.2, 0.0, 0.3 - fi * 0.4);
+        vec3 target = vec3(2.2, -0.9, 0.3 - fi * 0.4 + sin(stepT) * 1.0);
+        if(jump > 0.01) target = mix(target, vec3(0.2, -3.0, 4.0), jump);
+        
+        target.y += max(0.0, cos(stepT)) * 0.8 * (1.0 - pause);
+        vec3 knee = mix(root, target, 0.5) + vec3(0.6, 1.5 * (1.0 - jump), -0.5 * jump);
+        float l = smin(sdCapsule(lP, root, knee, 0.07), sdCapsule(lP, knee, target, 0.05), 0.05);
+        dLegs = min(dLegs, l);
+    }
+    d = smin(d, dLegs, 0.06);
+    
+    float ground = p.y + 1.0;
+    float finalD = min(d, ground);
+    float id = (d < ground) ? 2.0 : 1.0;
+    if(length(hP - vec3(0.12, 0.1, 0.15)) < 0.08) id = 3.0; 
 
-    vec3 q = rayPosition;
-    q.yz += 0.6; // Décalage vertical
-    vec3 rayDir = normalize(vec3(normalizedScreenCoordinates, 0.1));
+    return vec2(finalD, id);
+}
 
-    float e = 0.01; // Pas initial
-    vec4 o = vec4(0.0);
+vec3 getNormal(vec3 p) {
+    vec2 e = vec2(0.001, 0.0);
+    return normalize(vec3(map(p + e.xyy).x - map(p - e.xyy).x, 
+                          map(p + e.yxy).x - map(p - e.yxy).x, 
+                          map(p + e.yyx).x - map(p - e.yyx).x));
+}
 
-    for (int stepIdx = 0; stepIdx < 147; stepIdx++)
-    {
-        // Progression du rayon
-        vec3 p = q + rayDir * accumulatedDistance;
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
+    
+    vec3 ro = vec3(0.0, 1.3, 0.0);
+    vec3 rd = normalize(vec3(uv, 1.1));
 
-        // 1. Rotation Rodrigues
-        vec3 rotationAxis = normalize(vec3(5.4, sin(globalTime) + 7.0, 1.0));
-        float rotationAngle = globalTime * 0.0;
-        float cosA = cos(rotationAngle);
-        float sinA = sin(rotationAngle);
-        p = p * cosA - cross(rotationAxis, p) * sinA + rotationAxis * dot(rotationAxis, p) * (1.0 - cosA);
-
-        // 2. Clamp-Bounded Folding léger
-        vec3 foldingLimits = vec3(0.1, 0.1, 0.1);
-        for (int j = 0; j < 4; j++)
-        {
-            p = 7.3 * clamp(p, -foldingLimits, foldingLimits) - p;
-            float dotP = max(dot(p, p), 1e-4);
-            p /= dotP;
-        }
-
-        // 3. Distance Field via Box Folding
-        float boxDist = 1e5;
-        float v = max(length(p), 1e-4);
-
-        for(float j = 0.7; j < 9.0; j++)
-        {
-            vec2 p_xz_abs = abs(p.xz) - 1.0;
-            float p_y_val = 2.3 - p.y;
-            boxDist = min(boxDist, max(max(p_xz_abs.x, p_xz_abs.y), p_y_val) / v);
-        }
-
-        // 4. Transformation Polaire & Spirale de Fibonacci
-        float lenP = length(p.xz) + 1e-4;
-        float angleP = atan(p.z, p.x);
-        float logR = log(lenP);
-
-        float spiral = (logR / log(phi)) * phi - angleP / tau - globalTime;
-        float pattern = 0.4;
-        float S = 1.0; // Facteur d'échelle local utilisé pour la spirale
-
-        for (int i = 0; i < 16; i++) {
-            float fIter = float(i) + 1.0;
-            float cell = 0.5 - 0.5 * cos(spiral * fIter * tau);
-            float d = abs(cell) / S;
-            pattern += exp(-6.0 * d) * (1.0 / fIter);
-            spiral = log(length(vec2(cell, lenP)) + 0.1) * phi + angleP * phi;
-            S *= 0.185;
-        }
-
-        // 5. Mise à jour du pas e
-        e = clamp(abs(boxDist) * 0.1, 0.01, 0.18);
-        accumulatedDistance += e;
-
-        // 6.3 — Simple Inverse-Exponential Accumulation
-        // Utilisation du pattern géométrique pour moduler le facteur S
-        float geoScale = pattern * 20.0;
-        o += 0.005 / exp(e * geoScale);
+    float t = 0.0, id = 0.0;
+    for(int i=0; i<MAX_STEPS; i++) {
+        vec2 res = map(ro + rd * t);
+        if(res.x < SURF_DIST || t > MAX_DIST) break;
+        t += res.x * 0.5; 
+        id = res.y;
     }
 
-    fragColor = vec4(clamp(o.rgb, 0.0, 1.0), 1.0);
+    vec3 col = vec3(0.01, 0.01, 0.03);
+
+    if(t < MAX_DIST) {
+        vec3 p = ro + rd * t;
+        vec3 n = getNormal(p);
+        vec3 ld = normalize(ro - p);
+        
+        float diff = max(dot(n, ld), 0.1);
+        float spec = pow(max(dot(reflect(-ld, n), -rd), 0.0), 32.0);
+        float ao = clamp(1.0 - t/20.0, 0.0, 1.0);
+
+        if(id > 2.5) col = vec3(1.5, 0.0, 0.0) * (0.5 + 0.5 * sin(iTime * 60.0));
+        else if(id > 1.5) col = vec3(0.05) * diff + spec * 0.6;
+        else col = vec3(0.15) * diff * (0.5 + 0.5 * hash12(p.xz));
+        
+        col *= (4.0 / (1.0 + t * t * 0.15)) * ao;
+        col = mix(col, vec3(0.01, 0.01, 0.03), 1.0 - exp(-0.04 * t));
+    }
+
+    float tMod = mod(iTime, 6.0);
+    if(tMod > 4.4 && tMod < 5.2) {
+        float glare = hash12(uv + vec2(iTime));
+        col += vec3(0.3, 0.0, 0.0) * glare * smoothstep(4.4, 4.6, tMod);
+    }
+
+    fragColor = vec4(pow(col, vec3(0.4545)), 1.0);
 }

@@ -1,68 +1,62 @@
 // ==== Image (image) ====
-highp float Saturer(float valeur) {
-    return clamp(valeur, 0.0, 1.0);
-}
-
-highp vec3 Saturer(vec3 valeur) {
-    return clamp(valeur, 0.0, 1.0);
-}
-
-vec2 CalculerUvGlint(vec2 uv, float temps, float decalage) {
-    float angle = 0.5;
-    float cosinus = cos(angle);
-    float sinus = sin(angle);
-    mat2 rotation = mat2(cosinus, -sinus, sinus, cosinus);
-    vec2 uvTourne = rotation * (uv - 0.5);
-    uvTourne.x += temps * 0.1 + decalage;
-    return (uvTourne + 0.5) * 2.0;
-}
-
-void mainImage(out vec4 couleurSortie, in vec2 coordonneesFragment) {
-    vec2 uv = coordonneesFragment / iResolution.xy;
-    vec2 uvCentre = (coordonneesFragment - 0.5 * iResolution.xy) / iResolution.y;
-    
-    vec2 mouvementTorche = vec2(sin(iTime * 1.1), cos(iTime * 0.8)) * 0.12;
-    float distanceTorche = length(uvCentre - mouvementTorche);
-    
-    float faisceauPrincipal = smoothstep(0.75, 0.0, distanceTorche);
-    float pointChaudCentral = pow(smoothstep(0.35, 0.0, distanceTorche), 3.0);
-    
-    vec3 couleurJauneChaud = vec3(1.0, 0.92, 0.65); 
-    vec3 eclatTorche = couleurJauneChaud * (faisceauPrincipal * 1.5 + pointChaudCentral * 1.2);
-
-    vec3 albedoEntite = 0.5 + 0.5 * cos(uv.xyx + vec3(0, 2, 4));
-    float occlusionTotale = 1.0;
-    vec3 renduOrbes = vec3(0.0);
-    
-    for (float i = 0.0; i < 4.0; i++) {
-        float phase = i * 1.57;
-        vec2 posOrbe = vec2(sin(iTime * 0.7 + phase), cos(iTime * 0.5 + phase)) * 0.5;
-        float distFragment = length(uvCentre - posOrbe);
-        
-        vec2 directionOmbre = normalize(uvCentre - mouvementTorche);
-        float distanceOmbre = length(uvCentre - (posOrbe + directionOmbre * 0.18));
-        float adoucissementOmbre = smoothstep(0.0, 0.4, distanceOmbre);
-        occlusionTotale *= mix(0.3, 1.0, adoucissementOmbre);
-        
-        vec3 colOrbe = 0.5 + 0.5 * cos(iTime + i + vec3(0, 2, 4));
-        float coeur = 0.007 / distFragment;
-        float lueurBloom = pow(Saturer(1.0 - distFragment * 2.2), 12.0) * 3.5;
-        renduOrbes += colOrbe * (coeur + lueurBloom);
+void mainImage(out vec4 v, in vec2 w) {
+    vec2 k = (w - .5 * iResolution.xy) / iResolution.y;
+    float s = length(k);
+    float x = atan(k.y, k.x);
+    float e = log(s) - iTime * .4;
+    vec3 b = vec3(0.);
+    vec3 h = vec3(0.);
+    float f = 0.;
+    const int y = 40;
+    float l = .08;
+    vec3 z = vec3(1., 6., .9);
+    vec3 A = vec3(1.2, -3.8, .8);
+    for(int t = 0; t < y; t++) {
+        float g = iTime * .5 + f * 1.;
+        float d = 1.5;
+        float i = 1.;
+        vec3 noise3 = vec3(0.);
+        vec3 a = x * z + iTime * A;
+        for(int u = 0; u < 12; u++) {
+            vec3 m = vec3(cos(a.x) * 2., sin(a.x) * 2., e * 4.) * d;
+            vec3 n = vec3(cos(a.y) * 2., sin(a.y) * 2., e * 4.) * d;
+            vec3 o = vec3(cos(a.z) * 2., sin(a.z) * 2., e * 4.) * d;
+            m.z += g * d;
+            n.z += g * d;
+            o.z += g * d;
+            noise3.x += dot(sin(m), cos(m.zxy)) * i;
+            noise3.y += dot(sin(n), cos(n.zxy)) * i;
+            noise3.z += dot(sin(o), cos(o.zxy)) * i;
+            d *= 2.;
+            i *=.5;
+        }
+        vec3 c = max(vec3(0.), 1. - abs(noise3));
+        c = pow(c, vec3(4.4));
+        if(max(c.x, max(c.y, c.z)) > .01) {
+            vec3 p = vec3(cos(a.x) * 2., sin(a.x) * 2., e * 4.) + vec3(0., 0., g);
+            vec3 q = vec3(cos(a.y) * 2., sin(a.y) * 2., e * 4.) + vec3(0., 0., g);
+            vec3 r = vec3(cos(a.z) * 2., sin(a.z) * 2., e * 4.) + vec3(0., 0., g);
+            float B = dot(sin(p * 4.), cos(p.zxy * 4.));
+            float C = dot(sin(q * 4.), cos(q.zxy * 4.));
+            float D = dot(sin(r * 4.), cos(r.zxy * 4.));
+            vec3 E = vec3(B, C, D);
+            vec3 F = vec3(p.z, q.z, r.z);
+            vec3 G = 1. + 1. * cos(vec3(0., 1., 2.) + F * 1. + noise3 * 1.3);
+            vec3 H = vec3(1., .6, 0.) * max(vec3(0.), E);
+            vec3 I = G * c + H * pow(c, vec3(2.));
+            float J = 1. / (1. + f * f * .1);
+            b += I * J * l;
+            h += c * l;
+            if(min(h.x, min(h.y, h.z)) >= .95) break;
+        }
+        f += l;
     }
-    
-    vec3 lumiereAmbiante = vec3(0.02, 0.015, 0.03);
-    vec3 eclairageScene = (lumiereAmbiante + eclatTorche) * occlusionTotale;
-    vec3 compositionFinale = albedoEntite * eclairageScene;
-    
-    vec2 uvG1 = CalculerUvGlint(uv, iTime, 0.0);
-    float brillanceGlint = Saturer(sin(uvG1.x * 22.0) * cos(uvG1.y * 22.0));
-    compositionFinale += brillanceGlint * vec3(0.6, 0.3, 1.0) * 0.3 * (faisceauPrincipal + 0.05);
-    
-    compositionFinale += renduOrbes;
-    
-    vec3 noirProfond = vec3(0.002, 0.002, 0.005);
-    float vignetage = Saturer(exp(-length(uvCentre) * 0.7));
-    compositionFinale = mix(noirProfond, compositionFinale, vignetage);
-    
-    couleurSortie = vec4(Saturer(compositionFinale), 1.0);
+    b *= 1.7;
+    b = mix(b, vec3(0.), 1. - exp(-.05 * f * f));
+    b = pow(b, vec3(.4545));
+    b = clamp(b * 1.2, 0., 1.);
+    float j = s * .6;
+    j = .9 - j * j;
+    b *= clamp(j, 0., 1.);
+    v = vec4(b, 1.);
 }

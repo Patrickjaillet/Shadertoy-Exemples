@@ -1,124 +1,156 @@
 // ==== Image (image) ====
-mat2 rot(float a) {
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
+const float PHI = 1.618033988749895;
+const float TAU = 6.283185307179586;
+
+mat2 e(float a){
+    float b=cos(a),s=sin(a);
+    return mat2(b,-s,s,b);
 }
 
-vec3 pal(float t) {
-    vec3 a = vec3(0.55, 0.45, 0.6);
-    vec3 b = vec3(0.45, 0.45, 0.4);
-    vec3 c = vec3(1.0, 0.9, 0.6);
-    vec3 d = vec3(0.3, 0.55, 0.75);
-    return a + b * cos(6.28318 * (c * t + d));
+float n(vec3 a,vec3 b){
+    vec3 c=abs(a)-b;
+    return length(max(c,0.))+min(max(c.x,max(c.y,c.z)),0.);
 }
 
-float map(vec3 p, out float orbit) {
-    float t = iTime * 0.35;
-    p.xz *= rot(t * 0.7);
-    p.xy *= rot(t * 0.5);
+vec2 o(vec2 a,vec2 b){
+    return(a.x<b.x)?a:b;
+}
 
-    float scale = 1.0;
-    orbit = 1e10;
+float smin(float a, float b, float k){
+    float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+    return mix(b, a, h) - k * h * (1.0 - h);
+}
 
-    for (int i = 0; i < 8; i++) {
-        p = abs(p) - 0.3;
-        float r2 = dot(p, p);
-        float k = 1.6 / clamp(r2, 0.1, 1.2);
-        p *= k;
-        scale *= k;
-
-        float spin = t * (1.0 + 0.4 * float(i));
-        p.xy *= rot(spin);
-        p.xz *= rot(spin * 0.7);
-
-        orbit = min(orbit, r2 * 0.25 + float(i) * 0.05);
+vec2 g(vec3 a){
+    vec2 f=vec2(1e5,0.);
+    vec3 d=a;
+    d.xz*=e(iTime*.15);
+    d.yz*=e(iTime*.08);
+    vec3 c=d;
+    float j=1.,h=1e5,l=sin(iTime*.2)*TAU;
+    for(int b=0;b<9;b++){
+        c=abs(c)-vec3(0.,.18,.38)*pow(PHI,-float(b)*.1);
+        c.xy*=e(PHI*2.39996);
+        c.xz*=e(PHI*6.472+l);
+        c*=1.38;
+        j*=1.38;
+        float m=n(c,vec3(.27,.4,.08))/j;
+        h=min(h,m);
     }
-
-    return (length(p) - 1.0) / scale;
+    
+    vec3 i=d;
+    
+    // Trajectoire en douceur sans rupture aux extremites
+    float orbitProgress = iTime * 0.8;
+    float orbitRadius = smoothstep(-0.2, 0.2, sin(iTime * 0.4)) * 1.1;
+    
+    vec3 cubeOffset = vec3(
+        cos(orbitProgress) * orbitRadius,
+        sin(orbitProgress * 2.0) * 0.25 * orbitRadius,
+        sin(orbitProgress) * orbitRadius
+    );
+    
+    i -= cubeOffset;
+    
+    i.xy*=e(iTime*.5);
+    i.yz*=e(iTime*.3);
+    
+    // SDFs d'origines nettoyées de micro-imperfections
+    float dBox = n(i, vec3(.06*PHI))-.02;
+    float dSphere = length(i) - .085;
+    float dTorus = length(vec2(length(i.xz) - .065, i.y)) - .022;
+    
+    // Morphing continu sans coutures visuelles via smin
+    float mFactor = 0.5 + 0.5 * sin(iTime * 1.5);
+    float morph1 = smin(dBox, dSphere, 0.04);
+    float p = smin(morph1, dTorus, 0.04 * mFactor);
+    p = mix(dBox, p, mFactor);
+    
+    f=o(f,vec2(h,1.));
+    f=o(f,vec2(p,3.));
+    return f;
 }
 
-float calcAO(vec3 p, vec3 n) {
-    float occ = 0.0;
-    float sca = 1.0;
-    for (int i = 0; i < 5; i++) {
-        float h = 0.01 + 0.12 * float(i) / 4.0;
-        float dummy;
-        float d = map(p + n * h, dummy);
-        occ += (h - d) * sca;
-        sca *= 0.7;
-    }
-    return clamp(0.0 - 0.0 * occ, 0.0, 0.0);
-}
-
-vec3 calcNormal(vec3 p) {
-    vec2 e = vec2(0.0015, 0.0);
-    float dummy;
+vec3 t(vec3 a){
+    vec2 b=vec2(1e-3,0.);
     return normalize(vec3(
-        map(p + e.xyy, dummy) - map(p - e.xyy, dummy),
-        map(p + e.yxy, dummy) - map(p - e.yxy, dummy),
-        map(p + e.yyx, dummy) - map(p - e.yyx, dummy)
+        g(a+b.xyy).x-g(a-b.xyy).x,
+        g(a+b.yxy).x-g(a-b.yxy).x,
+        g(a+b.yyx).x-g(a-b.yyx).x
     ));
 }
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
+float u(vec3 a,vec3 f){
+    float c=0.,d=1.;
+    for(int b=0;b<5;b++){
+        float h=.001+.15*float(b)/4.,i=g(a+h*f).x;
+        c+=(h-i)*d;
+        d*=.85;
+    }
+    return clamp(1.-3.1*c,0.,1.);
+}
 
-    vec3 ro = vec3(0.0, 0.0, -1.1 + 0.0 * sin(iTime * 0.2));
-    vec3 fwd = normalize(vec3(0.0, 0.0, 1.0));
-    vec3 right = normalize(cross(vec3(0, 1, 0), fwd));
-    vec3 up = cross(fwd, right);
-    vec3 rd = normalize(fwd * 1.4 + uv.x * right + uv.y * up);
+float v(vec3 j,vec3 d,float a,float c,float l){
+    float f=1.,i=a;
+    for(int b=0;b<74;b++){
+        float h=g(j+d*i).x;
+        f=min(f,l*h/i);
+        i+=max(h*.5,.002);
+        if(f<.001||i>c)break;
+    }
+    return clamp(f,0.,1.);
+}
 
-    float t = 0.0;
-    float glow = 0.0;
-    bool hit = false;
-    vec3 hitP;
-    float hitOrbit = 0.0;
+vec3 k(vec3 d){
+    float a=dot(d,vec3(0.,1.,0.))*0.+0.;
+    vec3 c=mix(vec3(.01,.015,.03),vec3(.08,.04,.01),a);
+    float b=pow(max(dot(d,normalize(vec3(1.,.1,-1.5))),0.),32.);
+    return c+vec3(1.,.8,.5)*b*2.;
+}
 
-    for (int i = 0; i < 100; i++) {
-        vec3 p = ro + rd * t;
-        float orbit;
-        float d = map(p, orbit);
-        glow += 0.0028 / (0.02 + d * d * 14.0);
-
-        if (d < 0.0008) {
-            hit = true;
-            hitP = p;
-            hitOrbit = orbit;
+void mainImage(out vec4 w,in vec2 A){
+    vec2 B=(A-.5*iResolution.xy)/iResolution.y;
+    vec3 j=vec3(0.,0.,-2.8),d=normalize(vec3(B,1.2));
+    if(iMouse.z>0.){
+        vec2 a=(iMouse.xy-.5*iResolution.xy)/iResolution.y*3.14159;
+        j.yz*=e(-a.y);
+        j.xz*=e(-a.x);
+        d.yz*=e(-a.y);
+        d.xz*=e(-a.x);
+    }
+    vec2 f=vec2(0.);
+    float i=.01,C=10.;
+    for(int b=0;b<300;b++){
+        vec3 a=j+d*i;
+        vec2 h=g(a);
+        if(abs(h.x)<1e-4){
+            f=vec2(i,h.y);
             break;
         }
-
-        t += d * 0.72;
-        if (t > 14.0) break;
+        if(i>C)break;
+        i+=h.x*.25;
     }
-
-    vec3 bg = mix(vec3(0.01, 0.01, 0.03), vec3(0.05, 0.02, 0.08), 0.5 + 0.5 * uv.y);
-    vec3 result = bg;
-
-    if (hit) {
-        vec3 n = calcNormal(hitP);
-        float ao = calcAO(hitP, n);
-
-        vec3 lightDir = normalize(vec3(0.0, 0.0, -5.6));
-        float diff = max(dot(n, lightDir), 0.0);
-        float spec = pow(max(dot(reflect(-lightDir, n), -rd), 0.0), 0.0);
-        float fres = pow(0.0 - max(dot(n, -rd), 0.0), 0.0);
-
-        vec3 base = pal(hitOrbit * 1.8 + iTime * 0.05);
-        vec3 surf = base * (0.25 + 0.9 * diff) * ao;
-        surf += spec * vec3(1.0, 0.95, 0.85) * ao;
-        surf += fres * base * 1.4;
-
-        float fog = exp(-t * 0.12);
-        result = mix(bg, surf, fog);
+    vec3 c=vec3(.002,.003,.005);
+    if(f.x>0.){
+        vec3 a=j+d*f.x,b=t(a),l=-d,D=reflect(-l,b);
+        float E=u(a,b);
+        vec3 m=normalize(vec3(2.5,3.5,-2.)),F=normalize(vec3(-2.5,-1.5,1.));
+        float p=v(a+b*.001,m,.01,4.,16.);
+        vec3 q=vec3(1.,.78,.34),h=vec3(.39,.55,.15);
+        if(f.y==3.){
+            q=vec3(1.,.3,.1);
+            h=vec3(.9,.1,.05);
+        }
+        float G=max(dot(b,m),0.),H=max(dot(b,F),0.);
+        vec3 I=normalize(m+l);
+        float J=max(dot(b,I),0.),K=pow(J,29.8),L=pow(1.-max(dot(b,l),0.),8.3);
+        vec3 r=mix(q,vec3(1.),L),M=k(b)*h*.2,N=h*G*p*vec3(1.,1.,0.),O=h*H*0.*vec3(.5,.4,1.),P=r*K*6.*p,Q=k(D)*r*.8;
+        c=(M+N+O+P+Q)*E;
+        float R=exp(-f.x*0.);
+        c=mix(vec3(.002,.003,.005),c,R);
     }
-
-    vec3 glowCol = pal(0.0 + 1.00 * sin(iTime * 0.3)) * glow * 0.55;
-    result += glowCol;
-
-    result = result / (1.0 + result);
-    result = pow(result, vec3(0.82, 0.84, 0.86));
-    result *= 1.0 - 0.49 * dot(uv, uv);
-
-    fragColor = vec4(result, 1.0);
+    else c=k(d)*.25;
+    c/=(vec3(.6)+c);
+    c=pow(c,vec3(.4545));
+    w=vec4(c,1.);
 }

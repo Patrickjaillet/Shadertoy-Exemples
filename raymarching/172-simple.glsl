@@ -1,135 +1,77 @@
 // ==== Image (image) ====
-#define MENGER_ITER 4
-#define JULIA_ITER 80
-#define MAX_STEPS 100
-#define SURF_DIST 0.001
-#define MAX_DIST 25.0
-#define SAMPLES 2
+/*%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£%*
+ù  ____    _    _   _ ____  _____ _____   _  ___  ____  ____   ù
+ù / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \  ù
+ù \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | | ù
+ù  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| | ù
+ù |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/  ù
+ù                       PATRICK JAILLET                        ù
+ù - https://patrickjaillet.github.io/sandefjord-software       ù
+ù - https://x.com/JailletPatrick                               ù
+$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£*/
 
-mat2 Rot(float a) {
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
+mat2 q(float a){
+    float b=cos(a),d=sin(a);
+    return mat2(b,-d,d,b);
 }
-
-vec3 palette(float t) {
-    vec3 a = vec3(0.5, 0.5, 0.5);
-    vec3 b = vec3(0.5, 0.5, 0.5);
-    vec3 c = vec3(1.0, 1.0, 1.0);
-    vec3 d = vec3(0.00, 0.33, 0.67);
-    return a + b * cos(6.28318 * (c * t + d + iTime * 0.1));
+float k(vec2 a){
+    a=fract(a*vec2(123.34,456.21));
+    a+=dot(a,a+45.32);
+    return fract(a.x*a.y);
 }
-
-vec3 getIridescence(vec3 p, vec3 n, float t) {
-    float d = dot(p, n) * 0.3 + t * 0.1;
-    return 0.6 + 0.4 * cos(6.28318 * (d + vec3(0.1, 0.4, 0.7)));
+float A(vec2 a){
+    vec2 b=floor(a),c=fract(a),d=c*c*(3.-2.*c);
+    return mix(mix(k(b+vec2(0.)),k(b+vec2(1.,0.)),d.x),mix(k(b+vec2(0.,1.)),k(b+vec2(1.)),d.x),d.y);
 }
-
-vec3 getJuliaBackground(vec2 uv, float t) {
-    vec2 c = vec2(-0.745 + sin(t * 0.2) * 0.1, 0.11 + cos(t * 0.3) * 0.1);
-    vec2 z = uv * 1.5;
-    float iter = 0.0;
-    float m2 = 0.0;
-    for(int i = 0; i < JULIA_ITER; i++) {
-        z = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y) + c;
-        m2 = dot(z, z);
-        if(m2 > 10.0) break;
-        iter++;
+float r(vec2 a){
+    float c=0.,d=.5;
+    mat2 e=mat2(.8,.6,-.6,.8);
+    for(int b=0;b<4;b++){
+        c+=d*A(a);
+        a=e*a*2.03;
+        d*=.5;
     }
-    if (iter >= float(JULIA_ITER)) return vec3(0.98, 0.98, 1.0);
-    float dist = iter - log2(log2(m2)) + 4.0;
-    return palette(dist * 0.05);
+    return c;
 }
-
-float sdMengerTorus(vec3 p, float t) {
-    float r1 = 2.2; 
-    float r2 = 0.58;
-    float angle = atan(p.z, p.x);
-    vec2 cp = vec2(length(p.xz) - r1, p.y);
-    cp *= Rot(angle * 3.0 + t * 0.3); 
-    vec3 q = vec3(cp, angle * r1);
-    q += sin(q.zxy * 3.5 + t) * 0.05;
-    float d = length(max(abs(q) - vec3(r2), 0.0));
-    float s = 1.0;
-    for (int i = 0; i < MENGER_ITER; i++) {
-        vec3 a = mod(q * s, 2.0) - 1.0;
-        s *= 3.0;
-        vec3 r = abs(1.0 - 3.0 * abs(a));
-        float c = (min(max(r.x, r.y), min(max(r.y, r.z), max(r.z, r.x))) - 1.0) / s;
-        d = max(d, c);
-    }
-    return d;
-}
-
-float GetDist(vec3 p, float t) {
-    float d = sdMengerTorus(p, t);
-    vec3 dp = p;
-    dp.xz *= Rot(t * 0.1);
-    dp = mod(dp + 2.5, 5.0) - 2.5;
-    return min(d, length(dp) - 0.04);
-}
-
-vec3 GetNormal(vec3 p, float t) {
-    float d = GetDist(p, t);
-    vec2 e = vec2(0.001, 0);
-    return normalize(d - vec3(GetDist(p-e.xyy, t), GetDist(p-e.yxy, t), GetDist(p-e.yyx, t)));
-}
-
-vec3 render(vec2 uv, float t) {
-    vec3 ro = vec3(6.5 * sin(t * 0.1), 2.5 * cos(t * 0.08), 6.5 * cos(t * 0.1));
-    vec3 lookat = vec3(0, 0, 0);
-    vec3 f = normalize(lookat - ro), r = normalize(cross(vec3(0,1,0), f)), u = cross(f, r);
-    vec3 rd = normalize(f + uv.x * r + uv.y * u);
-
-    float dO = 0.0;
-    for(int i=0; i<MAX_STEPS; i++) {
-        float dS = GetDist(ro + rd * dO, t);
-        if(abs(dS) < SURF_DIST || dO > MAX_DIST) break;
-        dO += dS * 0.75;
-    }
-
-    vec3 col = getJuliaBackground(uv, t);
-
-    if(dO < MAX_DIST) {
-        vec3 p = ro + rd * dO;
-        vec3 n = GetNormal(p, t);
-        vec3 refR = reflect(rd, n);
-        
-        float dRef = 0.0;
-        for(int i=0; i<40; i++) {
-            float dS = GetDist((p + n * 0.01) + refR * dRef, t);
-            if(abs(dS) < SURF_DIST || dRef > 5.0) break;
-            dRef += dS;
+void mainImage(out vec4 B,in vec2 C){
+    vec2 s=(C-.5*iResolution.xy)/iResolution.y;
+    vec3 l=normalize(vec3(s,1.)),D=vec3(0.,0.,-1.);
+    float i=iTime;
+    l.xy*=q(i*.05);
+    l.xz*=q(sin(i*.1)*0.);
+    vec3 a=D,c=vec3(0.);
+    float g=0.,e=g;
+    for(float b=0.;b<50.;b++){
+        e=length(a);
+        float t=atan(a.y,a.x);
+        vec3 f=vec3(log(e)-i,exp(.7-a.z/e)-1.,t+i*.4);
+        vec2 u=vec2(f.x, (sin(t)+1.)*2.);
+        float E=r(u);
+        vec2 F=vec2(sin(f.z*16.),cos(f.x*16.))*0.;
+        float m=r(u+F*4.),d=1.,n=f.y+E*0.;
+        for(int v=0;v<10;v++){
+            vec3 G=f.yzz*d;
+            n+=dot(sin(G)-1.,.3-sin(f.zxx*d))/d*.2;
+            d*=2.;
         }
-        
-        vec3 refCol = getJuliaBackground(uv + refR.xy * 0.15, t);
-        if(dRef < 5.0) {
-            vec3 pRef = (p + n * 0.01) + refR * dRef;
-            vec3 nRef = GetNormal(pRef, t);
-            refCol = getIridescence(pRef, nRef, t) * 0.5;
-        }
-
-        float fresnel = pow(1.0 - max(dot(n, -rd), 0.0), 5.0);
-        vec3 iris = getIridescence(p, n, t);
-        float diff = clamp(dot(n, normalize(vec3(1, 2, 3))), 0.2, 1.0);
-        
-        col = mix(iris * diff, refCol, 0.2 + 0.8 * fresnel);
-        col += pow(fresnel, 3.0) * 0.4;
+        g=n;
+        float o=min(g*d,.7-g)/35.;
+        o=clamp(o,0.,1.);
+        float h=clamp(abs(n)*8.+m*.1,0.,.3);
+        vec3 H=vec3(.04,.02,.02),w=vec3(.7,.02,0.),p=vec3(1.,.3,0.),I=vec3(1.,.9,.35),j;
+        if(h<.25)j=mix(I,p,h*1.9);
+        else if(h<.4)j=mix(p,w,(h-.25)*2.857);
+        else j=mix(w,H,(h-.6)*2.5);
+        float J=sin(f.z*0.-i*12.+m*25.12)*.7+1.;
+        j+=p*J*(1.-h)*.6;
+        float K=1./(.9+g*g*40.);
+        c+=j*o*(1.2+m*.8)*K*(1.-b/120.);
+        a+=l*max(g*e*.18,.002);
+        if(e>25.)break;
     }
-    return col;
-}
-
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    vec3 finalCol = vec3(0);
-
-    for(int i=0; i<SAMPLES; i++) {
-        float t = iTime - (float(i) / float(SAMPLES)) * 0.02;
-        finalCol += render(uv, t);
-    }
-    
-    finalCol /= float(SAMPLES);
-    finalCol = pow(finalCol, vec3(0.4545)); 
-    finalCol *= 1.0 - length(uv) * 0.1; 
-    
-    fragColor = vec4(finalCol, 1.0);
+    c=mix(c,vec3(.02,.005,.002),1.-exp(-.89*e*e));
+    c=pow(c,vec3(.4545));
+    c=c*c*(3.-2.*c);
+    c*=1.25-length(s)*.65;
+    B=vec4(clamp(c,0.,1.),1.);
 }

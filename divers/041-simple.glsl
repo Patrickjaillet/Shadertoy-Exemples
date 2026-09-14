@@ -1,120 +1,146 @@
 // ==== Image (image) ====
-#define R iResolution.xy
-#define T iTime
-#define M iMouse
-#define MAX_STEPS 160
-#define SURF_DIST 0.001
-#define MAX_DIST 50.0
+#define ITR 120
+#define FAR 150.
+#define time iTime
+#define MOD3 vec3(.1031, .11369, .13787)
+#define SUN_COLOUR vec3(1.0, 0.9, 0.7)
+#define BIOLUM_COLOUR vec3(0.2, 0.8, 0.6)
 
-mat2 rot(float a) {
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
+mat2 mm2(in float a){float c = cos(a), s = sin(a);return mat2(c,s,-s,c);}
+float tri(in float x){return abs(fract(x)-.5);}
+vec3 tri3(in vec3 p){return vec3(tri(p.z+tri(p.y)), tri(p.z+tri(p.x)), tri(p.y+tri(p.x)));}
+
+float hash12(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * MOD3);
+    p3 += dot(p3, p3.yzx + 19.19);
+    return fract((p3.x + p3.y) * p3.z);
+}
+
+float Noise3d(in vec3 p) {
+    float z=1.4;
+    float rz = 0.;
+    vec3 bp = p;
+    for (float i=0.; i<= 3.; i++ ) {
+        vec3 dg = tri3(bp);
+        p += (dg);
+        bp *= 1.1;
+        z *= 1.5;
+        p *= 1.3;
+        rz+= (tri(p.z+tri(p.x+tri(p.y))))/z;
+        bp += 0.14;
+    }
+    return rz;
+}
+
+float ridged(float h) {
+    return 1.0 - abs(h - 0.5) * 2.0;
+}
+
+float smin(float a, float b, float k) {
+    float h = clamp(0.5 + 0.5*(b-a)/k, 0.0, 1.0);
+    return mix(b, a, h) - k*h*(1.0-h);
+}
+
+float tendril(vec3 p, float seed) {
+    p.xz *= mm2(p.y * 0.2 + seed);
+    p.x += sin(p.y * 0.4) * 2.0;
+    float d = length(p.xz) - (0.5 + sin(p.y * 2.0 + time) * 0.1);
+    return d;
 }
 
 float map(vec3 p) {
-    float s1 = 0.5 + 0.5 * sin(T * 0.4);
-    float s2 = 0.5 + 0.5 * cos(T * 0.3);
-    float warp = 1.0 + 0.3 * sin(p.z * 0.05 + T);
-    p.xy *= rot(p.z * 0.02 * warp * s2);
-    
-    float scale = 1.0;
-    for(int i = 0; i < 6; i++) {
-        p.xy = abs(p.xy) - vec2(1.0, 1.5) * warp;
-        p.xy *= rot(0.2 + s1 * 0.3);
-        float s = 1.6 / clamp(dot(p.xy, p.xy), 0.25, 1.6);
-        p.xy *= s;
-        scale *= s;
+    vec2 uv = p.xz * 0.05;
+    float h = 0.0;
+    float amp = 1.5;
+    float freq = 0.6;
+    for(int i=0; i<6; i++) {
+        h += ridged(Noise3d(vec3(uv * freq, 0.0).xyz)) * amp;
+        uv *= mm2(0.8);
+        freq *= 1.9;
+        amp *= 0.45;
     }
-    
-    float geom = (length(p.xy) - 0.18) / scale;
-    float tunnel = -(length(p.xy) - 4.8 * warp);
-    return max(geom, tunnel * 0.5);
+    float terrain = p.y + h * 4.0;
+    float structures = tendril(p - vec3(5.0, 0.0, 10.0), 1.0);
+    structures = smin(structures, tendril(p + vec3(8.0, 2.0, -5.0), 4.5), 2.0);
+    float disp = Noise3d(p * 0.5) * 0.3;
+    return smin(terrain, structures, 1.5) + disp;
 }
 
-vec3 getNormal(vec3 p) {
-    vec2 e = vec2(0.002, 0.0);
-    return normalize(vec3(map(p+e.xyy)-map(p-e.xyy),
-                          map(p+e.yxy)-map(p-e.yxy),
+vec3 getNormal(in vec3 p) {
+    vec2 e = vec2(0.01, 0.0);
+    return normalize(vec3(map(p+e.xyy)-map(p-e.xyy), 
+                          map(p+e.yxy)-map(p-e.yxy), 
                           map(p+e.yyx)-map(p-e.yyx)));
 }
 
-float getAO(vec3 p, vec3 n) {
-    float occ = 0.0;
-    float sca = 1.0;
-    for(int i = 0; i < 5; i++) {
-        float hr = 0.01 + 0.12 * float(i) / 4.0;
-        float dd = map(p + n * hr);
-        occ += -(dd - hr) * sca;
-        sca *= 0.95;
+float volumetric(vec3 ro, vec3 rd, float max_d) {
+    float d = 0.0;
+    float res = 0.0;
+    for(int i=0; i<30; i++) {
+        vec3 p = ro + rd * d;
+        if(d > max_d) break;
+        res += Noise3d(p * 0.2 + time * 0.1) * smoothstep(1.0, 0.0, p.y * 0.1);
+        d += max_d / 30.0;
     }
-    return clamp(1.0 - 3.0 * occ, 0.0, 1.0);
+    return res * 0.08;
 }
 
-vec3 getPal(float t, float var) {
-    vec3 c1 = vec3(0.95, 0.05, 0.4);
-    vec3 c2 = vec3(0.05, 0.75, 1.0);
-    vec3 c3 = vec3(0.4, 0.1, 0.9);
-    float m = 0.5 + 0.5 * sin(t * 0.15 + var);
-    return mix(mix(c1, c2, m), c3, 0.5 + 0.5 * cos(t * 0.25));
-}
-
-vec3 ace(vec3 x) {
-    return clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
+float shadow(in vec3 ro, in vec3 rd) {
+    float res = 1.0;
+    float t = 0.1;
+    for(int i=0; i<16; i++) {
+        float h = map(ro + rd * t);
+        res = min(res, 8.0 * h / t);
+        t += clamp(h, 0.02, 0.5);
+        if(h < 0.001 || t > 10.0) break;
+    }
+    return clamp(res, 0.0, 1.0);
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * R) / iResolution.y;
-    float dither = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
+    float camPath = time * 0.2;
+    vec3 ro = vec3(cos(camPath)*15.0, 8.0 + sin(time*0.3)*2.0, sin(camPath)*15.0);
+    vec3 lookAt = vec3(0.0, 2.0, 0.0);
+    vec3 f = normalize(lookAt - ro);
+    vec3 r = normalize(cross(vec3(0.0, 1.0, 0.0), f));
+    vec3 u = cross(f, r);
+    vec3 rd = normalize(f + uv.x * r + uv.y * u);
     
-    vec3 ro = vec3(0, 0, -4.5);
-    vec3 rd = normalize(vec3(uv, 1.1));
-    rd.xy *= rot(sin(T * 0.1) * 0.1);
-    
-    float t = 0.0 + 0.02 * dither, d;
-    float glow = 0.0;
-    float cloud = 0.0;
-    
-    for(int i = 0; i < MAX_STEPS; i++) {
-        vec3 p = ro + rd * t;
-        d = map(p);
-        if(abs(d) < SURF_DIST || t > MAX_DIST) break;
-        glow += exp(-d * 3.5) * (0.04 + 0.01 * sin(T + t));
-        cloud += exp(-abs(d) * 1.5) * 0.02;
-        t += d * 0.75;
+    float t = 0.0;
+    for(int i=0; i<ITR; i++) {
+        float d = map(ro + rd * t);
+        if(abs(d) < 0.001 * t || t > FAR) break;
+        t += d * 0.6;
     }
     
-    vec3 col = vec3(0.005, 0.0, 0.01);
+    vec3 col = vec3(0.8, 0.9, 1.0);
+    vec3 sunDir = normalize(vec3(0.5, 0.8, -0.5));
     
-    if(t < MAX_DIST) {
-        vec3 p = ro + rd * t;
-        vec3 n = getNormal(p);
-        float ao = getAO(p, n);
-        float rim = pow(1.0 - max(dot(n, -rd), 0.0), 3.5);
-        float diff = max(dot(n, normalize(vec3(1, 2, -1))), 0.0) * 0.5;
-        
-        vec3 base = getPal(p.z + T * 1.5, rim);
-        col = base * (diff + 0.1) * ao;
-        col += base * rim * 3.0 * ao;
-        col = mix(col, vec3(0.01, 0.005, 0.02), 1.0 - exp(-0.035 * t));
+    if(t < FAR) {
+        vec3 pos = ro + rd * t;
+        vec3 nor = getNormal(pos);
+        vec3 ref = reflect(rd, nor);
+        float occ = clamp(map(pos + nor * 1.5), 0.0, 1.0);
+        float sha = shadow(pos, sunDir);
+        float dif = clamp(dot(nor, sunDir), 0.0, 1.0);
+        float spe = pow(clamp(dot(ref, sunDir), 0.0, 1.0), 32.0);
+        float fre = pow(1.0 + dot(rd, nor), 4.0);
+        vec3 baseCol = mix(vec3(0.9, 0.85, 0.8), vec3(0.7, 0.9, 1.0), nor.y * 0.5 + 0.5);
+        vec3 irid = 0.5 + 0.5 * cos(time + pos.y + vec3(0, 2, 4));
+        baseCol = mix(baseCol, irid, fre * 0.5);
+        col = baseCol * (dif * sha + 0.2);
+        col += SUN_COLOUR * spe * sha;
+        col += BIOLUM_COLOUR * fre * (0.5 + 0.5 * sin(pos.y * 0.5 - time * 2.0));
+        col *= occ;
     }
     
-    col += getPal(T * 0.5, 0.0) * glow * 0.45;
-    col += getPal(T * 0.8, 1.0) * cloud * 0.12;
-
-    float r = length(uv);
-    for(float i = 0.0; i < 6.0; i++) {
-        float angle = i * 1.047;
-        vec2 dir = vec2(cos(angle), sin(angle));
-        float burst = 0.01 / (abs(dot(uv, dir)) + 0.02);
-        col += getPal(T, i) * burst * 0.05 * exp(-r * 2.0);
-    }
-    
-    col = ace(col * 1.8);
-    col = pow(col, vec3(0.4545));
-    
-    float vign = smoothstep(1.4, 0.35, r);
-    col *= vign;
-    col += (dither - 0.5) * 0.008;
-
+    float vol = volumetric(ro, rd, min(t, FAR));
+    col = mix(col, SUN_COLOUR, 1.0 - exp(-0.0002 * t * t));
+    col += BIOLUM_COLOUR * vol;
+    col = smoothstep(-0.05, 1.05, col);
+    col = pow(col, vec3(2.0));
+    vec2 q = fragCoord.xy / iResolution.xy;
+    col *= 0.5 + 0.5 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.1);
     fragColor = vec4(col, 1.0);
 }

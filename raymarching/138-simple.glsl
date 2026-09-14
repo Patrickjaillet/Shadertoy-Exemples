@@ -1,28 +1,49 @@
 // ==== Image (image) ====
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec4 o = vec4(0.0);
-    float i = 0.0, e = 0.0, R = 0.0, s = 0.0;
-    vec3 q = vec3(0.0), p = vec3(0.0), d = vec3(fragCoord.xy / iResolution.y * 0.6 - vec2(0.4, -0.6), 0.5);
-    q.zy -= 1.0;
-    
-    for(; i++ < 70.0;) {
-        float hue = 0.55 + q.z * 0.04;
-        float sat = 1.0 - e * 0.3;
-        float val = min(e * s, 1.0) / 64.0;
-        
-        vec3 c = clamp(abs(mod(hue * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
-        vec3 hsvColor = val * mix(vec3(1.0), c, sat);
-        o.rgb += hsvColor;
-        
-        s = 3.0;
-        p = q += d * e * R * 0.5 + 1e-4;
-        R = length(p);
-        p = vec3(log(R) - iTime * 0.2, exp(-p.z / R) + 0.23, atan(p.y, p.x));
-        
-        e = --p.y;
-        for(; s < 1e3; s += s) {
-            e += dot(cos(p.zxx * s), 0.7 + sin(p.yzy * s)) / s * 0.5;
+/*%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£%*
+ù  ____    _    _   _ ____  _____ _____   _  ___  ____  ____   ù
+ù / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \  ù
+ù \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | | ù
+ù  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| | ù
+ù |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/  ù
+ù                       PATRICK JAILLET                        ù
+ù - https://patrickjaillet.github.io/sandefjord-software       ù
+ù - https://x.com/JailletPatrick                               ù
+ù - https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g   ù
+$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£*/
+mat2 f(float a){
+    float b=sin(a),c=cos(a);
+    return mat2(c,-b,b,c);
+}
+void mainImage(out vec4 m,in vec2 n){
+    vec2 h=iResolution.xy;
+    float e=iTime;
+    vec3 c=vec3(0.),g=vec3(0.,0.,-.3);
+    g.xy+=vec2(sin(e),cos(e*.3))*.5;
+    vec2 o=(n*2.-h)/h.y;
+    vec3 i=vec3(o,.5);
+    i.xy*=f(e*0.);
+    float d=0.,b=d,p=b;
+    for(int j=0;j<135;j++){
+        vec3 a=g;
+        a.xz*=f(e*0.);
+        a.yz*=f(e*.4);
+        b=3.8;
+        a=1.-abs(a);
+        for(int k=0;k<3;k++){
+            a=abs(a)-1.;
+            d=4.2/min(dot(a,a),1.9);
+            b*=d;
+            a=abs(a)*d-3.8;
+            a.z+=4.2;
         }
+        d=length(a.xz)/b;
+        float l=max(d,0.);
+        p+=l;
+        g+=i*l;
+        float q=exp(-d*40.6);
+        c+=vec3(q)*.015;
     }
-    fragColor = vec4(o.rgb, 1.0);
+    c=pow(c,vec3(4.2));
+    c=1.-exp(-c);
+    m=vec4(c,0.);
 }

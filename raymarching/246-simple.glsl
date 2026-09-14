@@ -1,110 +1,155 @@
 // ==== Image (image) ====
-/*%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£%*
-ù  ____    _    _   _ ____  _____ _____   _  ___  ____  ____   ù
-ù / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \  ù
-ù \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | | ù
-ù  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| | ù
-ù |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/  ù
-ù                       PATRICK JAILLET                        ù
-ù - https://patrickjaillet.github.io/sandefjord-software       ù
-ù - https://x.com/JailletPatrick                               ù
-$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£*/
+//*====================================================================================*//
+//                                                                                      //
+//  _______ _______ _______ _______ _______ _______ _______ _____  _______ ______       //
+// |   |   |    ___|_     _|   _   |     __|   |   |   _   |     \|    ___|   __ \      //
+// |       |    ___| |   | |       |__     |       |       |  --  |    ___|      <      //
+// |__|_|__|_______| |___| |___|___|_______|___|___|___|___|_____/|_______|___|__|      //
+//                                                                                      //
+//======================================================================================//
+//:: [ Optimized for NVIDIA GeForce GT 1030 GDDR5 2Go ] ::                              //
+//======================================================================================//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░▒░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░▒▒▒▒░░░░░░░░░░░░░░░░ ░░░▒░░░░░░░░░░░░░░░▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░▒▒░░░░░░░░░░░░░░░▒░░░░▒░░▒░░░░░░░░░▒▒░░░░░▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▒▒░░░░░░░░░░░░░░░░░░░░▒▒▒░░▒▒▒░░▒▒▒▒▒▒▒ ▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░░   ░░░░░░░░░▒▒▒░▒▒▒▒░░▒▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▒░░░░░░░░░ ░▒▒▒▒▒░ ░░░░░░░▒░░░░▒░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ ░ ▒░░░░░░░░░▒▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▒▒▒▒░░░░░ ▒▒▓▒▓▒▒▒▒░░ ░░░░░░░▒▒░░░░░░░░░░░ ▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▒▓▓ ░░░ ▒▒▒▓▓▒▒░▓▒░░ ░░░░░░░▒▒▒▒░░░░░░░░░░░ ▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▒▓▒▒░░░▒▒▒▒▓▓▓░▓▓ ░░░░░░░░░▒▒▒▒▒▒░░░░░░░ ░░░░▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▒▓▒▓▓░▒▒▓▓▓▓▓▓░▓▓ ░ ░░░░░░▒▒▒▒▒▒▒▒░░░▒▒▒▒░░░░░▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░▓▒▓▓▒▓▓▓▓▓▓▓▒▒▓▓ ░▒░░░░░░▒▒▒▒▒▒▒▒░▒▒▒▒▒░ ░░░░░▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▓░░░░▒░▓▓▓▓▓▓▓▓▒▒▒░░ ░░░░ ░▒▒▒▒▒▒▒▒░▓▒▒░░░▒▒▒▒▒░░▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ ▓▓▓▓▓▓▓▒░░▒▒▒▒▒▒░░▒▒▒░  ▒ ░▒▒▒▒▒▒░▒▒░ ▒▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░   ░▒▒▒▒▒▒▒▒▒▒▒▒░ ░░ ▒ ▒▒░ ░▒▒▒░▒▒▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░    ░▒▒▒▒▒▒▒▒░ ░░░░░▒ ▒▒░░▒▒░░░  ▒▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░   ░░░░░░░░░░  ░░▒▒▒▒░░ ▒▒▒▒▒▒▒ ▒▒▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░ ░    ░░▒▒▒▒▒▒░▒░░░░▒▒▒▒▒  ░░▒▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░ ░░     ░░░░░░░░ ░▒▒▒░ ░▒░░░▒░░░ ▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░ ░▒▒▒▒▒▒░░░░░░░░░ ░░ ▒▒▒░░▒▒▒░░░░░░▒▒▒▒▒▒▒▒▒//
+//▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░▒▒▒▒▒▒▒▒░░░░  ░ ░ ░▒▒░░░░░░░░▒▒▒░░░ ▒▒▒▒▒▒▒▒//
+//======================================================================================//
+//:: [ CREDITS ] ::                                                                     //
+//======================================================================================//
+//  >>  Author  : Patrick JAILLET                                                       //
+//  >>  Email   : metashader@proton.me                                                  //
+//  >>  Engine  : MetaShader                                                            //
+//  >>  URL     : https://0110110101110011.netlify.app                                  //
+//*====================================================================================*//
+#define AA 1
 
-/*Quelques infos sur les modification du shader original:
-- cCalcul d'éclairage 3D et du super-échantillonnage
-- Integration du pavage Domaine/Log-Polaire
-- Géométrie analytique (SDF)
-- Distance Estimator
-- Version golfé 100% safe.
-*/
-vec3 j(float c,vec3 b,vec3 a,vec3 d,vec3 e){
-    return b+a*cos(6.2831855e0*(d*c+e));
+mat2 rot(float a) {
+    float c = cos(a), s = sin(a);
+    return mat2(c, -s, s, c);
 }
-mat2 s(float b){
-    float a=sin(b),d=cos(b);
-    return mat2(d,-a,a,d);
+
+float smin(float a, float b, float k) {
+    float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+    return mix(b, a, h) - k * h * (1.0 - h);
 }
-float t(vec2 c,vec2 a,float b){
-    c=abs(c);
-    if(c.y>c.x)c=c.yx;
-    vec2 d=c-a;
-    float h=max(d.x,d.y);
-    vec2 e=max(d,0.);
-    return length(e)+min(h,0.)-b;
+
+float sdTore(vec3 p, vec2 t) {
+    vec2 q = vec2(length(p.xz) - t.x, p.y);
+    return length(q) - t.y;
 }
-vec2 f(vec2 c,float h,float e,float a){
-    float b=length(c),i=atan(c.y,c.x);
-    vec2 d=vec2(log(b+1e-6),i);
-    d=mat2(1.,e,-e,1.)*d;
-    d.x-=a*.4;
-    d.y+=a*.1;
-    return d*h;
+
+float sdSphere(vec3 p, float s) {
+    return length(p) - s;
 }
-float g(vec2 c,out vec4 u,float a){
-    vec2 b=c,h=vec2(1.),d=vec2(.52+.08*cos(a*.2)+.22*sin(a*.96),.355+.08*sin(a*.19)+.03*cos(a*.53));
-    float i=1e10,k=i,l=k,n=0.;
-    mat2 v=s(a*.4);
-    for(int e=0;e<150;e++){
-        h=2.*vec2(b.x*h.x-b.y*h.y,b.x*h.y+b.y*h.x);
-        b=vec2(b.x*b.x-b.y*b.y,2.*b.x*b.y)+d;
-        float o=dot(b,b);
-        vec2 w=v*b;
-        float z=t(w,vec2(.8,0.),.02);
-        i=min(i,z);
-        float A=abs(length(b)-1.);
-        k=min(k,A);
-        float B=min(abs(b.x+b.y),abs(b.x-b.y))*.28;
-        l=min(l,B);
-        n+=exp(-o*.05);
-        if(o>256.)break;
+
+float carte(vec3 p) {
+    vec3 q = p;
+    q.xz *= rot(iTime * 0.1);
+    q.yz *= rot(iTime * 0.05);
+    vec3 id = floor(q / 4.0);
+    q = mod(q, 4.0) - 2.0;
+    float phase = sin(id.x * 12.0 + id.y * 3.0 + id.z * 7.0 + iTime);
+    q.xy *= rot(phase * 0.5);
+    float d1 = sdTore(q, vec2(1.0, 0.3));
+    vec3 q2 = q;
+    q2.xz *= rot(iTime * 1.5 + phase);
+    float d2 = sdSphere(q2 - vec3(1.0, 0.0, 0.0), 0.4);
+    vec3 q3 = q;
+    q3.yz *= rot(iTime * 1.2 + phase);
+    float d3 = sdSphere(q3 - vec3(0.0, 1.0, 0.0), 0.4);
+    float d = smin(d1, d2, 0.4);
+    d = smin(d, d3, 0.4);
+    d += 0.03 * sin(p.x * 3.0) * sin(p.y * 2.5 + iTime) * sin(p.z * 3.0);
+    return d * 0.7;
+}
+
+float lancerRayon(vec3 ro, vec3 rd) {
+    float t = 0.1;
+    for (int i = 0; i < 80; i++) {
+        float h = carte(ro + rd * t);
+        if (h < 0.001 * t) return t;
+        t += h;
+        if (t > 20.0) break;
     }
-    float p=length(b),C=sqrt(p/max(dot(h,h),1e-8))*log(p);
-    u=vec4(i,k,l,n);
-    return C;
+    return -1.0;
 }
-vec3 m(vec2 c,float a){
-    vec2 k=f(c,.63661977236,.5,a),l=asin(sin(k*3.1415927e0))*.63661977236;
-    vec4 b;
-    float i=g(l,b,a);
-    vec2 e=vec2(5e-4,0.);
-    vec4 h;
-    vec2 n=f(c+vec2(e.x,0.),.63661977236,.5,a),o=f(c-vec2(e.x,0.),.63661977236,.5,a),p=f(c+vec2(0.,e.x),.63661977236,.5,a),u=f(c-vec2(0.,e.x),.63661977236,.5,a),v=asin(sin(n*3.1415927e0))*.63661977236,w=asin(sin(o*3.1415927e0))*.63661977236,z=asin(sin(p*3.1415927e0))*.63661977236,A=asin(sin(u*3.1415927e0))*.63661977236;
-    float B=g(v,h,a)-g(w,h,a),C=g(z,h,a)-g(A,h,a);
-    vec2 D=vec2(B,C)/(2.*e.x);
-    vec3 E=normalize(vec3(-D,.05)),F=normalize(vec3(cos(a*.5),sin(a*.5),.8));
-    float G=pow(max(0.,dot(reflect(-F,E),vec3(0.,0.,1.))),128.);
-    vec3 H=vec3(.5),I=H,J=vec3(1.),K=vec3(0.,.33,.67),L=vec3(.8,.5,.4),M=vec3(.2,.4,.2),N=vec3(2.,1.,1.),O=vec3(0.,.25,.25),P=j(b.x*2.5-a*.1,H,I,J,K),Q=j(b.y*4.+a*.15,L,M,N,O),R=vec3(.95,.4,.15);
-    float S=.002/(abs(b.x)+.001),T=.01/(abs(b.y)+.001),U=.045/(abs(b.z)+.001);
-    vec3 d=vec3(0.);
-    d+=P*pow(S,1.2)*.35;
-    d+=Q*pow(T,1.1)*.25;
-    d+=R*pow(U,1.3)*.05;
-    float V=smoothstep(.0015,0.,i);
-    vec3 W=j(b.w*.02+a*.05,vec3(.1),vec3(.4),vec3(1.),vec3(.1,.2,.3));
-    d=mix(d,W+G*.8,V*.7);
-    float X=smoothstep(.001,0.,abs(i));
-    d+=vec3(.8,.95,1.)*X*.6;
-    return d;
+
+vec3 calcNormale(vec3 p) {
+    const float h = 0.001; 
+    const vec2 k = vec2(1,-1);
+    return normalize(k.xyy*carte(p + k.xyy*h) + k.yyx*carte(p + k.yyx*h) + k.yxy*carte(p + k.yxy*h) + k.xxx*carte(p + k.xxx*h));
 }
-void mainImage(out vec4 l,in vec2 i){
-    vec3 b=vec3(0.);
-    vec2 d[4];
-    d[0]=vec2(-.25,-.25);
-    d[1]=vec2(.25,-.25);
-    d[2]=vec2(-.25,.25);
-    d[3]=vec2(.25);
-    float a=iTime;
-    for(int e=0;e<4;e++){
-        vec2 n=i+d[e],c=(n-.5*iResolution.xy)/iResolution.y;
-        b+=m(c,a);
+
+vec3 couleurPastel(vec3 p) {
+    vec3 colA = vec3(1.0, 0.7, 0.8); 
+    vec3 colB = vec3(0.6, 0.8, 1.0);
+    float t = p.y * 0.3 + iTime * 0.2;
+    return mix(colA, colB, sin(t) * 0.5 + 0.5);
+}
+
+vec3 rendu(vec3 ro, vec3 rd) {
+    vec3 ciel = mix(vec3(1.0, 0.98, 0.95), vec3(0.92, 0.96, 1.0), rd.y * 0.5 + 0.5);
+    vec3 col = ciel;
+    float t = lancerRayon(ro, rd);
+    
+    if (t > 0.0) {
+        vec3 pos = ro + t * rd;
+        vec3 nor = calcNormale(pos);
+        vec3 alb = couleurPastel(pos);
+        
+        vec3 lumDir = normalize(vec3(0.5, 1.0, 0.5));
+        
+        float dif = clamp(dot(nor, lumDir), 0.0, 1.0);
+        float trans = pow(clamp(dot(-rd, lumDir), 0.0, 1.0), 4.0) * 0.6;
+        float fresnel = pow(1.0 + dot(rd, nor), 3.0);
+        
+        vec3 eclairage = dif * vec3(1.0, 0.95, 0.9);
+        eclairage += trans * alb * 1.5; 
+        eclairage += vec3(0.1, 0.15, 0.2); 
+        
+        col = alb * eclairage;
+        col = mix(col, vec3(1.0), fresnel * 0.3); 
+        
+        vec3 ref = reflect(rd, nor);
+        float spe = pow(clamp(dot(ref, lumDir), 0.0, 1.0), 32.0);
+        col += spe * 0.3;
+        
+        col = mix(col, ciel, 1.0 - exp(-0.1 * t));
     }
-    b*=.25;
-    vec2 h=i/iResolution.xy,k=h-.5,o=((i+k*2.)-.5*iResolution.xy)/iResolution.y,p=((i-k*2.)-.5*iResolution.xy)/iResolution.y;
-    b.r=mix(b.r,m(o,a).r,.35);
-    b.b=mix(b.b,m(p,a).b,.35);
-    float u=pow(16.*h.x*h.y*(1.-h.x)*(1.-h.y),.25);
-    b*=u;
-    b/=(.6+b*.5);
-    b=pow(b,vec3(1./2.2));
-    l=vec4(b,1.);
+    return clamp(col, 0.0, 1.0);
+}
+
+void mainImage(out vec4 fCol, in vec2 fCoor) {
+    vec2 p = (2.0 * fCoor - iResolution.xy) / iResolution.y;
+    float camT = iTime * 0.15;
+    vec3 ro = vec3(3.5 * cos(camT), 1.5 + 0.5 * sin(camT * 0.5), 3.5 * sin(camT));
+    vec3 ta = vec3(0.0, 0.0, 0.0);
+    vec3 cw = normalize(ta - ro), cp = vec3(0.0, 1.0, 0.0);
+    vec3 cu = normalize(cross(cw, cp)), cv = cross(cu, cw);
+    vec3 rd = normalize(p.x * cu + p.y * cv + 2.0 * cw);
+    
+    vec3 col = rendu(ro, rd);
+    col = pow(col, vec3(0.4545));
+    
+    vec2 q = fCoor / iResolution.xy;
+    col *= 0.9 + 0.1 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.1);
+    fCol = vec4(col, 1.0);
 }

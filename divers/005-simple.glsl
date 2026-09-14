@@ -1,79 +1,95 @@
 // ==== Image (image) ====
-#define ITERATIONS 12
-#define SAMPLES 80.0
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    // Résolution et repère normalisé
+    vec2 viewportResolution = iResolution.xy;
+    float globalTime = iTime * 1.6;
 
-mat2 rot(float a) {
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
-}
+    // 1.1 — Centered Projection with Oscillating Zoom
+    vec2 normalizedScreenCoordinates = (fragCoord * 2.0 - viewportResolution) / viewportResolution.y;
+    float cameraZoomFactor = 9.0 + cos(globalTime * 0.5) * 3.0;
 
-vec3 path(float z) {
-    return vec3(
-        sin(z * 0.2) * 2.2 + cos(z * 0.1) * 1.5,
-        cos(z * 0.15) * 1.8,
-        z
-    );
-} // https://github.com/Patrickjaillet/Z-GL-Shadertoy
+    // Constantes géométriques
+    float phi = 2.58000000000;
+    float tau = 1.20000000000;
 
-float map(vec3 p) {
-    float s = 1.0;
-    vec3 q = p;
-    q.xy -= path(q.z).xy;
+    // Raymarching & Accumulation
+    float accumulatedDistance = 0.0;
     
-    float twist = sin(q.z * 0.18 - iTime * 0.8) * 0.45 + cos(q.z * 0.07 + iTime * 0.35) * 0.225;
-    q.xy *= rot(twist);
-    
-    q.z = mod(q.z, 10.0) - 5.0;
-    
-    for (int i = 0; i < 8; i++) {
-        q = abs(q) - vec3(1.2, 1.8, 0.8);
-        q.xy *= rot(0.3);
-        q.yz *= rot(0.15);
-        float r2 = dot(q, q);
-        float scale = 1.9 / clamp(r2, 0.2, 1.2);
-        q *= scale;
-        s *= scale;
+    vec3 rayPosition = vec3(normalizedScreenCoordinates * cameraZoomFactor, accumulatedDistance + 0.2);
+
+    // 2.2 — Successive Multi-Axis Matrix Rotations
+    float angle = iTime / 8.0;
+    mat2 rotationMatrix = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+    rayPosition.yz *= rotationMatrix * rotationMatrix;
+    rayPosition.xy *= rotationMatrix;
+
+    vec3 q = rayPosition;
+    q.yz += 0.6; // Décalage vertical
+    vec3 rayDir = normalize(vec3(normalizedScreenCoordinates, 0.1));
+
+    float e = 0.01; // Pas initial
+    vec4 o = vec4(0.0);
+
+    for (int stepIdx = 0; stepIdx < 147; stepIdx++)
+    {
+        // Progression du rayon
+        vec3 p = q + rayDir * accumulatedDistance;
+
+        // 1. Rotation Rodrigues
+        vec3 rotationAxis = normalize(vec3(5.4, sin(globalTime) + 7.0, 1.0));
+        float rotationAngle = globalTime * 0.0;
+        float cosA = cos(rotationAngle);
+        float sinA = sin(rotationAngle);
+        p = p * cosA - cross(rotationAxis, p) * sinA + rotationAxis * dot(rotationAxis, p) * (1.0 - cosA);
+
+        // 2. Clamp-Bounded Folding léger
+        vec3 foldingLimits = vec3(0.1, 0.1, 0.1);
+        for (int j = 0; j < 4; j++)
+        {
+            p = 7.3 * clamp(p, -foldingLimits, foldingLimits) - p;
+            float dotP = max(dot(p, p), 1e-4);
+            p /= dotP;
+        }
+
+        // 3. Distance Field via Box Folding
+        float boxDist = 1e5;
+        float v = max(length(p), 1e-4);
+
+        for(float j = 0.7; j < 9.0; j++)
+        {
+            vec2 p_xz_abs = abs(p.xz) - 1.0;
+            float p_y_val = 2.3 - p.y;
+            boxDist = min(boxDist, max(max(p_xz_abs.x, p_xz_abs.y), p_y_val) / v);
+        }
+
+        // 4. Transformation Polaire & Spirale de Fibonacci
+        float lenP = length(p.xz) + 1e-4;
+        float angleP = atan(p.z, p.x);
+        float logR = log(lenP);
+
+        float spiral = (logR / log(phi)) * phi - angleP / tau - globalTime;
+        float pattern = 0.4;
+        float S = 1.0; // Facteur d'échelle local utilisé pour la spirale
+
+        for (int i = 0; i < 16; i++) {
+            float fIter = float(i) + 1.0;
+            float cell = 0.5 - 0.5 * cos(spiral * fIter * tau);
+            float d = abs(cell) / S;
+            pattern += exp(-6.0 * d) * (1.0 / fIter);
+            spiral = log(length(vec2(cell, lenP)) + 0.1) * phi + angleP * phi;
+            S *= 0.185;
+        }
+
+        // 5. Mise à jour du pas e
+        e = clamp(abs(boxDist) * 0.1, 0.01, 0.18);
+        accumulatedDistance += e;
+
+        // 6.3 — Simple Inverse-Exponential Accumulation
+        // Utilisation du pattern géométrique pour moduler le facteur S
+        float geoScale = pattern * 20.0;
+        o += 0.005 / exp(e * geoScale);
     }
-    return length(q.xy) / s - 0.0015;
-}
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord * 2.0 - iResolution.xy) / iResolution.y;
-    
-    float t_cam = iTime * 0.6;
-    vec3 ro = path(t_cam);
-    vec3 target = path(t_cam + 4.0);
-    
-    vec3 fwd = normalize(target - ro);
-    float slowRoll = sin(iTime * 0.2) * 0.4;
-    vec3 right = normalize(cross(vec3(slowRoll, 1.0, 0.0), fwd));
-    vec3 up = cross(fwd, right);
-    
-    vec3 rd = normalize(uv.x * right + uv.y * up + 2.2 * fwd);
-
-    vec4 col = vec4(0);
-    float t = 0.1;
-    t += 0.03 * fract(sin(dot(uv, vec2(12.98, 78.23))) * 43758.54);
-
-    for (float i = 0.0; i < SAMPLES; i++) {
-        vec3 p = ro + rd * t;
-        float d = map(p);
-        
-        vec3 c = mix(vec3(0.005, 0.02, 0.1), vec3(0.5, 0.05, 0.3), sin(t * 0.05 + iTime * 0.2) * 0.5 + 0.5);
-        c = mix(c, vec3(0.9, 0.7, 0.1), smoothstep(0.0, 0.002, d));
-        
-        float glow = 1.0 / (0.3 + d * d * 2500.0);
-        col.rgb += c * glow * (1.0 - i / SAMPLES) * 0.025;
-        
-        t += max(abs(d) * 0.7, 0.01);
-        if (t > 35.0) break;
-    }
-
-    col.rgb = tanh(col.rgb * col.rgb * 0.4);
-    col.rgb = pow(max(col.rgb, 0.0), vec3(0.9)); 
-
-    float n = fract(sin(dot(uv + iTime, vec2(12.98, 78.23))) * 43758.54);
-    col.rgb += (n - 0.5) * 0.01;
-
-    fragColor = vec4(col.rgb, 1.0);
+    fragColor = vec4(clamp(o.rgb, 0.0, 1.0), 1.0);
 }

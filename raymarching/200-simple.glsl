@@ -1,153 +1,117 @@
 // ==== Image (image) ====
-/*%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£%*
-ù  ____    _    _   _ ____  _____ _____   _  ___  ____  ____   ù
-ù / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \  ù
-ù \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | | ù
-ù  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| | ù
-ù |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/  ù
-ù                       PATRICK JAILLET                        ù
-ù - https://patrickjaillet.github.io/sandefjord-software       ù
-ù - https://x.com/JailletPatrick                               ù
-ù - https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g   ù
-$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£*/
-float map(vec3 p)
-{
-    p.xy -= vec2(sin(p.z * 0.2) * 2.0, cos(p.z * 0.15) * 1.5);
-    vec3 q = mod(p + vec3(4.0), 8.0) - 4.0;
-    
-    float scale = 1.0;
-    for (int j = 0; j < 4; j++)
-    {
-        q = clamp(q, -1.0, 1.0) * 2.0 - q;
-        float r2 = dot(q, q);
-        float k = max(1.2 / max(r2, 0.08), 0.6);
-        q *= k;
-        scale *= k;
-    }
-    
-    float dFractal = (length(q.xz) - 0.25) / scale;
-    float dTunnel = 1.8 - length(p.xy - vec2(sin(p.z * 0.2) * 2.0, cos(p.z * 0.15) * 1.5));
-    
-    return max(dFractal, dTunnel);
-}
-
-vec3 getPath(float z)
-{
-    return vec3(sin(z * 0.2) * 2.0, cos(z * 0.15) * 1.5, z);
-}
-
-mat2 rot2D(float a)
-{
+mat2 rot(float a) {
     float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
+    return mat2(c, s, -s, c);
 }
 
-vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d)
-{
-    return a + b * cos(6.283185 * (c * t + d));
+float sdBox(vec3 p, vec3 b) {
+    vec3 q = abs(p) - b;
+    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord)
-{
-    vec2 u = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    float t = iTime * 2.0;
+float map(vec3 p) {
+    float t = iTime * 0.6;
+    float pulse = pow(sin(t * 0.5) * 0.5 + 0.5, 4.0);
+    float explosion = smoothstep(0.3, 0.9, pulse) * 4.5;
     
-    vec3 ro = getPath(t);
-    vec3 ta = getPath(t + 1.5);
+    p.xy *= rot(t * 0.15);
+    p.xz *= rot(t * 0.25);
     
-    vec3 cz = normalize(ta - ro);
-    vec3 cx = normalize(cross(cz, vec3(0.0, 1.0, 0.0)));
-    vec3 cy = cross(cx, cz);
-    
-    vec3 rd = mat3(cx, cy, cz) * normalize(vec3(u, 1.0));
-    
-    float acc = 0.0;
-    float glow = 0.0;
-    float d = 0.0;
-    
-    vec3 colorAcc = vec3(0.0);
-    vec3 glowAcc = vec3(0.0);
-    
-    float pulse = sin(iTime * 4.0) * 0.5 + 0.5;
-    float fastPulse = sin(iTime * 12.0) * 0.5 + 0.5;
-    
-    for (int i = 0; i < 128; i++)
-    {
-        vec3 p = ro + rd * d;
+    float s = 1.0;
+    for(int i = 0; i < 8; i++) {
+        p = abs(p) - 0.5;
+        if (p.x < p.y) p.yx = p.xy;
+        if (p.x < p.z) p.zx = p.xz;
+        if (p.y < p.z) p.zy = p.yz;
         
-        vec3 pSpace = p;
-        vec3 pathPos = getPath(p.z);
-        pSpace.xy -= pathPos.xy;
+        float factor = 2.2 + explosion;
+        p.x = p.x * factor - 0.8 * (factor - 1.0);
+        p.y = p.y * factor - 0.8 * (factor - 1.0);
+        p.z = p.z * factor;
         
-        vec3 q = mod(pSpace + vec3(4.0), 8.0) - 4.0;
+        if(p.z > 0.5 * factor) p.z -= factor;
         
-        float scale = 1.0;
-        float orbit = 100.0;
-        vec3 orbitVec = vec3(100.0);
-        
-        for (int j = 0; j < 4; j++)
-        {
-            q = clamp(q, -1.0, 1.0) * 2.0 - q;
-            float r2 = dot(q, q);
-            float k = max(1.2 / max(r2, 0.08), 0.6);
-            q *= k;
-            scale *= k;
-            orbit = min(orbit, length(q));
-            orbitVec = min(orbitVec, abs(q));
-        }
-        
-        float dFractal = (length(q.xz) - 0.25) / scale;
-        float dTunnel = 1.8 - length(pSpace.xy);
-        float dist = max(dFractal, dTunnel);
-        
-        float stepSize = max(abs(dist) * 0.3, 0.005);
-        
-        float stepAcc = 0.008 / (0.04 + abs(dist) * 12.0);
-        float stepGlow = 0.003 / (0.02 + orbit * 1.8);
-        
-        acc += stepAcc;
-        glow += stepGlow;
-        
-        float palIndex1 = p.z * 0.08 + iTime * 0.35 + float(i) * 0.002;
-        vec3 pCol1 = palette(palIndex1, 
-            vec3(0.5, 0.5, 0.5), 
-            vec3(0.5, 0.5, 0.5), 
-            vec3(1.0, 1.0, 1.0), 
-            vec3(0.00, 0.33, 0.67));
-            
-        float palIndex2 = orbit * 0.15 - iTime * 0.5 + pSpace.z * 0.05;
-        vec3 pCol2 = palette(palIndex2, 
-            vec3(0.8, 0.5, 0.4), 
-            vec3(0.5, 0.4, 0.2), 
-            vec3(2.0, 1.0, 1.0), 
-            vec3(0.00, 0.25, 0.25));
-            
-        vec3 localPsy = mix(pCol1, pCol2, sin(orbitVec.x * 2.0 + iTime) * 0.5 + 0.5);
-        localPsy += vec3(sin(q.x * 0.5), cos(q.y * 0.5), sin(q.z * 0.5)) * 0.15 * pulse;
-        
-        colorAcc += stepAcc * localPsy;
-        glowAcc += stepGlow * palette(orbitVec.y * 0.2 + iTime * 0.8, vec3(0.5), vec3(0.5), vec3(1.0), vec3(0.3, 0.6, 0.9));
-        
-        d += stepSize;
-        if (d > 35.0) break;
+        s *= factor;
     }
     
-    vec3 baseCol = vec3(0.8, 0.6, 2.86);
-    vec3 dynamicCol = mix(baseCol, colorAcc / max(acc, 0.0001), 0.85);
-    vec3 dynamicGlow = mix(baseCol, glowAcc / max(glow, 0.0001), 0.90);
+    return sdBox(p, vec3(0.6, 0.2, 0.05)) / s;
+}
+
+vec3 getNormal(vec3 p) {
+    vec2 e = vec2(0.0005, 0.0);
+    return normalize(vec3(
+        map(p + e.xyy) - map(p - e.xyy),
+        map(p + e.yxy) - map(p - e.yxy),
+        map(p + e.yyx) - map(p - e.yyx)
+    ));
+}
+
+float getAO(vec3 p, vec3 n) {
+    float occ = 0.0;
+    float sca = 1.0;
+    for(int i = 0; i < 5; i++) {
+        float h = 0.01 + 0.12 * float(i) / 4.0;
+        float d = map(p + h * n);
+        occ += (h - d) * sca;
+        sca *= 0.95;
+    }
+    return clamp(1.0 - 3.0 * occ, 0.0, 1.0);
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
     
-    vec3 col = dynamicCol * (acc * 0.35) + dynamicGlow * (glow * 0.25);
+    float t = iTime;
+    float intense = pow(sin(t * 0.5) * 0.5 + 0.5, 12.0);
+    vec2 shake = vec2(sin(t * 120.0), cos(t * 135.0)) * intense * 0.08;
     
-    float pulseMod = 1.0 + 0.3 * sin(iTime * 6.0 + length(u) * 4.0);
-    col *= pulseMod;
+    vec3 ro = vec3(0.0, 0.0, -3.8 + sin(t * 0.1) * 0.4);
+    ro.xy += shake;
     
-    col = pow(col, vec3(1.3));
-    col = smoothstep(vec3(0.05), vec3(0.95), col);
+    vec3 lookat = vec3(shake * 2.0, 0.0);
+    vec3 f = normalize(lookat - ro);
+    vec3 r = normalize(cross(vec3(0.0, 1.0, 0.0), f));
+    vec3 u = cross(f, r);
+    vec3 rd = normalize(f + uv.x * r + uv.y * u);
     
-    vec2 st = fragCoord / iResolution.xy;
-    col.r = texture(iChannel0, st + vec2(0.002 * fastPulse, 0.0)).r * 0.2 + col.r * 0.8;
-    col.b = texture(iChannel0, st - vec2(0.002 * fastPulse, 0.0)).b * 0.2 + col.b * 0.8;
-    col.g = texture(iChannel0, st + vec2(0.002 * fastPulse, 0.0)).g * 0.5 + col.g * 0.8;
+    float t_dist = 0.0;
+    float glow = 0.0;
+    for(int i = 0; i < 128; i++) {
+        float d = map(ro + rd * t_dist);
+        if(d < 0.0005 || t_dist > 12.0) break;
+        t_dist += d;
+        glow += 1.0 / (1.0 + d * d * 80.0);
+    }
     
+    vec3 col = vec3(0.002, 0.005, 0.01);
+    
+    if(t_dist < 12.0) {
+        vec3 p = ro + rd * t_dist;
+        vec3 n = getNormal(p);
+        vec3 l = normalize(vec3(2.0, 3.0, -4.0));
+        vec3 l2 = normalize(vec3(-2.0, -1.0, 1.0));
+        
+        float diff = max(dot(n, l), 0.0);
+        float diff2 = max(dot(n, l2), 0.0) * 0.3;
+        float spec = pow(max(dot(reflect(-l, n), -rd), 0.0), 64.0);
+        float fres = pow(clamp(1.0 + dot(rd, n), 0.0, 1.0), 4.0);
+        float ao = getAO(p, n);
+        
+        vec3 baseCol = mix(vec3(0.05, 0.1, 0.2), vec3(0.8, 0.9, 1.0), fres);
+        col = baseCol * diff + vec3(0.1, 0.2, 0.3) * diff2;
+        col += spec * vec3(1.0, 0.95, 0.8) * 1.5;
+        col *= ao;
+        
+        col = mix(col, vec3(0.0), 1.0 - exp(-0.02 * t_dist * t_dist));
+    }
+    
+    col += glow * vec3(0.05, 0.2, 0.5) * 0.015 * (1.0 + intense * 5.0);
+    
+    col = pow(col, vec3(0.4545));
+    col *= 1.0 - length(uv) * 0.6;
+    
+    float noise = fract(sin(dot(uv, vec2(12.9898, 78.233) * t)) * 43758.5453);
+    col += (noise - 0.5) * 0.02;
+
     fragColor = vec4(col, 1.0);
 }

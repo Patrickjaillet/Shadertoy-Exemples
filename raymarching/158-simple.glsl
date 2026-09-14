@@ -1,118 +1,80 @@
 // ==== Image (image) ====
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    float t = iTime * 0.5;
+// https://github.com/Patrickjaillet
 
-    vec3 ro = vec3(cos(t * 0.3) * 1.5, sin(t * 0.2) * 0.8, -2.0 + sin(t * 0.1) * 0.5);
-    vec3 ta = vec3(0.0, 0.0, 0.0);
-    vec3 ww = normalize(ta - ro);
-    vec3 uu = normalize(cross(ww, vec3(0.0, 1.0, 0.0)));
-    vec3 vv = normalize(cross(uu, ww));
-    vec3 rd = normalize(uv.x * uu + uv.y * vv + 1.2 * ww);
 
-    vec2 skyUV = (rd.xy / (abs(rd.z) + 0.8)) * 1.8 + vec2(t * 0.03, t * 0.01);
-    float cloud = 0.0;
-    float amp = 0.5;
-    vec2 pSky = skyUV;
-    mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    // Initialize the accumulated color output vector to zero (transparent black background)
+    vec4 o = vec4(0.0);
+    // Declare and initialize scalars for the raymarching step index (i), density/SDF (e), radial radius (R), and frequency scaling factor (s)
+    float i = 0.0, e = 0.0, R = 1.0, s = 0.0;
+    
+    // Normalize and center the screen coordinates with a 2.2 zoom multiplier, preserving the aspect ratio on the Y-axis
+    vec2 uv = (fragCoord * 2.2 - iResolution.xy) / iResolution.y;
+    
+    // Set the ray origin position (Camera position) slightly elevated on the Y-axis
+    vec3 ro = vec3(0.0, 0.2, 0.0);
+    // Define the normalized ray direction vector with a focal length/depth adjustment of 1.2
+    vec3 rd = normalize(vec3(uv, 1.2));
+    
+    // Initialize the current marching point vector q at the camera position
+    vec3 q = ro;
+    // Declare the position vector p which will store the space-transformed coordinates
+    vec3 p = vec3(0.0);
 
-    for (int i = 0; i < 5; i++) {
-        vec2 i_p = floor(pSky);
-        vec2 f_p = fract(pSky);
-        vec2 u = f_p * f_p * (3.0 - 2.0 * f_p);
+    // Main raymarching loop for volumetric accumulation, capped at a maximum of 113 iterations
+    for(; i++ < 113.0;)
+    {
+        // Reset the initial base frequency for the fractal noise loop
+        s = 3.3;
+        // Move the ray marching point q forward along its path and copy the value into p for transformations
+        p = q += rd * e * R * 0.1;
 
-        float n00 = fract(sin(dot(i_p + vec2(0.0, 0.0), vec2(127.1, 311.7))) * 43758.5453);
-        float n10 = fract(sin(dot(i_p + vec2(1.0, 0.0), vec2(127.1, 311.7))) * 43758.5453);
-        float n01 = fract(sin(dot(i_p + vec2(0.0, 1.0), vec2(127.1, 311.7))) * 43758.5453);
-        float n11 = fract(sin(dot(i_p + vec2(1.0, 1.0), vec2(127.1, 311.7))) * 43758.5453);
+        // Calculate the raw Euclidean distance (radius) of the point p from the world origin
+        R = length(p);
+        
+        // Generate a 3D trigonometric displacement field (blister pattern) animated over time
+        float blisters = sin(p.x * 6.3 + iTime) * cos(p.y * 3.5 - iTime) * sin(p.z * 4.0) * 0.45;
 
-        float nx0 = mix(n00, n10, u.x);
-        float nx1 = mix(n01, n11, u.x);
-        float n = mix(nx0, nx1, u.y);
+        // Project the 3D space into log-spherical / cylindrical coordinates, distorted by time and the blister displacement
+        p = vec3(
+            log2(R + 1e-4) - iTime * 0.5 + blisters,
+            exp2(R - p.z / (R + 1e-4)),
+            atan(p.y, p.x)
+        );
 
-        cloud += amp * n;
-        pSky = rot * pSky * 2.08 + vec2(1.7, 9.2);
-        amp *= 0.5;
+        // Initialize the base density/potential field derived from the transformed vertical Y coordinate
+        e = --p.y;
+
+        // Nested Fractal Brownian Motion (FBM) loop that doubles the frequency (s) at each iteration up to the upper threshold
+        for(; s < 734.0; s += s)
+            // Accumulate absolute value harmonic wave layers using interleaved trigonometric dot products, scaled down by frequency
+            e += abs(dot(cos(p.yzz * s), cos(p.yyx * s))) / s * 0.4;
+
+        // Normalize and remap the accumulated density e weighted by the maximum frequency, bounded between 0.0 and 1.0
+        float val = clamp((e * s - 1.0) / 42.6, 0.0, 1.0);
+
+        // Generate 4 distinct smooth transition masks to segment the gradient color ramp based on the local density value
+        vec4 w = smoothstep(vec4(0.0, 0.17, 0.00, 1.0), vec4(0.15, 0.34, 0.58, 1.0), vec4(val));
+        // Linearly interpolate the first tier: transitioning from a dark magenta-red base to a bright vermilion red
+        vec3 col = mix(mix(vec3(0.25, 0.00, 0.05), vec3(1.0, 0.05, 0.00), w.x), vec3(1.00, 0.40, 0.00), w.y);
+        // Linearly interpolate the second tier into a warm glowing orange
+        // Interpolate the third tier towards a bright, core emissive white color
+        col = mix(col, vec3(1.0, 1.0, 1.00), w.z);
+        // Interpolate the fourth tier into a highly energetic, yellowish-white thermal tint
+        col = mix(col, vec3(1.5, 2.20, 1.05), w.w);
+        // Add a final hyper-energetic layer shifting towards an electric blue for peak structural density zones
+        col = mix(col, vec3(0.20, 0.55, 2.00), smoothstep(0.75, 1.0, val));
+
+        // Accumulate the fragment's color multiplied by its density, a step filter threshold (0.6), and an absorption constant
+        o.rgb += col * val * 0.020 * step(0.6, val);
     }
 
-    float cloudDensity = smoothstep(0.35, 0.75, cloud);
-    float cloudShadow = smoothstep(0.2, 0.8, cloud);
+    // Apply a Reinhard tonemapping operator to map high dynamic range (HDR) illumination back into a 0-1 LDR scale
+    o.rgb = o.rgb / (1.0 + o.rgb);
+    // Gamma correction with a linear exponent of 1.0 (maintaining raw color curves or assuming linear color space)
+    o.rgb = pow(o.rgb, vec3(1.0));
 
-    vec3 skyBase = mix(vec3(0.55, 0.72, 0.95), vec3(0.2, 0.45, 0.85), clamp(rd.y + 0.4, 0.0, 1.0));
-    vec3 cloudBaseColor = vec3(0.55, 0.6, 0.72);
-    vec3 cloudLightColor = vec3(0.98, 0.98, 1.0);
-    vec3 cloudCol = mix(cloudBaseColor, cloudLightColor, cloudShadow);
-
-    vec3 skyCol = mix(skyBase, cloudCol, cloudDensity);
-    vec3 col = skyCol;
-
-    float denom = rd.z;
-    if (abs(denom) > 0.0001) {
-        float hitT = -ro.z / denom;
-        if (hitT > 0.0) {
-            vec3 pos = ro + rd * hitT;
-            vec2 p2d = pos.xy;
-
-            vec3 stemColAcc = vec3(0.0);
-            float stemMaskAcc = 0.0;
-
-            if (p2d.y < 0.0 && p2d.y > -1.2) {
-                float stemCurve = sin(p2d.y * 3.0 + t) * 0.05;
-                float stemDist = abs(p2d.x - stemCurve);
-                float stemMask = smoothstep(0.025, 0.015, stemDist);
-                vec3 stemCol = mix(vec3(0.1, 0.5, 0.1), vec3(0.2, 0.7, 0.2), p2d.y + 1.2);
-                stemColAcc = stemCol;
-                stemMaskAcc = stemMask;
-            }
-
-            vec2 l1 = p2d - vec2(-0.18, -0.4);
-            l1 *= mat2(cos(0.8), -sin(0.8), sin(0.8), cos(0.8));
-            float leaf1Dist = length(l1 * vec2(2.5, 1.0));
-            float leaf1Mask = smoothstep(0.25, 0.23, leaf1Dist);
-
-            vec2 l2 = p2d - vec2(0.18, -0.7);
-            l2 *= mat2(cos(-0.7), -sin(-0.7), sin(-0.7), cos(-0.7));
-            float leaf2Dist = length(l2 * vec2(2.5, 1.0));
-            float leaf2Mask = smoothstep(0.22, 0.20, leaf2Dist);
-
-            vec3 leafCol = vec3(0.15, 0.6, 0.15);
-            float leavesMask = max(leaf1Mask, leaf2Mask);
-
-            vec3 backgroundElements = mix(stemColAcc, leafCol, leavesMask);
-            float backgroundMask = max(stemMaskAcc, leavesMask);
-
-            vec3 flowerCol = vec3(0.0);
-            for (float i = 0.0; i < 32.0; i++) {
-                float scale = pow(0.98, i);
-                float angle = i * 0.15;
-                vec2 p = (p2d / scale) * mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
-
-                float r = length(p);
-                float a = atan(p.y, p.x);
-
-                float wind = sin(a * 2.0 + t + i * 0.3) * sin(t * 0.7 + r * 3.0) * r * 0.08;
-                a += wind;
-
-                p += vec2(sin(r * 2.6 + i * 1.2 + sin(t * 0.4)), cos(r * 3.4 + cos(t * 0.3))) * 0.02;
-
-                float petC = floor(3.0 + mod(i, 3.0));
-
-                float petVal = mix(abs(sin(a)) * 0.5, sin(petC * a), 1.0) * (1.0 - r);
-
-                float edge = smoothstep(0.2, 0.16, abs(petVal - 0.5));
-                vec3 layerCol = mix(vec3(1.0, 0.2, 0.4), vec3(1.0, 0.7, 0.8), sin(i + r * 8.0));
-
-                flowerCol += edge * layerCol * smoothstep(0.0, 0.0, 0.8 - r) * pow(0.98, i) * 1.5;
-            }
-
-            float flowerAlpha = clamp(length(flowerCol), 0.0, 1.0);
-            vec3 objectCol = mix(backgroundElements * backgroundMask, flowerCol, flowerAlpha);
-            objectCol = mix(objectCol, flowerCol, step(0.001, flowerAlpha));
-            float objectMask = max(backgroundMask, step(0.001, flowerAlpha));
-
-            col = mix(skyCol, objectCol, objectMask);
-        }
-    }
-
-    fragColor = vec4(tanh(col * 0.3), 1.0);
+    // Write the final processed color output to the RGBA frame buffer with an opaque alpha channel
+    fragColor = vec4(o.rgb, 1.0);
 }

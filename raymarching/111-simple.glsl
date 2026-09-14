@@ -1,32 +1,18 @@
 // ==== Image (image) ====
-// https://patrickjaillet.github.io/sandefjord-software
-// https://x.com/JailletPatrick
-void mainImage(out vec4 i,in vec2 j){
-    vec4 k=vec4(j,0.,1.);
-    vec2 l=iResolution.xy;
-    float f=iTime;
-    vec3 h=vec3(0.),p;
-    h.z--;
-    float m=0.,e=m,v=e,a=v;
-    i=vec4(0.);
-    float d=sin(f),g=cos(f),c=1.-g;
-    for(;m++<1e2;i+=vec4(mix(vec3(0.),
-    clamp(abs(fract(vec3(a+f*.74)+vec3(0.,-1.6,1./3.))*6.-1.2),0.,1.),.7),0.)*.02/exp(e*1e3)){
-        vec3 b=normalize(h+.03);
-        mat3 n=mat3(b.x*b.x*c+g,b.y*b.x*c+b.z*d,b.z*b.x*c-b.y*d,b.x*b.y*c-b.z*d,b.y*b.y*c+g,
-        b.z*b.y*c+b.x*d,b.x*b.z*c+b.y*d,b.y*b.z*c-b.x*d,b.z*b.z*c+g);
-        p=h+=e*(1.-k.rgb/l.y)*n;
-        p/=dot(p,p);
-        p=vec3(log(v=length(p))+f/6.3,p.y/v-1.5,atan(p.z,p.x));
-        p=fract(p/acos(-1.)*3.5)-.5;
-        a=9.;
-        for(int o=0;o++<3;p=abs(p/e)){
-            --p;
-            p=mod(p,2.)-1.;
-            a=min(a,length(p));
-            e=dot(p,p);
-            v/=e;
+void mainImage(out vec4 O, vec2 I) {
+    vec3 r = iResolution, d = vec3(I - .5 * r.xy, r.y), q = vec3(0, .8, -.9), p;
+    O = vec4(.1);
+    for (float i = 0., e = 0., s, g, k; i++ < 24.;) {
+        g = min(e * s, .4 - e) * .04;
+        k = clamp(g * 15., 0., 1.);
+        O.rgb += mix(mix(mix(mix(vec3(.01, .15, .95), vec3(.95, .08, .01), step(.2, k)), vec3(1, .45, .02), smoothstep(.18, .45, k)), vec3(1, .95, .35), smoothstep(.4, .85, k)), vec3(1), smoothstep(.8, 1., k)) * g * 4.2;
+        p = q += normalize(d) * max(abs(e), .005) * .3;
+        p = vec3(log(length(p) + 1.) - iTime * .5, exp(-p.y / (length(p) + .01) + .5), atan(p.x, p.z));
+        e = length(p.yz * .5) - .2;
+        for (s = 1.4; s < 1e3; s *= 2.) {
+            p = abs(p) - vec3(.8, .2, .5);
+            e += mix(-abs(dot(cos(p.zxy * s), .2 - sin(p * s))), -abs(dot(sin(p.yzx * s), .2 - cos(p * s))), sin(iTime * .52) * .5 + .5) / s * .4;
         }
-        e=max(p.y-.1,length(p.xz)-1.)/v*.3;
     }
+    O = pow(max(O, 0.), vec4(.45));
 }

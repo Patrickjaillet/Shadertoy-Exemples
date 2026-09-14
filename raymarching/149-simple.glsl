@@ -1,36 +1,93 @@
 // ==== Image (image) ====
-#define AA 2
-#define MAX_ITER 256.0
-#define BAILOUT 16.0
-mat2 n(float a){
-  float e=sin(a),f=cos(a);
-  return mat2(f,-e,e,f);
-}
-vec3 o(float b,float e,float c){
-  vec4 a=vec4(1.,2./3.,1./3.,3.);
-  vec3 g=abs(fract(vec3(b)+a.xyz)*6.-a.www);
-  return c*mix(a.xxx,clamp(g-a.xxx,0.,1.),e);
-}
-void mainImage(out vec4 p,vec2 q){
-  vec3 d=vec3(0.);
-  for(int c=0;c<AA;c++)for(int b=0;b<AA;b++){
-    vec2 r=(q+vec2(b,c)/float(AA)-.5*iResolution.xy)/min(iResolution.y,iResolution.x),a=r*2.5,f=vec2(.35,.39)+vec2(.05*cos(iTime*.1),.05*sin(iTime*.15));
-    float j=0.,h=1e20,i=1e20;
-    a*=n(iTime*.05);
-    for(float k=0.;k<MAX_ITER;k++){
-      a=vec2(a.x*a.x-a.y*a.y,2.*a.x*a.y)+f;
-      float s=dot(a,a);
-      h=min(h,abs(length(a)-1.));
-      i=min(i,abs(a.x));
-      if(s>BAILOUT)break;
-      j++;
+/**************************************************************
+*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____  *
+* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \ *
+* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |*
+*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |*
+* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/ *
+***************************************************************
+* - X: https://x.com/JailletPatrick                           *
+***************************************************************
+* https://patrickjaillet.github.io/sandefjord-software        *
+* GLSL shader design and value tweaking - Sliders-GL v1.0.1:  *
+* 100% safe Code Golfing - µShader v3.0.1:                    *
+**************************************************************/
+void mainImage(out vec4 v, in vec2 w) {
+    vec2 l = iResolution.xy;
+    vec2 A = (w * 2. - l) / l.y;
+    
+    float b = iTime * .4;
+    float m = floor(b * .2);
+    float B = m + 1.;
+    float C = smoothstep(0., 1., fract(b * .2));
+    float f = floor(m);
+    float g = floor(B);
+    float c = 0.;
+    
+    vec3 D = vec3(
+        fract(sin(f * .1031) * 43758.5453),
+        fract(sin((f + 1.) * .1031) * 43758.5453),
+        fract(sin((f + 2.) * .1031) * 43758.5453)
+    ) * 2. - 1.;
+    
+    vec3 E = vec3(
+        fract(sin(g * .1031) * 43758.5453),
+        fract(sin((g + 1.) * .1031) * 43758.5453),
+        fract(sin((g + 2.) * .1031) * 43758.5453)
+    ) * 2. - 1.;
+    
+    vec3 h = mix(D, E, C);
+    vec3 i = vec3(.02);
+    vec3 F = vec3(0., 0., -3.);
+    vec3 G = normalize(vec3(A, 1.));
+    
+    for (int n = 0; n < 120; n++) {
+        vec3 a = F + G * (c + .2);
+        
+        float o = b * 1.4 + h.r;
+        float p = cos(o);
+        float s1 = sin(o);
+        a.rb = mat2(p, -s1, s1, p) * a.rb;
+        
+        float q = b + h.g;
+        float s = cos(q);
+        float s2 = sin(q);
+        a.rg = mat2(s, -s2, s2, s) * a.rg;
+        
+        vec3 t = a;
+        float d = 1.1;
+        float j = 1.;
+        
+
+        for (int u = 0; u < 5; u++) {
+            a = vec3(5.5) - abs(a * j - h.b * .3);
+            j = 2.67;                       
+            d *= j;                             
+        }
+        
+        float k = distance(a.rb, a.gr) / d;
+        k = max(k, 1e-4);
+        
+        float e = k;
+        float H = length(t.gg);
+        float I = mod(H, t.g) / d * .5;
+        
+        e += I;
+        c += e * .35;
+        
+        float J = .59;
+        float K = .4 - e;
+        float L = d / 4e3;
+        
+        vec3 M = mod(J * 6. + vec3(0., 4., 2.), 6.);
+        vec3 N = clamp(abs(M - 3.) - 1., 0., 1.);
+        vec3 O = L * mix(vec3(1.), N, K);
+        
+        float P = exp(-e * 45.) * exp(-c * .1);
+        i += O * P;
+        
+        if (c > 30. || i.r > 15.) break;
     }
-    float l=j/MAX_ITER,t=l+iTime*.1,u=.85+.15*sin(l*6.28318+iTime*.2),m=1.-.5*exp(-10.*i);
-    m*=smoothstep(0.,.1,h);
-    vec3 g=o(t,u,m);
-    d+=g;
-  }
-  d/=float(AA*AA);
-  d=pow(d,vec3(.4545));
-  p=vec4(d,1.);
+    
+    v = vec4(i, 1.);
 }

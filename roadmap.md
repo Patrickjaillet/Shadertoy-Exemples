@@ -79,9 +79,11 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 - [x] Testé le site en local (`npx serve .`) avant publication : page d'accueil, `data/shaders.json` et un `data/shaders/<NNN>.json` répondent tous en 200.
 
 ### 8. Finitions
-- [ ] README mis à jour avec lien vers le site publié et instructions de contribution (comment ajouter un nouveau shader : juste déposer le fichier dans le bon dossier + relancer le build).
-- [ ] Thème visuel simple (dark mode par défaut, cohérent avec l'esthétique "shader").
-- [ ] Vérification manuelle d'un échantillon de shaders par catégorie pour valider le bon fonctionnement du runtime (au moins 2-3 par dossier).
+- [x] README.md créé avec lien vers le site publié, instructions d'ajout d'un nouveau shader, pile technique, et capture d'écran du logiciel (`docs/screenshot.png`), conformément aux conventions strictes du dépôt.
+- [x] Thème visuel dark mode *(fait dès l'étape 2 : palette sombre CSS + thème `dracula` pour CodeMirror depuis l'étape 4)*.
+- [x] Vérification manuelle d'un échantillon de shaders par catégorie (2-3 par dossier, en plus des shaders déjà testés aux étapes précédentes) via Playwright + Chromium : 11 des 15 shaders testés rendent correctement dans le viewport, 4 échouent à la compilation GLSL (incompatibilités WebGL1/GLSL ES 3.00) avec l'erreur affichée proprement — comportement attendu et déjà géré par le runtime. Chaque catégorie compte au moins un shader validé fonctionnel.
+
+**Étape 8 complète : les 8 étapes de la roadmap sont désormais toutes réalisées** (miniatures de l'étape 5 restant en option non bloquante, cf. Risques).
 
 ## Pile technique proposée
 

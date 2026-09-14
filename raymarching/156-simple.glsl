@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 resolution = iResolution.xy;
     float time = iTime;
@@ -14,10 +14,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     float a1 = 0.2 + sin(time * 0.02) * 0.35;
     mat2 r1 = mat2(cos(a1), sin(a1), -sin(a1), cos(a1));
-    
+
     float a2 = time * 0.04 + cos(time * 0.11) * 0.4;
     mat2 r2 = mat2(cos(a2), sin(a2), -sin(a2), cos(a2));
-    
+
     float a3 = sin(time * 0.18) * 0.2;
     mat2 r3 = mat2(cos(a3), sin(a3), -sin(a3), cos(a3));
 
@@ -29,7 +29,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         i += 1.0;
 
         vec3 p = vec3((fragCoord - 0.7 * resolution) / resolution * g + 1.8, g);
-        
+
         p.zy *= r1;
         p.xz *= r2;
         p.xy *= r3;

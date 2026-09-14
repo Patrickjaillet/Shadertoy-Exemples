@@ -1,16 +1,4 @@
-// ==== Image (image) ====
-/**************************************************************
-*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____  *
-* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \ *
-* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |*
-*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |*
-* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/ *
-***************************************************************
-*                 https://x.com/JailletPatrick                *
-***************************************************************
-*                     Le Petit Editeur GLSL                   *
-*   https://github.com/Patrickjaillet/Le-Petit-Editeur-GLSL   *
-**************************************************************/
+
 vec4 clr(float x){
     vec4 c = vec4(x,.25-x,x-.25,0);
     c=fract(clamp(fract(c+.75),.25,1.)+.25);
@@ -40,7 +28,7 @@ float getVal(vec2 U) {
         vec2 c_wind = rot(wind) * c;
 
         z = mat2(z, -z.y, z)*z + c_wind;
-        
+
         rr = dot(z,z);
         if(rr>B) break;
 
@@ -69,21 +57,21 @@ float getVal(vec2 U) {
 void mainImage(out vec4 O, vec2 U)
 {
     float val = getVal(U);
-    
+
     vec2 e = vec2(1.5, 0.0);
     float valX = getVal(U + e.xy);
     float valY = getVal(U + e.yx);
-    
+
     vec3 normal = normalize(vec3((val - valX) * 2.5, (val - valY) * 2.5, 0.2));
-    
+
     vec3 lightDir = normalize(vec3(-0.4, 0.6, 0.8));
-    
+
     float diff = max(dot(normal, lightDir), 0.0);
     float spec = pow(max(dot(reflect(-lightDir, normal), vec3(0.0, 0.0, 1.0)), 0.0), 24.0);
-    
+
     vec4 baseColor = clr(val);
-    
+
     float lighting = mix(0.7, 1.35, diff);
-    
+
     O = baseColor * lighting + vec4(spec * 0.45);
 }

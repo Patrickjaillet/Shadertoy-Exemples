@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat3 rot3D(float a, vec3 axis) {
     axis = normalize(axis);
     float s = sin(a), c = cos(a), oc = 1.0 - c;

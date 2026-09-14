@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define sEPS 0.008
 #define FAR 55.
 #define ITER 100
@@ -40,10 +40,10 @@ vec3 envMap(vec3 rd) {
 float map(vec3 p) {
     p.xy *= rot(p.z * 0.1 + iTime * 0.05);
     p.xz *= rot(iTime * 0.02);
-    
+
     vec3 pL = mod(p, 2.0) - 1.0;
     float x = smin(length(pL.xy), smin(length(pL.yz), length(pL.xz), 0.25), 0.25) - 0.15;
-    
+
     float dps = 1e5;
     for(int i=0; i<4; i++) {
         vec4 h = hash41(float(i) + 15.0);
@@ -74,12 +74,12 @@ vec3 getEmptySpacePath(float t) {
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    
+
     float t_anim = iTime * 0.5; 
-    
+
     vec3 ro = getEmptySpacePath(t_anim);
     vec3 target = getEmptySpacePath(t_anim + 0.5);
-    
+
     vec3 f = normalize(target - ro);
     vec3 cp = vec3(0.0, 1.0, 0.0); 
     vec3 r = normalize(cross(cp, f));
@@ -100,17 +100,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         vec3 n = getNormal(p);
         vec3 ld = normalize(vec3(1.0, 2.0, -1.0));
         vec3 refl = reflect(rd, n);
-        
+
         vec3 cube = envMap(refl);
-        
+
         float diff = max(dot(n, ld), 0.0);
         float spec = pow(max(dot(refl, ld), 0.0), 64.0);
         float fres = pow(clamp(1.0 + dot(rd, n), 0.0, 1.0), 5.0);
         float ao = clamp(map(p + n * 0.2) / 0.2, 0.0, 1.0);
-        
+
         float internalGlow = clamp(1.0 - length(mod(p, 2.0)-1.0), 0.0, 1.0);
         vec3 emit = blackbody(internalGlow) * 1.8;
-        
+
         vec3 baseCol = mix(vec3(0.01), cube, 0.3 + fres * 0.7);
         col = (baseCol * diff + spec * cube + emit) * ao;
         col *= exp(-0.12 * t);
@@ -118,7 +118,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     vec2 vuv = fragCoord / iResolution.xy;
     col *= pow(16.0 * vuv.x * vuv.y * (1.0 - vuv.x) * (1.0 - vuv.y), 0.12);
-    
+
     col = aces(col * 1.2);
     col = pow(col, vec3(0.4545));
 

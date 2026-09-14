@@ -1,12 +1,4 @@
-// ==== Image (image) ====
-/*%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£%*
-ù  ____    _    _   _ ____  _____ _____   _  ___  ____  ____   ù
-ù / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \  ù
-ù \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | | ù
-ù  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| | ù
-ù |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/  ù
-ù            PATRICK JAILLET-VAN DEN BEEMT [PJVDB]             ù
-ù**************************************************************/
+
 void mainImage(out vec4 O, vec2 U) {
     vec3 R = iResolution, h = vec3(.3, .3, -2.5), p, b,
          D = vec3(.5 * R.x - U.x, .7 * R.y - U.y, R.y) / R.y;
@@ -34,17 +26,3 @@ void mainImage(out vec4 O, vec2 U) {
     O.rgb += (.5 + .5 * cos(t * .5 + vec3(0, 1, 2))) * w * .35;
     O = min(O, 1.);
 }
-/*****************************************************************************ù
-ù - Software:       https://patrickjaillet.github.io/sandefjord-software      ù
-ù - Social Network: https://x.com/JailletPatrick                              ù
-ù - Music:          https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g  ù
-ù*****************************************************************************ù
-ù Software used for GLSL shader creation:                      ù
-ù                -----------------------------                 ù
-ù GLSL shader design and value tweaking                        *****************************************ù
-ù - Sliders-GL v1.0.1: https://patrickjaillet.github.io/sandefjord-software/software.html?id=sliders-gl ù
-ù 100% safe Code Golfing                                                                                ù
-ù - µShader v3.0.1: https://patrickjaillet.github.io/sandefjord-software/software.html?id=microshader   ù
-ù Formatting & Layout                                                                                   ù
-ù - ShaderFmt v1.0.0: https://patrickjaillet.github.io/sandefjord-software/software.html?id=shaderfmt   ù
-ù*******************************************************************************************************/

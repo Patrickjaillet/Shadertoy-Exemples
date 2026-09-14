@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define MAX_STEPS 256
 #define SURF_DIST .0005
 #define MAX_DIST 120.
@@ -52,7 +52,7 @@ vec2 GetDist(vec3 p) {
     float ground = p.y + 2.5 + Hash21(p.xz * 0.1) * 0.01;
     vec2 res = vec2(ground, 1.0);
     vec3 pW = p - vec3(0, 2.5, 8.0);
-    
+
     float support = 1e10;
     for(float i = -1.0; i <= 1.0; i += 2.0) {
         float xSide = i * 0.8;
@@ -68,7 +68,7 @@ vec2 GetDist(vec3 p) {
     float ringOuter = abs(length(pR.yz) - 4.2) - 0.05;
     float ringInner = abs(length(pR.yz) - 4.1) - 0.03;
     float wheelStructure = max(min(ringOuter, ringInner), abs(pR.x) - 0.6);
-    
+
     float angle = atan(pR.z, pR.y);
     float id = floor(angle / (2.0 * PI / 16.0) + 0.5);
     vec3 pSpoke = pR;
@@ -76,12 +76,12 @@ vec2 GetDist(vec3 p) {
     float spokes = min(length(pSpoke.xz - vec2(0.1, 0.0)) - 0.03, length(pSpoke.xz - vec2(-0.1, 0.0)) - 0.03);
     wheelStructure = min(wheelStructure, max(spokes, abs(pSpoke.y) - 4.2));
     if(wheelStructure < res.x) res = vec2(wheelStructure, 2.0);
-    
+
     vec3 pC = pR;
     pC.yz *= Rot(-id * (2.0 * PI / 16.0));
     pC.y -= 4.2;
     pC.yz *= Rot(id * (2.0 * PI / 16.0) + t); 
-    
+
     float body = sdBox(pC, vec3(0.4, 0.45, 0.35)) - 0.02;
     float interior = sdBox(pC, vec3(0.38, 0.43, 0.33));
     float glass = max(body, -interior);
@@ -89,7 +89,7 @@ vec2 GetDist(vec3 p) {
 
     if(seat < res.x) res = vec2(seat, 3.0);
     if(glass < res.x) res = vec2(glass, 4.0);
-    
+
     return res;
 }
 
@@ -112,7 +112,7 @@ float GetShadow(vec3 p, vec3 lightDir) {
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    
+
     float cycle = mod(iTime, 24.0);
     vec3 ro, lookAt;
     float fov = 1.0;
@@ -163,7 +163,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         float shadow = GetShadow(p, sunDir);
         float diff = max(dot(n, sunDir), 0.0) * shadow;
         float fresnel = pow(clamp(1.0 + dot(rd, n), 0.0, 1.0), 5.0);
-        
+
         if(dS.y == 1.0) {
             vec2 gv = fract(p.xz * 0.5) - 0.5;
             float line = smoothstep(0.48, 0.5, max(abs(gv.x), abs(gv.y)));
@@ -195,9 +195,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     col = ACESFilm(col);
     col = pow(col, vec3(0.4545));
-    
+
     float flash = smoothstep(0.1, 0.0, abs(mod(cycle, 6.0)));
     col = mix(col, vec4(0).rgb, flash);
-    
+
     fragColor = vec4(col, 1.0);
 }

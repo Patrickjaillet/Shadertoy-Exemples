@@ -1,22 +1,4 @@
-// ==== Image (image) ====
-/*%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£%*
-ù  ____    _    _   _ ____  _____ _____   _  ___  ____  ____   ù
-ù / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \  ù
-ù \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | | ù
-ù  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| | ù
-ù |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/  ù
-ù                       PATRICK JAILLET                        ù
-ù - https://patrickjaillet.github.io/sandefjord-software       ù
-ù - https://x.com/JailletPatrick                               ù
-$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£*/
 
-/*Quelques infos sur les modification du shader original:
-- cCalcul d'éclairage 3D et du super-échantillonnage
-- Integration du pavage Domaine/Log-Polaire
-- Géométrie analytique (SDF)
-- Distance Estimator
-- Version golfé 100% safe.
-*/
 vec3 j(float c,vec3 b,vec3 a,vec3 d,vec3 e){
     return b+a*cos(6.2831855e0*(d*c+e));
 }

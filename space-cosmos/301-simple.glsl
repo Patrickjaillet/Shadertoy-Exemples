@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define PI 3.14159265359
 #define STEPS 20
 #define SHADOW_STEPS 4

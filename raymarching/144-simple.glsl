@@ -1,12 +1,10 @@
-// ==== Image (image) ====
-// Hash rapide pour le bruit
+
 float hash12(vec2 p) {
     vec3 p3  = fract(vec3(p.xyx) * 0.1031);
     p3 += dot(p3, p3.yzx + 33.33);
     return fract((p3.x + p3.y) * p3.z);
 }
 
-// Bruit de Perlin 2D
 float valueNoise(vec2 st) {
     vec2 i = floor(st);
     vec2 f = fract(st);
@@ -38,7 +36,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float rRed = 3.0 / iResolution.y;
     float rBlack = 2.0 / iResolution.y;
 
-    // Estimation du rayon pour cibler uniquement les anneaux voisins
     float rPixel = length(uv);
     float iEst = (rPixel * 720.0 - 50.0) / 10.0;
     int iStart = clamp(int(floor(iEst)) - 2, 0, 79);
@@ -55,31 +52,25 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         float noiseDeg = valueNoise(vec2(noise_param.y, fi * 0.01 - frameNum * 0.005));
         float degStart = mapValue(noiseDeg, 0.0, 1.0, 0.0, 1440.0);
 
-        // Annulation sûre de la rotation Y sur les coordonnées UV
         float cosR = cos(rotRad);
         vec2 uvRot = vec2(uv.x / max(abs(cosR), 0.001), uv.y);
 
-        // Calcul de l'angle UV ramené dans le repère local [0, 360]
         float anglePixel = atan(uvRot.y, uvRot.x) / DEG_TO_RAD;
         if (anglePixel < 0.0) anglePixel += 360.0;
 
-        // Normalisation de degStart par rapport aux cycles de 360 deg
         float baseDeg = mod(degStart, 360.0);
         float deltaDeg = anglePixel - baseDeg;
         if (deltaDeg < 0.0) deltaDeg += 360.0;
 
-        // Tester les différentes révolutions de l'arc (de 0 à 1440 deg = 4 tours)
         for (float rev = 0.0; rev < 1440.0; rev += 360.0) {
             float targetDeg = baseDeg + deltaDeg + rev;
-            if (targetDeg >= degStart && targetDeg <= degStart + 180.0) { // 720 * 0.25deg = 180 deg d'arc
+            if (targetDeg >= degStart && targetDeg <= degStart + 180.0) {
                 float radAngle = targetDeg * DEG_TO_RAD;
                 vec2 pointPos = vec2(radius * cos(radAngle), radius * sin(radAngle));
 
-                // Projection de la distance re-mesurée
                 vec2 projPoint = vec2(pointPos.x * cosR, pointPos.y);
                 float d = length(uv - projPoint);
 
-                // Dessin des cercles rouge et noir
                 float circleRed = smoothstep(rRed, rRed - 1.0 / iResolution.y, d);
                 color = mix(color, vec3(239.0 / 255.0, 39.0 / 255.0, 39.0 / 255.0), circleRed);
 

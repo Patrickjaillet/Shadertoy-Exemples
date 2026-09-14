@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define AA 2
 #define MAX_ITER 256.0
 #define BAILOUT 16.0

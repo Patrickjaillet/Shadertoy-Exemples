@@ -1,14 +1,12 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    // --- GESTION DU TEMPS ET BULLET TIME ---
+
     float rawTime = iTime;
-    
-    // Vitesse du temps qui oscille (bullet time cyclique)
+
     float speed = mix(0.08, 1.0, .5 + .5 * cos(rawTime * .4));
-    
-    // Progression temporelle fluide intégrant des pauses ralenties
+
     float t = rawTime * .25 + sin(rawTime * .4) * 1.5;
-    
+
     vec2 r = iResolution.xy;
     vec3 u = vec3(0);
     vec3 U[8] = vec3[8](
@@ -22,40 +20,37 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         vec3(.9, .95, .5)
     );
 
-    // Flou de mouvement réactif à la vitesse
     float blur = .03 * speed;
 
     for (float h = 0.; h < 4.; h++) {
         float v = t + (h * .25 - .5) * blur;
-        
-        // --- MORPHING EN CONTINU ---
+
         float e = .5 + .5 * sin(v * .8);
-        
+
         float c = v * 0.73;
         float d = v * 0.73 + 1.0;
         float k = 0.;
         float G = v * .2;
-        
+
         float ac = mix(2.4 + .2 * cos(c * 1.5), 2.4 + .2 * cos(d * 1.5), e);
 
-        // --- CAMÉRA STRICTEMENT FIXE FACE AU FRACTAL ---
-        vec3 C = vec3(0.0, 1.5, 2.6); // Position fixe
-        vec3 target = vec3(0.0, 0.0, 0.0); // Point d'impact au centre
-        
+        vec3 C = vec3(0.0, 1.5, 2.6);
+        vec3 target = vec3(0.0, 0.0, 0.0);
+
         vec3 j = normalize(target - C);
         vec3 D = normalize(cross(j, vec3(0, 1, 0)));
         vec3 Z = cross(D, j);
-        
+
         vec3 _ = normalize(vec3((fragCoord - .5 * r) / r.y, 1.2) * mat3(D, Z, j));
         vec3 F = C;
         vec3 l = vec3(0);
-        
+
         vec3 J = mix(
             vec3(1, .8 + .2 * sin(c), .8 + .2 * sin(c)),
             vec3(1, .8 + .2 * sin(d), .8 + .2 * sin(d)),
             e
         );
-        
+
         mat2 aa = mat2(cos(G), -sin(G), sin(G), cos(G));
         mat2 ab = mat2(.995, -.1, .1, .995);
 

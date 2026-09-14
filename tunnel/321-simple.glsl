@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
 vec4 map(vec3 p){
     p.z=mod(p.z-iTime*4.5,16.)-8.;
@@ -9,7 +9,7 @@ vec4 map(vec3 p){
     }
     return vec4(max((length(q)-.05)/s,2.9-length(p.xy)),1.,q.x,q.y);
 }
-// https://github.com/Patrickjaillet/Z-GL
+
 vec3 calcNormal(vec3 p){vec2 e=vec2(.01,0.);return normalize(vec3(map(p+e.xyy).x-map(p-e.xyy).x,map(p+e.yxy).x-map(p-e.yxy).x,map(p+e.yyx).x-map(p-e.yyx).x));}
 vec3 render(vec2 fragCoord,vec2 res,float time){
     vec2 uv=(fragCoord-.6*res)/res.y;

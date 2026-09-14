@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define OCTAVES 5
 
 float hash(vec2 p) {
@@ -181,7 +181,7 @@ float psychedelicMorphSDF(vec2 p, float t, float kick) {
 vec2 getShaderMode(vec2 uv, int mode) {
     float r = length(uv) + 1e-5;
     float a = atan(uv.y, uv.x);
-    
+
     if (mode == 0) return vec2(log(r), a);
     if (mode == 1) return vec2(log2(r), a * 1.5);
     if (mode == 2) return vec2(log(r) * 0.43429, a);
@@ -250,7 +250,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         float subSecond = fract(remaining);
 
         float pulse = pow(1.0 - subSecond, 3.0);
-        
+
         uv *= (1.0 - pulse * 0.15);
 
         float r = length(uv);
@@ -281,7 +281,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float transitionPhase = fract(sequenceTime);
 
     float transitionImpact = smoothstep(0.75, 1.0, transitionPhase);
-    
+
     float rnd = hash(vec2(iTime * 50.0, floor(uv.y * 40.0)));
     float lineGlitch = step(0.92 - transitionImpact * 0.25, rnd);
 
@@ -309,7 +309,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     int currentMode = (transitionPhase > 0.5) ? modeB : modeA;
 
     float chromaDist = 0.005 + transitionImpact * 0.04 + kick * 0.015;
-    
+
     vec3 col;
     col.r = renderScene(uv * (1.0 + chromaDist), currentMode, demoTime, kick, kickToggle, low, mid, high).r;
     col.g = renderScene(uv, currentMode, demoTime, kick, kickToggle, low, mid, high).g;
@@ -329,19 +329,19 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     if (iTime >= 45.0) {
         float objTime = iTime - 45.0;
-        
+
         vec2 rawUV = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-        
+
         float dist = psychedelicMorphSDF(rawUV, objTime, kick);
-        
+
         float objGlow = 0.015 / (abs(dist) + 0.01);
         objGlow *= (1.0 + kick * 2.0);
-        
+
         float objFill = smoothstep(0.01, -0.01, dist);
-        
+
         vec3 objCol = 0.5 + 0.5 * cos(objTime * 3.0 + dist * 10.0 + vec3(0.0, 2.0, 4.0));
         objCol += vec3(0.2, 0.8, 1.0) * objGlow;
-        
+
         col = mix(col, col + objCol, objFill * 0.6 + objGlow * 0.4);
 
         float beatCounter = objTime * 4.0 * max(kick, 0.5);

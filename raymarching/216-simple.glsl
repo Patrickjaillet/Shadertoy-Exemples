@@ -1,8 +1,8 @@
-// ==== Image (image) ====
+
 float e(vec2 d,vec4 j){
   vec2 c=d-j.xy,ba=j.zw-j.xy;
   return length(c-ba*clamp(dot(c,ba)/dot(ba,ba),0.,1.));
-}// https://patrickjaillet.github.io/GLSL-Hyper-Golfer/
+}
 float o(int h,vec2 d){
   float c=1e5;
   if(h==83){

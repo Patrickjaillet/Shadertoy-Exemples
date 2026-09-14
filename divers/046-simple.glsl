@@ -1,5 +1,4 @@
-// ==== Image (image) ====
-// https://github.com/Patrickjaillet/Z-GL-Shadertoy
+
 #define R iResolution.xy
 #define T iTime
 #define WEB_DENSITY 14.0
@@ -54,7 +53,7 @@ void mainImage(out vec4 O, vec2 C) {
     vec2 uv = (2.0 * C - R) / R.y;
     vec2 m = (2.0 * iMouse.xy - R) / R.y;
     float isDown = step(0.01, iMouse.z);
-    
+
     float d = 1e10;
     float dDew = 1e10;
     float aStep = 6.2831 / WEB_DENSITY;
@@ -64,7 +63,7 @@ void mainImage(out vec4 O, vec2 C) {
         vec2 dir = vec2(cos(a), sin(a));
         vec2 p1 = vec2(0);
         vec2 p2 = dir * 2.2;
-        
+
         float broken = checkTear(p1, p2, m, isDown);
         if(broken < 0.5) {
             vec2 dP1 = elasticDeform(p1, m, isDown, broken);
@@ -77,24 +76,24 @@ void mainImage(out vec4 O, vec2 C) {
         for(float i = 0.0; i < WEB_DENSITY; i++) {
             float a1 = i * aStep;
             float a2 = (i + 1.0) * aStep;
-            
+
             vec2 p1 = vec2(cos(a1), sin(a1)) * r;
             vec2 p2 = vec2(cos(a2), sin(a2)) * r;
-            
+
             float broken = checkTear(p1, p2, m, isDown);
-            
+
             float naturalHole = step(0.12, hash12(vec2(r, i)));
-            
+
             if(broken < 0.5 && naturalHole > 0.5) {
                 vec2 dP1 = elasticDeform(p1, m, isDown, broken);
                 vec2 dP2 = elasticDeform(p2, m, isDown, broken);
-                
+
                 vec2 mid = mix(dP1, dP2, 0.5);
                 mid -= normalize(mid) * (0.03 * r);
-                
+
                 float segment = min(sdLine(uv, dP1, mid), sdLine(uv, mid, dP2));
                 d = min(d, segment);
-                
+
                 if(hash12(vec2(r, i + 13.0)) > 0.94) {
                     dDew = min(dDew, length(uv - mid));
                 }
@@ -103,14 +102,14 @@ void mainImage(out vec4 O, vec2 C) {
     }
 
     vec3 col = vec3(0.005, 0.008, 0.012);
-    
+
     float thread = smoothstep(LINE_WIDTH, 0.0, d);
     float sheen = pow(max(0.0, 1.0 - d * 60.0), 20.0) * 0.4;
     vec3 silkCol = vec3(0.7, 0.85, 1.0) * (0.5 + sheen);
-    
+
     col = mix(col, silkCol, thread);
     col += vec3(0.4, 0.6, 1.0) * 0.0012 / (d + 0.004);
-    
+
     float drop = smoothstep(0.012, 0.0, dDew);
     float dropSpec = pow(max(0.0, 1.0 - dDew * 80.0), 50.0);
     col = mix(col, vec3(0.9, 0.95, 1.0), drop);

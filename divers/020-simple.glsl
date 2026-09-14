@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define T iTime
 #define R(a) mat2(cos(a),-sin(a),sin(a),cos(a))
 #define E(o) ((p+o).y+1.2-c-W(p+o))

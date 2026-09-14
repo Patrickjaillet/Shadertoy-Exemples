@@ -1,5 +1,3 @@
-// ==== Image (image) ====
-// https://patrickjaillet.github.io/sandefjord-software
 
 mat2 rotate2D(float angle) {
     float c = cos(angle);
@@ -41,10 +39,10 @@ float fastNoise3D(vec3 p) {
 
     vec4 n4_0 = vec4(n000, n100, n010, n110);
     vec4 n4_1 = vec4(n001, n101, n011, n111);
-    
+
     vec2 n2_0 = mix(n4_0.xz, n4_0.yw, f.x);
     vec2 n2_1 = mix(n4_1.xz, n4_1.yw, f.x);
-    
+
     float n_0 = mix(n2_0.x, n2_0.y, f.y);
     float n_1 = mix(n2_1.x, n2_1.y, f.y);
 
@@ -55,17 +53,17 @@ float fastFbm(vec3 p) {
     float value = 0.0;
     float amp = 0.5;
     mat3 rot = mat3(0.00, 0.80, 0.60, -0.80, 0.36, -0.48, -0.60, -0.48, 0.64);
-    
+
     value += amp * fastNoise3D(p); p = rot * p * 2.04; amp *= 0.50;
     value += amp * fastNoise3D(p); p = rot * p * 2.02; amp *= 0.50;
     value += amp * fastNoise3D(p);
-    
+
     return value;
 }
 
 vec3 nebulaDensityFast(vec3 p) {
     vec3 q = p * 0.25 + vec3(iTime * 0.02, -iTime * 0.015, iTime * 0.01);
-    
+
     float n1 = fastFbm(q);
     float n2 = fastFbm(q * 1.8 + vec3(n1 * 1.8));
 
@@ -96,7 +94,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float transmittance = 1.0;
     float totalDist = 0.0;
     bool hit = false;
-    vec3 glowAccum = vec3(0.0); // Accumulateur de glow
+    vec3 glowAccum = vec3(0.0);
 
     float jitter = fastHash(vec3(fragCoord, iTime)) * 0.05;
     totalDist += jitter;
@@ -122,10 +120,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         for (int j = 0; j < 6; j++) {
             foldP = abs(mod(foldP - 0.8, 2.0) - 1.0);
             foldP.yz *= rotate2D(0.78539816);
-            
+
             float dotP = dot(foldP, foldP);
             dotP = clamp(dotP, 0.30, 3.3);
-            
+
             foldP = foldP / dotP - vec3(0.0, 0.3, 0.8);
             scaleAcc /= dotP;
         }
@@ -144,15 +142,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
             vec3 nebCol = nebulaDensityFast(p);
             float stepLen = max(abs(sdf) * 0.8, 0.08);
             float density = length(nebCol);
-            
+
             if (density > 0.001) {
                 float opticalDepth = density * stepLen * 0.5;
                 float stepTransmittance = exp(-opticalDepth);
-                
+
                 vec3 lDir = normalize(lightPos - p);
                 float lightAtten = 1.0 / (1.0 + dot(lightPos - p, lightPos - p) * 0.05);
                 float forwardScattering = pow(max(dot(rayDir, lDir), 0.0), 3.0) * 1.2;
-                
+
                 vec3 stepEmission = nebCol * (1.0 + forwardScattering) * lightAtten;
                 nebulaAccum += stepEmission * (1.0 - stepTransmittance) * transmittance;
                 transmittance *= stepTransmittance;

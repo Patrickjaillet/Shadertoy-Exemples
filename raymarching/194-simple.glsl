@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 float hash(vec2 p) {
   p = fract(p * vec2(234.34, 435.345));
   p += dot(p, p + 34.23);
@@ -66,7 +66,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   float ringFrequency = 1.0 + fbm(uv0 * 1.5 + t * 0.2) * 0.5;
   float ringRadius = 0.45 + 0.12 * sin(iTime * 1.2 + f * 4.0);
   float ring = sdCircle(uv0, ringRadius);
-  
+
   float glow = exp(-abs(ring) * (12.0 - 4.0 * sin(iTime * 2.0)));
   vec3 glowColor = mix(vec3(0.48, 0.42, 0.98), vec3(0.98, 0.35, 0.68), sin(iTime * 0.5) * 0.5 + 0.5);
   col += glow * glowColor * 1.8;

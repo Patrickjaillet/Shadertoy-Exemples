@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 O, vec2 U) {
     vec2 R = iResolution.xy;
     vec3 rd = normalize(vec3((U-.5*R)/R.y, 1.2)), ro = vec3(0,0,-5), col=vec3(0), 

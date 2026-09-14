@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define I 7
 #define S 220
 #define T .0008
@@ -31,16 +31,16 @@ void mainImage(out vec4 O,vec2 C){
     float n=fract(sin(dot(u,vec2(12.9898,78.233)+iTime))*43758.5453),
           y=mod(iTime,32.),t=mod(y,8.)/8.,v=1.2,m,b,l,d,h=0.;
     vec3 o,a,f,r,k,p,c=vec3(1,.4,0),e=vec3(1,.2,.6),g=vec3(.4,1,.5);
-    
+
     if(y<8.){o=vec3(.4*sin(t*P),.4*cos(t*P),-3.);a=vec3(0,0,-17.);}
     else if(y<16.){o=vec3(2.5*sin(t*P*.5),1.5*cos(t*P*.5),-2.+t*4.);a=vec3(0,0,o.z+10.);v=1.8;}
     else if(y<24.){o=vec3(sin(iTime*.5)*1.1,cos(iTime*.3)*1.1,-1.);a=vec3(0,0,20.);v=.7;}
     else {o=vec3(0,0,-5.+t*15.);a=vec3(sin(iTime),cos(iTime),o.z+5.);}
-    
+
     f=normalize(a-o);
     r=normalize(cross(vec3(sin(iTime*.2),1,0),f));
     k=normalize(f*v+u.x*r+u.y*cross(f,r));
-    
+
     for(int i=0;i<S;i++){
         p=o+h*k;d=map(p);
         float w=exp(-h*.04);
@@ -50,7 +50,7 @@ void mainImage(out vec4 O,vec2 C){
         h+=max(T,d*.45);
         if(h>M)break;
     }
-    
+
     float x=sin(iTime*.4)*.5+.5,j=length(u);
     vec3 q=mix(c,mix(e,g,x),x),
     z=q*m*.18+vec3(.3,.1,1)*b*.05+q*l*.02;

@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define MAX_STEPS 160
 #define MAX_DIST 50.0
 #define SURF_DIST 0.0008
@@ -39,15 +39,15 @@ float map(vec3 p) {
     vec2 path = getPath(p.z);
     vec3 p_tunnel = p;
     p_tunnel.xy -= path;
-    
+
     float tunnel = -(length(p_tunnel.xy) - 3.8);
-    
+
     p_tunnel.xy *= rot(p.z * 0.3);
     vec3 q = mod(p_tunnel, 3.0) - 1.5;
-    
+
     float bulb = sdMandelbulb(q * 0.75) / 0.75;
     float shapes = smin(bulb, length(q) - 0.5, 0.2);
-    
+
     return smin(tunnel, shapes, 0.5);
 }
 
@@ -73,17 +73,17 @@ float getAO(vec3 p, vec3 n) {
 
 void mainImage(out vec4 fragColor, vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    
+
     float t_time = iTime * 1.5;
-    
+
     vec3 ro = vec3(getPath(t_time), t_time);
     vec3 lookAt = vec3(getPath(t_time + 1.0), t_time + 1.0);
-    
+
     vec3 f = normalize(lookAt - ro);
     vec3 r = normalize(cross(vec3(0.0, 1.0, 0.0), f));
     vec3 u = cross(f, r);
     vec3 rd = normalize(f + uv.x * r + uv.y * u);
-    
+
     float t = 0.0;
     float d;
     for (int i = 0; i < MAX_STEPS; i++) {
@@ -92,24 +92,24 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
         if (abs(d) < SURF_DIST || t > MAX_DIST) break;
         t += d * 0.7;
     }
-    
+
     vec3 col = vec3(0.0);
-    
+
     if (t < MAX_DIST) {
         vec3 p = ro + rd * t;
         vec3 n = getNormal(p);
         vec3 l = normalize(vec3(1.0, 2.0, -1.0));
-        
+
         float diff = max(dot(n, l), 0.0);
         float ao = getAO(p, n);
         float fog = exp(-0.05 * t);
-        
+
         vec3 material = 0.5 + 0.5 * cos(t * 0.1 + vec3(0.5, 1.2, 3.5));
         col = material * diff;
         col += pow(max(dot(reflect(-l, n), -rd), 0.0), 32.0) * 0.3;
         col *= ao;
         col = mix(vec3(0.005, 0.01, 0.03), col, fog);
     }
-    
+
     fragColor = vec4(pow(col, vec3(0.4545)), 1.0);
 }

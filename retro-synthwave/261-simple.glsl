@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void drawChar(inout vec3 col, vec3 textCol, vec2 uv, vec2 pos, vec2 size, int charCode) {
     vec2 p = (uv - pos) / size;
     if (p.x >= 0.0 && p.x <= 1.0 && p.y >= 0.0 && p.y <= 1.0) {

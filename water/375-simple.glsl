@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 rot(float a) {
     float s = sin(a);
     float c = cos(a);

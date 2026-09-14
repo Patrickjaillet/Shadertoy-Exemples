@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 m=mat2(1.6,1.2,-1.2,1.6);
 float q(vec2 c){
     float f=dot(c,vec2(127.1,311.7));

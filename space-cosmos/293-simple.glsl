@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define R iResolution.xy
 #define T (iTime*.4)
 #define r(a) mat2(cos(a),-sin(a),sin(a),cos(a))

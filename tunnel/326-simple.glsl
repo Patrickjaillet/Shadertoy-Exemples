@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define cQ vec3(.22,.07,.08)
 #define cP vec2(J*1.05,j*2.)
 #define cO step(.5,i(C*71.3))
@@ -349,13 +349,11 @@ b+=vec3(1.2,.45,.18)*exp(-J*J*12.)*.6;
 }else
 b=ci(c,o,e,x);
 
-
 float cA=1.-exp(-ak*.008);
 b=mix(b,at,smoothstep(0.,1.,cA)*.5);
 
 }else
 b=at;
-
 
 return b;
 }

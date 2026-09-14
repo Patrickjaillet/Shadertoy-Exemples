@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 const vec3 RAY_PARAMS = vec3(160.0, 0.0003, 90.0);
 const vec3 LIGHT_COLOR = vec3(0.05, 0.85, 1.0);
 const vec3 LIGHT_ACCENT = vec3(0.95, 0.25, 0.85);
@@ -30,7 +30,7 @@ struct Motion { float t; float look; float tilt; };
 Motion getCinematicSequence(float time) {
     float phase = mod(time, LOOP_PARAMS.x) / LOOP_PARAMS.x;
     float t_p, look = 0., tilt = 0., p;
-    
+
     if (phase < .25) {
         t_p = mix(0., 12., sStep(phase / .25));
     } else if (phase < .625) {
@@ -152,9 +152,9 @@ vec3 renderScene(vec2 uv, float dither) {
          cw = normalize(tar - ro),
          ri = normalize(cross(cw, vec3(0, 1, 0))),
          up = cross(ri, cw);
-    
+
     cw = normalize(cw + ri * m.look + up * m.tilt);
-    
+
     vec3 cu = normalize(cross(cw, vec3(0, 1, 0))), 
          cv = cross(cu, cw), 
          rd = normalize(uv.x * cu + uv.y * cv + cw * (1.6 - abs(m.look) * .3)),
@@ -164,95 +164,95 @@ vec3 renderScene(vec2 uv, float dither) {
     float t = dither * 0.05;
     float d = 0.0;
     float bloom = 0.0;
-    
+
     for(int i = 0; i < int(RAY_PARAMS.x); i++) {
         vec3 p = ro + rd * t;
         d = map(p);
-        
+
         float dL = length(p - lP);
         bloom += exp(-dL * 0.3) * 0.012;
-        
+
         if(d < RAY_PARAMS.y || t > RAY_PARAMS.z) break;
         t += d * 0.65;
     }
-    
+
     vec3 fogColor = vec3(0.002, 0.004, 0.012);
 
     if(t < RAY_PARAMS.z) {
         vec3 p = ro + rd * t;
         vec3 n = getNormal(p, t);
         vec3 v = -rd;
-        
+
         vec3 lDir = lP - p;
         float lDist = length(lDir);
         lDir /= lDist;
-        
+
         float ao = calcAO(p, n);
         float shadow = calcSoftShadow(p + n * 0.008, lDir, 0.02, lDist, 24.0);
-        
+
         float detailNoise = hash31(floor(p * 8.0));
         vec3 baseAlbedo = mix(vec3(0.015, 0.025, 0.045), vec3(0.1, 0.14, 0.22), sin(p.z * 0.1) * 0.5 + 0.5);
         vec3 albedo = mix(baseAlbedo, baseAlbedo * 1.5, detailNoise * 0.3);
-        
+
         float roughness = mix(0.08, 0.4, hash12(floor(p.xz * 3.0)));
         float metallic = mix(0.8, 0.95, detailNoise);
-        
+
         vec3 F0 = mix(vec3(0.04), albedo, metallic);
         vec3 h = normalize(v + lDir);
-        
+
         float NDF = distributionGGX(n, h, roughness);
         float G = geometrySmith(n, v, lDir, roughness);
         vec3 F = fresnelSchlick(max(dot(h, v), 0.0), F0);
-        
+
         vec3 kS = F;
         vec3 kD = (vec3(1.0) - kS) * (1.0 - metallic);
-        
+
         vec3 numerator = NDF * G * F;
         float denominator = 4.0 * max(dot(n, v), 0.0) * max(dot(n, lDir), 0.0) + 0.00001;
         vec3 specular = numerator / denominator;
-        
+
         float NdotL = max(dot(n, lDir), 0.0);
         float attenuation = 55.0 / (1.0 + lDist * lDist * 0.035);
         vec3 radiance = mix(LIGHT_COLOR, LIGHT_ACCENT, sin(p.z * 0.05) * 0.5 + 0.5) * attenuation;
-        
+
         vec3 Lo = (kD * albedo / 3.14159265359 + specular) * radiance * NdotL * shadow;
-        
+
         vec3 r = reflect(-v, n);
         vec3 envSpec = mix(LIGHT_ACCENT * 0.25, LIGHT_COLOR * 0.75, smoothstep(-0.5, 0.8, r.y));
         vec3 F_env = fresnelSchlickRoughness(max(dot(n, v), 0.0), F0, roughness);
         vec3 ambient = (kD * albedo + envSpec * F_env) * 0.25 * ao;
-        
+
         col = Lo + ambient;
         col *= smoothstep(RAY_PARAMS.z, RAY_PARAMS.z * 0.6, t);
     } else {
         col = fogColor;
     }
-    
+
     vec3 lightEmissive = mix(LIGHT_COLOR, LIGHT_ACCENT, sin(iTime * 0.5) * 0.5 + 0.5);
     col += lightEmissive * bloom;
-    
+
     col = mix(col, fogColor, 1.0 - exp(-0.015 * t));
-    
+
     return col;
 }
 
 void mainImage(out vec4 fragColor, vec2 fragCoord) {
     vec2 uv = (fragCoord - .5 * iResolution.xy) / iResolution.y;
-    
+
     float dither = hash12(fragCoord + vec2(iTime * 123.45));
-    
+
     float caDist = length(uv) * 0.008;
     vec3 col;
     col.r = renderScene(uv * (1.0 + caDist), dither).r;
     col.g = renderScene(uv, dither).g;
     col.b = renderScene(uv * (1.0 - caDist), dither).b;
-    
+
     col = (col * (2.51 * col + 0.03)) / (col * (2.43 * col + 0.59) + 0.14);
-    
+
     vec3 finalColor = pow(max(col, 0.0), vec3(1.0 / 2.2));
     finalColor *= 1.1 - length(uv) * 0.5;
-    
+
     finalColor += (dither - 0.5) * (1.0 / 255.0);
-    
+
     fragColor = vec4(clamp(finalColor, 0.0, 1.0), 1.0);
 }

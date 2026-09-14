@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
     float time = iTime * 0.6;
@@ -21,7 +21,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     for (int stepIdx = 0; stepIdx < 40; stepIdx++) {
         vec3 p = ro + rd * t;
-        
+
         vec3 p_w = p;
         p_w.x += sin(p.z * 0.5 + time) * 0.3;
         p_w.y += cos(p.z * 0.4 - time) * 0.3;
@@ -36,7 +36,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
             for (int j = -1; j <= 0; j++) {
                 for (int i = -1; i <= 0; i++) {
                     vec3 c = baseCell + vec3(float(i), float(j), float(k));
-                    
+
                     vec3 h0 = fract(sin(vec3(dot(c, vec3(127.1, 311.7, 74.7)), dot(c, vec3(269.5, 183.3, 246.1)), dot(c, vec3(113.5, 271.9, 124.6)))) * 43758.5453);
                     vec3 v0 = (c + 0.5 + (h0 - 0.5) * 0.7) * scale;
                     v0 += vec3(sin(time * 2.0 + h0.x * 6.28), cos(time * 1.7 + h0.y * 6.28), sin(time * 1.3 + h0.z * 6.28)) * 0.2;

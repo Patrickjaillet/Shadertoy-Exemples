@@ -1,9 +1,9 @@
-// ==== Image (image) ====
+
 const float F=3.1415927e0;
 mat2 c(float b){
     float d=cos(b),a=sin(b);
     return mat2(d,-a,a,d);
-}// https://patrickjaillet.github.io/sandefjord-software
+}
 vec3 G(float b,float a,float d){
     vec3 e=clamp(abs(mod(b*6.+vec3(0.,4.,2.),6.)-3.)-1.,0.,1.);
     return d*mix(vec3(1.),e,a);

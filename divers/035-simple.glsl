@@ -1,6 +1,4 @@
-// ==== Image (image) ====
-// https://patrickjaillet.github.io/sandefjord-software
-// https://x.com/JailletPatrick
+
 float i(float g){
     return fract(sin(g)*4.3758547e4);
 }

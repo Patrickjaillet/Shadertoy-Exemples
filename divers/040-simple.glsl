@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 rotate2D(float angle)
 {
     float s = sin(angle);
@@ -30,14 +30,14 @@ float sdPetal(vec3 p, float scale)
     p /= scale;
     float curl = p.x * p.x * 0.45 - p.y * 0.15;
     p.z += curl;
-    
+
     float wave = sin(p.x * 22.0) * 0.015 * smoothstep(0.1, 0.8, p.x);
     p.z += wave;
 
     vec3 sp = p * vec3(1.1, 4.0, 3.5);
     sp.x -= 0.35;
     float d = length(sp) - 0.38;
-    
+
     d = max(d, abs(p.z) - 0.012 * (1.0 - p.x * 0.7));
     return d * scale;
 }
@@ -46,18 +46,18 @@ float sdStamen(vec3 p, out float isTip)
 {
     float angle = atan(p.z, p.x);
     float r = length(p.xz);
-    
+
     float sector = 6.283185 / 24.0;
     angle = mod(angle + sector * 0.5, sector) - sector * 0.5;
-    
+
     vec3 q = vec3(cos(angle) * r, p.y, sin(angle) * r);
     q.x -= 0.08 + sin(p.y * 15.0) * 0.01;
-    
+
     float stem = length(q.xz) - 0.004;
     stem = max(stem, abs(q.y - 0.12) - 0.12);
-    
+
     float tip = length(q - vec3(0.01, 0.24, 0.0)) - 0.015;
-    
+
     isTip = (tip < stem) ? 1.0 : 0.0;
     return min(stem, tip);
 }
@@ -70,7 +70,7 @@ float map(vec3 p, out vec4 matInfo)
     float stemCurve = sin(p.y * 1.2) * 0.08;
     vec3 pStem = p;
     pStem.x += stemCurve;
-    
+
     float stem = length(pStem.xz) - (0.035 - pStem.y * 0.005);
     stem = max(stem, -pStem.y - 1.6);
     stem = max(stem, pStem.y - 0.05);
@@ -103,24 +103,24 @@ float map(vec3 p, out vec4 matInfo)
         float count = 5.0 + layer * 2.0;
         float sector = 6.283185 / count;
         float layerScale = 0.75 + layer * 0.22;
-        
+
         mat2 rotLayer = rotate2D(layer * 0.45);
 
         vec3 q = pFlower;
         q.xz = rotLayer * q.xz;
-        
+
         float a = atan(q.z, q.x);
         a = mod(a + sector * 0.5, sector) - sector * 0.5;
-        
+
         float r = length(q.xz);
         vec3 pPetal = vec3(cos(a) * r, q.y, sin(a) * r);
-        
+
         float droop = 0.2 + layer * 0.12;
         pPetal.yz *= rotate2D(-droop);
         pPetal.y += layer * 0.03;
-        
+
         float petalDist = sdPetal(pPetal, layerScale);
-        
+
         if (petalDist < d)
         {
             d = petalDist;
@@ -222,16 +222,16 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         {
             float layer = hitMat.y;
             float petalPos = hitMat.z;
-            
+
             float hue = 0.92 - layer * 0.02 + petalPos * 0.05;
             albedo = hsv(hue, 0.82, 0.98);
-            
+
             vec3 coreGlow = vec3(1.0, 0.4, 0.05) * (1.0 - smoothstep(0.0, 0.4, petalPos));
             albedo = mix(albedo, coreGlow, 0.6);
 
             float vein = sin(hitMat.w * 180.0) * 0.05 + 0.95;
             albedo *= vein;
-            
+
             translucency = 0.75 - layer * 0.1;
         }
 

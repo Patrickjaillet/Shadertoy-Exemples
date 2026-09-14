@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 O, in vec2 I) {
     vec2 uv = (I - 0.5 * iResolution.xy) / iResolution.y;
     float rayon_cam = 11.5 + 1.5 * sin(iTime * 0.1);
@@ -96,7 +96,7 @@ void mainImage(out vec4 O, in vec2 I) {
     if(d < 35.0) {
         vec3 p = ro + rd * d;
         vec2 e = vec2(0.0005, -0.0005);
-        
+
         float d_t1; {
             vec3 p_sc = p + e.xyy;
             float torsion = ((9.869604401089358 * (p_sc.z * 0.18)) / (4.0 + sqrt(34.0 + 39.47841760435743 * p_sc.z * p_sc.z * 0.0324))) * 1.2;

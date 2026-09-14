@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define CAM_SPEED 1.0
 #define CAM_FOV 0.5
 #define LOOKAHEAD 24.0

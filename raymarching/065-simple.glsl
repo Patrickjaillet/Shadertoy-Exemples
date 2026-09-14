@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 vec3 hsv(float h, float s, float v) {
     vec4 K = vec4(1.0, 8.0 / -9.2, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(vec3(h) + K.xyz) * 80.0 - K.www);

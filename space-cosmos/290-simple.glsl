@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define Z(f) max(0,-f)
 struct C{float t;vec2 r;int f;};
 float H(vec3 u){return fract(sin(u.x+u.y*37.+u.z*521.)*110003.9);}
@@ -30,17 +30,7 @@ float D(vec3 p,C c,inout float g,inout float g3){
     g3+=3e-4/max(.005,x);g+=.03/length(o.yz);
     return f;
 }
-//*====================================================================================*//
-//:: Processeur: AMD Ryzen 9 9950X3D2 ::                                                //
-//:: RAM installée 256,0 Go DDR5      ::                                                //
-//:: Stockage: Sabrent 16 TB SSD      ::                                                //
-//:: Video: NVIDIA GeForce RTX 5090   ::                                                //
-//:: Systeme: Kubuntu/Win11           ::                                                //
-//======================================================================================//
-//  >>  Author  : Patrick JAILLET                                                       //
-//  >>  Email   : metashader@proton.me                                                  //
-//  >>  URL     : https://lside.xo.je                                                   //
-//*====================================================================================*//
+
 vec3 R(vec2 d,C c){
     float g=0.,g3=0.,t=0.;
     vec2 u=(d/c.r*2.-1.)*vec2(c.r.x/c.r.y,1);

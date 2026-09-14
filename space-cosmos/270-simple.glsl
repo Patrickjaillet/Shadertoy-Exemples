@@ -1,20 +1,20 @@
-// ==== Image (image) ====
-#define MAX_STEPS  128       // @range(32, 256) @step(1) @group(Raymarching) @label("Pas max")
-#define MAX_DIST   20.0      // @range(5, 60)   @step(0.5) @group(Raymarching) @label("Distance max")
-#define SURF_DIST  0.0005    // @range(0.0001, 0.005) @step(0.0001) @group(Raymarching) @label("Précision surface")
 
-#define ITERATIONS  7        // @range(1, 16) @step(1) @group(Fractale) @label("Itérations")
-#define SCALE      -2.1      // @range(-3.0, -1.5) @step(0.01) @group(Fractale) @label("Échelle")
-#define FOLD_LIMIT  1.0      // @range(0.3, 2.0) @step(0.01) @group(Fractale) @label("Limite de repliement")
-#define FOLD_SCALE  0.5      // @range(0.1, 1.5) @step(0.005) @group(Fractale) @label("Rayon boule")
-#define MIN_RADIUS  0.25     // @range(0.05, 1.0) @step(0.01) @group(Fractale) @label("Rayon mini")
-#define FIX_RADIUS  1.9      // @range(0.5, 3.0) @step(0.05) @group(Fractale) @label("Rayon fixe")
+#define MAX_STEPS  128
+#define MAX_DIST   20.0
+#define SURF_DIST  0.0005
 
-#define SPEED       0.18     // @range(0.0, 1.0) @step(0.005) @group(Exploration) @label("Vitesse vol")
-#define ZOOM        5.0      // @range(0.2, 5.0) @step(0.05) @group(Exploration) @label("Zoom")
-#define CAMERA_DIST 4.5      // @range(1.0, 12.0) @step(0.1) @group(Exploration) @label("Distance caméra")
-#define CAM_ROLL    0.0      // @range(-3.14159, 3.14159) @step(0.01) @group(Exploration) @label("Roulis caméra")
-#define CAM_TILT    0.42     // @range(-1.5707, 1.5707) @step(0.01) @group(Exploration) @label("Inclinaison")
+#define ITERATIONS  7
+#define SCALE      -2.1
+#define FOLD_LIMIT  1.0
+#define FOLD_SCALE  0.5
+#define MIN_RADIUS  0.25
+#define FIX_RADIUS  1.9
+
+#define SPEED       0.18
+#define ZOOM        5.0
+#define CAMERA_DIST 4.5
+#define CAM_ROLL    0.0
+#define CAM_TILT    0.42
 
 vec2 offset = vec2(0.5, 0.5);
 vec3 colorA = vec3(0.1, 0.4, 0.9);
@@ -22,20 +22,20 @@ vec3 colorB = vec3(0.9, 1.0, 0.5);
 vec3 colorC = vec3(0.00, 1.0, 0.6);
 vec3 bgColor = vec3(0.0, 0.0, 0.00);
 
-#define ORBIT_STRENGTH  0.72  // @range(0.0, 2.0) @step(0.01) @group(Effets) @label("Force orbite")
-#define AO_SAMPLES      6     // @range(1, 12) @step(1) @group(Effets) @label("Éch. AO")
-#define GLOW_POWER      2.1   // @range(0.5, 6.0) @step(0.05) @group(Effets) @label("Puissance glow")
-#define FOG_DENSITY     0.06  // @range(0.0, 0.3) @step(0.002) @group(Effets) @label("Densité brouillard")
-#define REFLECTION      0.18  // @range(0.0, 0.8) @step(0.01) @group(Effets) @label("Réflexion")
-#define LIGHT_ANGLE     1.05  // @range(-3.14159, 3.14159) @step(0.01) @group(Effets) @label("Angle lumière")
-#define LIGHT_HEIGHT    0.78  // @range(-1.5707, 1.5707) @step(0.01) @group(Effets) @label("Hauteur lumière")
-#define SHADOW_SOFT     12.0  // @range(2.0, 32.0) @step(0.5) @group(Effets) @label("Douceur ombre")
-#define SPEC_POWER      32.0  // @range(4.0, 128.0) @step(1.0) @group(Effets) @label("Exposant spéculaire")
+#define ORBIT_STRENGTH  0.72
+#define AO_SAMPLES      6
+#define GLOW_POWER      2.1
+#define FOG_DENSITY     0.06
+#define REFLECTION      0.18
+#define LIGHT_ANGLE     1.05
+#define LIGHT_HEIGHT    0.78
+#define SHADOW_SOFT     12.0
+#define SPEC_POWER      32.0
 
-#define EXPOSURE        1.2   // @range(0.2, 4.0) @step(0.05) @group(Post) @label("Exposition")
-#define SATURATION      1.35  // @range(0.0, 3.0) @step(0.05) @group(Post) @label("Saturation")
-#define VIGNETTE        0.55  // @range(0.0, 1.5) @step(0.02) @group(Post) @label("Vignettage")
-#define CHROMAB         0.003 // @range(0.0, 0.015) @step(0.0005) @group(Post) @label("Aber. chroma")
+#define EXPOSURE        1.2
+#define SATURATION      1.35
+#define VIGNETTE        0.55
+#define CHROMAB         0.003
 
 float de_mandelbox(vec3 p, out vec4 trap) {
     vec4 q = vec4(p, 0.9);

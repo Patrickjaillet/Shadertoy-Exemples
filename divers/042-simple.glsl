@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 v, in vec2 w) {
     vec2 k = (w - .5 * iResolution.xy) / iResolution.y;
     float s = length(k);

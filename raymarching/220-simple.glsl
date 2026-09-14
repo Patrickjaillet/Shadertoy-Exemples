@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define R iResolution
 #define r(a) mat2(cos(a+vec4(0,33,11,0)))
 
@@ -37,7 +37,7 @@ void mainImage(out vec4 O, vec2 U) {
             + vec3(.1, .5, .9) * pow(1. + dot(rd, n), 3.) * 2.
             + .5 + .5 * cos(iTime * 2. + p.z * 4. + atan(p.y, p.x) * 3. + vec3(0, 2, 4));
     }
-    
+
     col += (.5 + .5 * sin(iTime * 3. + p.z * 2. + vec3(0, 2, 4))) * a * 2.;
 
     vec2 u = U / R.xy;

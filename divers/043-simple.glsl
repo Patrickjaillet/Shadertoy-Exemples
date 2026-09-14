@@ -1,5 +1,3 @@
-// ==== Image (image) ====
-// Cubic [@xordev], Cubic [@xordev], Untitled 10 [@Zozuar], Untitled 10 [@Zozuar] - worldbreeder.io
 
 #define FC gl_FragCoord
 
@@ -176,7 +174,6 @@ float fsnoise(vec2 c) {
   return fract(sin(dot(c, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-
 const float SAFE_EPS = 0.0001;
 const float SAFE_DIV_EPS = 0.01;
 const float SAFE_EXP_MAX = 40.0;
@@ -250,7 +247,7 @@ struct WB_CoordOut_e5aae421b099772a08d19408d3d19d21_coordinate_0_2_3faf5780 {
   highp vec3 coordinate;
 };
 WB_CoordOut_e5aae421b099772a08d19408d3d19d21_coordinate_0_2_3faf5780 WB_evalCoord_e5aae421b099772a08d19408d3d19d21_coordinate_0_2_3faf5780(highp vec3 wb_v_POS, highp float wb_v_t) {
-  /*__WB_SCOPED_DONATION_SAFE_MATH__*/
+
   wb_v_POS.yz-=wb_v_t;
   WB_CoordOut_e5aae421b099772a08d19408d3d19d21_coordinate_0_2_3faf5780 wb_result;
   wb_result.coordinate = wb_v_POS;

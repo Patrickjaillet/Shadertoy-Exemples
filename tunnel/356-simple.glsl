@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 a(in float b) {
   float c=cos(b),d=sin(b);
   return mat2(c,d,-d,c);
@@ -52,10 +52,10 @@ vec4 getMorphWeights(out float w5) {
   float m3 = smoothstep(27.0, 30.0, cycle) - smoothstep(42.0, 45.0, cycle);
   float m4 = smoothstep(42.0, 45.0, cycle) - smoothstep(57.0, 60.0, cycle);
   float m5 = smoothstep(57.0, 60.0, cycle) - smoothstep(72.0, 75.0, cycle);
-  
+
   vec4 w1 = clamp(vec4(m1, m2, m3, m4), 0.0, 1.0);
   w5 = clamp(m5, 0.0, 1.0);
-  
+
   float s = w1.x + w1.y + w1.z + w1.w + w5;
   if(s > 0.0001) {
     w1 /= s;
@@ -159,7 +159,7 @@ float q(vec3 h, vec4 w1, float w5) {
     float peristalsis = sin(h.z*0.8 - iTime*2.5)*0.65;
     float sphincter = sin(ang*6.0 + h.z*0.4)*sin(ang*3.0 - h.z*0.2)*0.55;
     float lumen = (5.2 + peristalsis + sphincter) - rad;
-    
+
     vec3 bioPos = vec3(s5.xy*0.45, h.z*0.3);
     float bioNoise = i(bioPos, 0.25);
     q5 = lumen - bioNoise*0.85;
@@ -188,7 +188,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   float t = iTime*0.64;
   float w5;
   vec4 w1 = getMorphWeights(w5);
-  
+
   vec2 aa = fragCoord.xy / iResolution.xy;
   vec2 h = aa - 0.5;
   h.x *= iResolution.x / iResolution.y;
@@ -196,7 +196,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   float ab = t*14.0;
   vec3 ac = z(ab);
   vec3 ad = z(ab + dot(w1, vec4(8.0, 16.0, 10.0, 12.0)) + w5*11.0);
-  
+
   float ae = sin(t*(dot(w1, vec4(0.2, 0.6, 0.4, 0.3)) + w5*0.5))*(dot(w1, vec4(0.5, 1.4, 0.8, 1.1)) + w5*1.2);
   vec3 af = normalize(ad - ac);
   vec3 ag = vec3(sin(ae), cos(ae), sin(t*0.5)*w1.y + cos(t*0.7)*w5);
@@ -207,7 +207,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   float ak = 0.0, w = 0.0, al = 0.0;
   float maxDist = dot(w1, vec4(50.0, 80.0, 60.0, 70.0)) + w5*65.0;
   float stepFactor = dot(w1, vec4(0.75, 0.65, 0.68, 0.65)) + w5*0.62;
-  
+
   for(int n = 0; n < 128; n++) {
     w = q(ac + aj*ak, w1, w5);
     if(abs(w) < 0.003 || ak > maxDist) break;
@@ -216,7 +216,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   }
 
   vec3 am = w1.x*vec3(0.002, 0.004, 0.008) + w1.y*vec3(0.001, 0.003, 0.008) + w1.z*vec3(0.008, 0.001, 0.004) + w1.w*vec3(0.006, 0.002, 0.008) + w5*vec3(0.009, 0.003, 0.001);
-  
+
   vec3 orbCenter = getOrbPos(ab);
   float pulse = sin(iTime*9.0 + sin(iTime*3.0)*2.0);
   float orbRadius = 1.0 + 0.35*pulse;
@@ -236,7 +236,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 col3 = mix(vec3(0.2, 0.02, 0.08), vec3(0.85, 0.15, 0.35), uVal);
     vec3 col4 = mix(vec3(0.15, 0.02, 0.2), vec3(0.65, 0.25, 0.9), uVal);
     vec3 col5 = mix(vec3(0.25, 0.04, 0.01), vec3(0.95, 0.35, 0.05), uVal);
-    
+
     am = col1*w1.x + col2*w1.y + col3*w1.z + col4*w1.w + col5*w5;
     vec3 specCol = w1.x*vec3(0.7, 0.9, 1.0) + w1.y*vec3(0.3, 1.0, 0.9) + w1.z*vec3(1.0, 0.4, 0.6) + w1.w*vec3(0.9, 0.5, 1.0) + w5*vec3(1.0, 0.6, 0.2);
     am = am*aq + ar*specCol*as;
@@ -253,7 +253,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
       vec3 reflDir = reflect(-orbDir, ao);
       float orbSpec = pow(max(0.0, dot(reflDir, viewDir)), 16.0);
       float atten = 1.0 / (1.0 + orbDist*0.15 + orbDist*orbDist*0.05);
-      
+
       vec3 orbIllum = (orbEmissive * orbDiff * 2.5 + vec3(1.0, 0.8, 0.6) * orbSpec * 4.0) * atten;
       am += orbIllum * (w1.z + w1.w*0.5 + w5*0.8);
 
@@ -288,7 +288,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float orbGlow = (0.4 + 0.3*pulseVal) / (orbGlowDist*orbGlowDist + 0.08);
     am += orbEmissive * orbGlow * (w1.z + w1.w*0.5 + w5*0.8) * exp(-orbDistAlongRay*0.025);
   }
-  
+
   vec3 fogCol = w1.x*vec3(0.001, 0.002, 0.005) + w1.y*vec3(0.0, 0.005, 0.015) + w1.z*vec3(0.008, 0.001, 0.003) + w1.w*vec3(0.005, 0.001, 0.008) + w5*vec3(0.01, 0.002, 0.001);
   float fogDensity = dot(w1, vec4(0.06, 0.025, 0.04, 0.035)) + w5*0.045;
   am = mix(am, fogCol, 1.0 - exp(-ak*fogDensity));

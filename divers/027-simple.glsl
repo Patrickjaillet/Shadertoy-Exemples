@@ -1,8 +1,8 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     fragColor = vec4(0.0, 0.0, 0.0, 0.0);
-    
+
     vec2 resolution = iResolution.xy;
     float time = iTime;
 
@@ -13,17 +13,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     for(int stepIndex = 0; stepIndex < 64; stepIndex++) 
     {
         vec2 uv = (fragCoord - 0.5 * resolution) / resolution.x * 0.45;
-        
+
         uv += vec2(cos(time * 0.25) * 0.12, 1.2 + sin(time * 0.18) * 0.25);
-        
+
         vec3 position = vec3(uv, RayDistance - 1.2);
 
         float angleY = time * 0.35 + sin(RayDistance * 0.2);
         float angleX = cos(time * 0.15) * 0.5;
-        
+
         mat2 rotY = mat2(cos(angleY), -sin(angleY), sin(angleY), cos(angleY));
         mat2 rotX = mat2(cos(angleX), -sin(angleX), sin(angleX), cos(angleX));
-        
+
         position.zx *= rotY;
         position.zy *= rotX;
 

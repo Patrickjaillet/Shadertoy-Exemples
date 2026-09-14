@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 rotation(float a) {
     float c = cos(a), s = sin(a);
     return mat2(c, -s, s, c);
@@ -87,15 +87,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
             col = paletteFilament *4.0;
         } else {
             col = vec3(3.1, 0.12, 1.15); 
-            
-        
+
             col += paletteFilament * lueur * 12.5;
-            
-        
+
             float spec = pow(max(dot(ref, avant), 0.0), 26.0);
             col += spec * paletteFilament * 10.0;
 
- 
             vec3 pRef = ro + ref * t;
             pF = pRef; pF.z -= iTime * 20.0;
             float dRefFilaments = carteFilaments(pF);

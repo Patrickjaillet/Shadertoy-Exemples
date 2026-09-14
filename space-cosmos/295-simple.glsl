@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 rot(float a) {
     float s = sin(a), c = cos(a);
     return mat2(c, -s, s, c);
@@ -8,7 +8,7 @@ float smin(float a, float b, float k) {
     float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
     return mix(b, a, h) - k * h * (1.0 - h);
 }
-// https://github.com/Patrickjaillet/Z-GL-Shadertoy
+
 vec3 palette(float t) {
     return vec3(0.5) + vec3(0.5) * cos(6.2831853 * (vec3(1.0) * t + vec3(0.28, 0.18, 0.22)) + vec3(0.0, 1.3, 2.8));
 }
@@ -55,51 +55,51 @@ vec3 GetBackground(vec3 rd, float time) {
 float map(vec3 p, inout float g_glow, float time, inout float matID) {
     vec3 q = p; 
     float d = 1e5;
-    
+
     vec3 p_env = p;
     p_env.z += time * 12.0; 
     p_env.xy *= rot(p_env.z * 0.005);
 
     vec3 id = floor((p_env + 8.0) / 16.0);
     p_env = mod(p_env + 8.0, 16.0) - 8.0;
-    
+
     float box = length(max(abs(p_env) - vec3(3.5, 3.5, 16.0), 0.0));
     float t_cylinder = -length(p_env.xy) + 5.5 + sin(p_env.z * 0.25 + time) * 0.4;
-    
+
     float g_ribs = sin(p_env.z * 2.5) * 0.2;
     box = max(box, t_cylinder + g_ribs); 
     d = box;
     matID = 0.0;
-    
+
     vec3 p_frac = q;
     p_frac.xz *= rot(time * 0.12);
     p_frac.yz *= rot(time * 0.08);
 
     float scale = 1.0;
     float localGlow = 0.0;
-    
+
     for(int i = 0; i < 7; i++) {
         p_frac = abs(p_frac) - vec3(0.65, 0.75 + float(i) * 0.05, 0.65); 
         p_frac.xz *= rot(0.78539816); 
         p_frac.yz *= rot(0.28 + float(i) * 0.04);
-        
+
         scale *= 1.38;
         p_frac *= 1.38;
         p_frac -= vec3(1.05, 0.35, 1.05); 
-        
+
         localGlow += exp(-length(p_frac) * 1.2) * (1.0 / scale);
     }
-    
+
     float frac_d = (length(p_frac) - 0.012) / scale; 
     g_glow += localGlow * 0.35;
-    
+
     if (frac_d < d) {
         d = smin(d, frac_d, 0.8);
         matID = 1.0;
     } else {
         d = smin(d, frac_d, 0.8);
     }
-    
+
     return d;
 }
 
@@ -150,7 +150,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     if (iMouse.z <= 0.0) m = vec2(0.5, 0.45); 
 
     vec2 uvScene = (fragCoord * 2.0 - iResolution.xy) / iResolution.y;
-    
+
     vec3 ro = vec3(0.0, 0.0, -8.0); 
     vec3 rd = normalize(vec3(uvScene, 1.6)); 
 
@@ -160,13 +160,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     rd.xz *= rot(yaw);
     ro.yz *= rot(pitch * 0.3); 
     ro.xz *= rot(yaw * 0.3);
-    
+
     float t = 0.0;
     float maxDist = 90.0;
     float g_glow = 0.0;
     float matID = 0.0;
     float activeMat = 0.0;
-    
+
     for(int i = 0; i < 160; i++) {
         vec3 p = ro + rd * t;
         float d = map(p, g_glow, iTime, matID);
@@ -176,7 +176,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
             break;
         }
     }
-    // https://github.com/Patrickjaillet/Z-GL-Shadertoy
+
     vec3 col = vec3(0.0);
     vec3 bgCol = GetBackground(rd, iTime);
 
@@ -184,42 +184,42 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         vec3 p = ro + rd * t;
         vec3 n = GetNormal(p, iTime);
         vec3 r = reflect(rd, n);
-        
+
         float ao = GetAO(p, n, iTime);
-        
+
         vec3 l1 = normalize(vec3(8.0, 15.0, p.z - 6.0) - p);
         vec3 l2 = normalize(vec3(-8.0, -12.0, p.z + 6.0) - p);
-        
+
         float sh1 = shadow(p, l1, 0.05, 6.0, iTime);
-        
+
         float diff1 = max(dot(n, l1), 0.0);
         float diff2 = max(dot(n, l2), 0.0) * 0.4;
-        
+
         float spec1 = pow(max(dot(r, l1), 0.0), 40.0);
         float spec2 = pow(max(dot(r, l2), 0.0), 18.0);
-        
+
         float fresnel = pow(1.0 - max(dot(n, -rd), 0.0), 5.0);
-        
+
         vec3 objColor = palette(length(p.xy) * 0.06 + p.z * 0.012);
         if(activeMat > 0.5) {
             objColor = mix(objColor, vec3(1.0, 0.8, 0.25), 0.4);
         }
-        
+
         vec3 p_spec = sin(p * 50.0);
         float specNoise = smoothstep(0.25, 0.35, p_spec.x * p_spec.y * p_spec.z);
-        
+
         col = objColor * (diff1 * sh1 * vec3(1.0, 0.88, 0.7) + diff2 * vec3(0.2, 0.4, 0.95));
         col += vec3(1.0, 0.96, 0.88) * spec1 * sh1 * (2.0 + specNoise * 3.0); 
         col += vec3(0.3, 0.7, 1.0) * spec2 * 0.6; 
         col += bgCol * fresnel * 4.0; 
         col *= ao;
-        
+
         col = mix(col, bgCol, 1.0 - exp(-t * t * 0.00005));
     } else {
         col = bgCol;
         g_glow += 1.8; 
     }
-    
+
     vec3 glowColor = mix(vec3(0.05, 0.4, 1.0), vec3(1.0, 0.1, 0.02), smoothstep(0.0, 5.0, g_glow));
     vec3 baseScene = col + glowColor * g_glow * 0.07;
 
@@ -229,7 +229,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     blurOffsets[2] = vec2(-1.5, 1.5);  blurOffsets[3] = vec2(1.5, 1.5);
     blurOffsets[4] = vec2(0.0, -2.0);  blurOffsets[5] = vec2(0.0, 2.0);
     blurOffsets[6] = vec2(-2.0, 0.0);  blurOffsets[7] = vec2(2.0, 0.0);
-    
+
     float dummyMat = 0.0;
     for(int i = 0; i < 8; i++) {
         vec2 blurUv = uvScene + (blurOffsets[i] * 6.5) / iResolution.y;
@@ -249,12 +249,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     float caStrength = smoothstep(0.1, 1.2, length(uv - 0.5)) * 0.007;
     vec2 shift = (uv - 0.5) * caStrength;
-    
+
     vec3 sceneSample = baseScene;
     vec2 uvR = uvScene - shift * 1.8;
     vec2 uvB = uvScene + shift * 1.8;
     float gR = 0.0, gB = 0.0;
-    
+
     float tR = 0.0;
     for(int i = 0; i < 55; i++) {
         float d = map(ro + normalize(vec3(uvR, 1.6)) * tR, gR, iTime, dummyMat);
@@ -270,7 +270,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     if (tB < 60.0) sceneSample.b = mix(sceneSample.b, palette(tB * 0.015).b, 0.5);
 
     col = mix(baseScene, sceneSample, 0.5) + bloom * 0.5;
-    
+
     col *= 0.95;
     col = clamp((col * (2.51 * col + 0.03)) / (col * (2.43 * col + 0.59) + 0.14), 0.0, 1.0);
     col = pow(col, vec3(0.45454545));
@@ -280,6 +280,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     float grain = fract(sin(dot(uv + iTime * 0.08, vec2(12.9898, 78.233))) * 43758.5453);
     col += (grain - 0.5) * 0.025;
-    
+
     fragColor = vec4(smoothstep(-0.02, 1.02, col), 1.0);
 }

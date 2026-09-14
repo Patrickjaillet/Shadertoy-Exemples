@@ -5,5 +5,5 @@
   "file": "divers/038-simple.glsl",
   "unsupported": false,
   "unsupportedReason": null,
-  "source": "// variant of https://shadertoy.com/view/7cdGRf\r\n\r\n \r\n#define H(D)  fract(1e3*sin(1e3*D*mat2(R,79.-R)))   // hash\r\n\r\nvoid mainImage( out vec4 O, vec2 u )\r\n{\r\n    vec2 R = iResolution.xy,\r\n         U = 10.*( u+u - R ) / R.y, D, P;     // normalized coordinates\r\n    float l = 1.;\r\n    \r\n    for (int k; k<25; k++ ) {                 // check closest in 3x3 neighborhood\r\n        P = floor(U) + vec2(k%5,k/5)-2.;      // neighbor cell id\r\n        D = U-P - H(P);                       // distance to seed point\r\n        l = min(l, length( ( D * mat2(cos( .3*length(P) + iTime + vec4(0,11,33,0)))) / vec2(10,1) )); // elliptic distance\r\n    }\r\n    O = vec4(1.-l);\r\n}"
+  "source": "#define H(D)  fract(1e3*sin(1e3*D*mat2(R,79.-R)))\n\nvoid mainImage( out vec4 O, vec2 u )\r\n{\r\n    vec2 R = iResolution.xy,\r\n         U = 10.*( u+u - R ) / R.y, D, P;\n    float l = 1.;\r\n\n    for (int k; k<25; k++ ) {\n        P = floor(U) + vec2(k%5,k/5)-2.;\n        D = U-P - H(P);\n        l = min(l, length( ( D * mat2(cos( .3*length(P) + iTime + vec4(0,11,33,0)))) / vec2(10,1) ));\n    }\r\n    O = vec4(1.-l);\r\n}"
 }

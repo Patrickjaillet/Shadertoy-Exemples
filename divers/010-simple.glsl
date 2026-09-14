@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 float w(vec3 p){
     float d=max(0.,.14-max(0.,length(p.xy)-.1)/.1)/.14,a=p.z*.4;
     p.xy*=mat2(cos(a),sin(a),-sin(a),cos(a));

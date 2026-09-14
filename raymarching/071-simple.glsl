@@ -1,5 +1,3 @@
-// ==== Image (image) ====
-// Par : Patrick JAILLET
 
 float hsh(float n) { return fract(sin(n) * 43758.5453123); }
 
@@ -49,7 +47,7 @@ vec3 gN(vec3 p) {
 void mainImage(out vec4 O, vec2 v) {
     vec2 R = iResolution.xy;
     vec2 uv = (v + v - R) / R.y;
-    
+
     float camT = iTime * 0.5;
     vec3 o = vec3(sin(camT) * 4.0, 1.0, cos(camT) * 4.0);
     vec3 target = vec3(0.0, 0.0, 0.0);
@@ -57,10 +55,10 @@ void mainImage(out vec4 O, vec2 v) {
     vec3 uu = normalize(cross(ww, vec3(0.0, 1.0, 0.0)));
     vec3 vv = normalize(cross(uu, ww));
     vec3 r = normalize(uv.x * uu + uv.y * vv + 2.0 * ww);
-    
+
     vec3 sun = normalize(vec3(-1.0, 2.0, -2.0));
     float t = 0.0, d;
-    
+
     for(int i = 0; i < 100; i++) {
         d = m(o + r * t);
         if(abs(d) < 0.001 || t > 15.0) break;

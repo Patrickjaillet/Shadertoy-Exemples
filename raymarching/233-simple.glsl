@@ -1,17 +1,4 @@
-// ==== Image (image) ====
-/**************************************************************
-*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____  *
-* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \ *
-* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |*
-*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |*
-* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/ *
-***************************************************************
-* - X: https://x.com/JailletPatrick                           *
-***************************************************************
-* https://patrickjaillet.github.io/sandefjord-software        *
-* GLSL shader design and value tweaking - Sliders-GL v1.0.1:  *
-* 100% safe Code Golfing - µShader v3.0.1:                    *
-**************************************************************/
+
 void mainImage(out vec4 B, in vec2 C) {
     vec3 q = vec3(0.);
     const int n = 8;
@@ -79,7 +66,7 @@ void mainImage(out vec4 B, in vec2 C) {
             float U = mix(mix(Q, R, h.x), mix(S, T, h.x), h.y);
 
             float A = smoothstep(.4, 0., abs(sin(t * 2. + c * 1.5 + U * 4.)));
-            
+
             float dof = abs(zPlane - 2.2) * 0.01;
             float V = (.025 / (k + .001 + dof)) * A;
             float W = (.060 / (k + .02 + dof)) * A;

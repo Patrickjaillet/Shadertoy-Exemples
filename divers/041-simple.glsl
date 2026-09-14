@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define ITR 120
 #define FAR 150.
 #define time iTime
@@ -106,17 +106,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 r = normalize(cross(vec3(0.0, 1.0, 0.0), f));
     vec3 u = cross(f, r);
     vec3 rd = normalize(f + uv.x * r + uv.y * u);
-    
+
     float t = 0.0;
     for(int i=0; i<ITR; i++) {
         float d = map(ro + rd * t);
         if(abs(d) < 0.001 * t || t > FAR) break;
         t += d * 0.6;
     }
-    
+
     vec3 col = vec3(0.8, 0.9, 1.0);
     vec3 sunDir = normalize(vec3(0.5, 0.8, -0.5));
-    
+
     if(t < FAR) {
         vec3 pos = ro + rd * t;
         vec3 nor = getNormal(pos);
@@ -134,7 +134,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         col += BIOLUM_COLOUR * fre * (0.5 + 0.5 * sin(pos.y * 0.5 - time * 2.0));
         col *= occ;
     }
-    
+
     float vol = volumetric(ro, rd, min(t, FAR));
     col = mix(col, SUN_COLOUR, 1.0 - exp(-0.0002 * t * t));
     col += BIOLUM_COLOUR * vol;

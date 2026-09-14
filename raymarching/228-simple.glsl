@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 const float PHI = 1.618033988749895;
 const float TAU = 6.283185307179586;
 
@@ -37,35 +37,32 @@ vec2 g(vec3 a){
         float m=n(c,vec3(.27,.4,.08))/j;
         h=min(h,m);
     }
-    
+
     vec3 i=d;
-    
-    // Trajectoire en douceur sans rupture aux extremites
+
     float orbitProgress = iTime * 0.8;
     float orbitRadius = smoothstep(-0.2, 0.2, sin(iTime * 0.4)) * 1.1;
-    
+
     vec3 cubeOffset = vec3(
         cos(orbitProgress) * orbitRadius,
         sin(orbitProgress * 2.0) * 0.25 * orbitRadius,
         sin(orbitProgress) * orbitRadius
     );
-    
+
     i -= cubeOffset;
-    
+
     i.xy*=e(iTime*.5);
     i.yz*=e(iTime*.3);
-    
-    // SDFs d'origines nettoyées de micro-imperfections
+
     float dBox = n(i, vec3(.06*PHI))-.02;
     float dSphere = length(i) - .085;
     float dTorus = length(vec2(length(i.xz) - .065, i.y)) - .022;
-    
-    // Morphing continu sans coutures visuelles via smin
+
     float mFactor = 0.5 + 0.5 * sin(iTime * 1.5);
     float morph1 = smin(dBox, dSphere, 0.04);
     float p = smin(morph1, dTorus, 0.04 * mFactor);
     p = mix(dBox, p, mFactor);
-    
+
     f=o(f,vec2(h,1.));
     f=o(f,vec2(p,3.));
     return f;

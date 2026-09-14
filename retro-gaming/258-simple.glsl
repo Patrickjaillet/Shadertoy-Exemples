@@ -1,8 +1,8 @@
-// ==== Image (image) ====
+
 mat2 i(float c){
     float g=cos(c),d=sin(c);
     return mat2(g,-d,d,g);
-}// https://patrickjaillet.github.io/sandefjord-software
+}
 
 float l(vec3 a,vec3 d){
     vec3 e=abs(a)-d;

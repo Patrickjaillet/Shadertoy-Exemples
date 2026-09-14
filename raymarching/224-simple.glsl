@@ -1,15 +1,4 @@
-// ==== Image (image) ====
-// https://patrickjaillet.github.io/sandefjord-software
-/*
-Shader fixes & optimizations:
 
-- Replaced unit-iteration loops and optimized matrix instructions
-- Gradient calculation streamlined to 4 samples instead of 6
-- Implemented dynamic step scaling for faster empty-space traversal
-- Switched to Cook-Torrance specular BRDF
-- Added gamma correction and a filmic S-curve tonemapping curve
-- Added a new path, more expresive
-*/
 void mainImage(out vec4 aD,in vec2 aE){
     vec2 aq=iResolution.xy;
     float S=iTime,aF=S*1.4,a_v1=sin(S*.35)*.5+.5,d_v1=a_v1*a_v1*a_v1*2.2,q=aF+d_v1*(S*.2),ao=S+.02,aG=ao*1.4,a_v2=sin(ao*.35)*.5+.5,d_v2=a_v2*a_v2*a_v2*2.2,aH=aG+d_v2*(ao*.2),V=(aH-q)*50.,ar=q*.12,c_l1=sin(ar)+.4*sin(ar*2.3),d_l1=smoothstep(-.3,.3,c_l1);

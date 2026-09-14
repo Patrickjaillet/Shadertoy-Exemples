@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define R iResolution.xy
 #define T iTime
 #define M iMouse
@@ -16,7 +16,7 @@ float map(vec3 p) {
     float s2 = 0.5 + 0.5 * cos(T * 0.3);
     float warp = 1.0 + 0.3 * sin(p.z * 0.05 + T);
     p.xy *= rot(p.z * 0.02 * warp * s2);
-    
+
     float scale = 1.0;
     for(int i = 0; i < 6; i++) {
         p.xy = abs(p.xy) - vec2(1.0, 1.5) * warp;
@@ -25,7 +25,7 @@ float map(vec3 p) {
         p.xy *= s;
         scale *= s;
     }
-    
+
     float geom = (length(p.xy) - 0.18) / scale;
     float tunnel = -(length(p.xy) - 4.8 * warp);
     return max(geom, tunnel * 0.5);
@@ -65,15 +65,15 @@ vec3 ace(vec3 x) {
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * R) / iResolution.y;
     float dither = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
-    
+
     vec3 ro = vec3(0, 0, -4.5);
     vec3 rd = normalize(vec3(uv, 1.1));
     rd.xy *= rot(sin(T * 0.1) * 0.1);
-    
+
     float t = 0.0 + 0.02 * dither, d;
     float glow = 0.0;
     float cloud = 0.0;
-    
+
     for(int i = 0; i < MAX_STEPS; i++) {
         vec3 p = ro + rd * t;
         d = map(p);
@@ -82,22 +82,22 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         cloud += exp(-abs(d) * 1.5) * 0.02;
         t += d * 0.75;
     }
-    
+
     vec3 col = vec3(0.005, 0.0, 0.01);
-    
+
     if(t < MAX_DIST) {
         vec3 p = ro + rd * t;
         vec3 n = getNormal(p);
         float ao = getAO(p, n);
         float rim = pow(1.0 - max(dot(n, -rd), 0.0), 3.5);
         float diff = max(dot(n, normalize(vec3(1, 2, -1))), 0.0) * 0.5;
-        
+
         vec3 base = getPal(p.z + T * 1.5, rim);
         col = base * (diff + 0.1) * ao;
         col += base * rim * 3.0 * ao;
         col = mix(col, vec3(0.01, 0.005, 0.02), 1.0 - exp(-0.035 * t));
     }
-    
+
     col += getPal(T * 0.5, 0.0) * glow * 0.45;
     col += getPal(T * 0.8, 1.0) * cloud * 0.12;
 
@@ -108,10 +108,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         float burst = 0.01 / (abs(dot(uv, dir)) + 0.02);
         col += getPal(T, i) * burst * 0.05 * exp(-r * 2.0);
     }
-    
+
     col = ace(col * 1.8);
     col = pow(col, vec3(0.4545));
-    
+
     float vign = smoothstep(1.4, 0.35, r);
     col *= vign;
     col += (dither - 0.5) * 0.008;

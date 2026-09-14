@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define F4 0.309016994374947451
 #define ITERATIONS 8
 #define QUALITY 1.0
@@ -95,43 +95,43 @@ vec3 palette(float t) {
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
     vec2 mouse = (iMouse.xy - 0.5 * iResolution.xy) / iResolution.y;
-    
+
     float mDist = length(uv - mouse);
     float mStrength = 0.35 / (mDist + 0.35);
     vec2 mDir = normalize(uv - mouse + 0.001);
-    
+
     vec3 ro = vec3(0.0, 0.0, -3.0);
     vec3 rd = normalize(vec3(uv, 1.5));
     float t = iTime * 0.1;
-    
+
     vec4 p = vec4(rd * 2.2, t);
-    
+
     p.xy += mDir * mStrength * 0.85;
     p.z += mStrength * 0.4;
-    
+
     float n1 = fbm(p + fbm(p + fbm(p)));
     float n2 = fbm(p + n1 + t);
-    
+
     vec3 color = palette(n2 + length(uv) * 0.5);
-    
+
     float lum = n1 * 2.2 + 0.2;
     color *= lum;
-    
+
     vec3 glow = pow(max(0.0, n2), 4.0) * vec3(0.1, 0.4, 0.8);
     color += glow;
-    
+
     color = mix(color, color * color * 1.8, n1);
-    
+
     vec3 finalColor;
     finalColor.r = color.r;
     finalColor.g = palette(n2 + length(uv) * 0.51).g * lum;
     finalColor.b = palette(n2 + length(uv) * 0.52).b * lum;
-    
+
     finalColor = mix(finalColor, finalColor * 1.2, glow);
     finalColor = pow(finalColor, vec3(0.4545));
-    
+
     float mouseHighlight = exp(-mDist * 10.0);
     finalColor += mouseHighlight * vec3(0.1, 0.2, 0.5) * 0.5;
-    
+
     fragColor = vec4(finalColor, 1.0);
 }

@@ -1,7 +1,7 @@
-// ==== Image (image) ====
+
 vec2 i(float a){
   return vec2(2.5*sin(a*.12),1.8*cos(a*.08));
-} // https://patrickjaillet.github.io/GLSL-Hyper-Golfer
+}
 void mainImage(out vec4 D,in vec2 p){
   vec3 j=iResolution;
   vec2 q=(p-.5*j.xy)/j.y;

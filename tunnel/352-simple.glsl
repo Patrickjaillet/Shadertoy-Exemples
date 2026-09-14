@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define OCTAVES 8
 #define SHAKE_STR 0.015
 #define MAX_SAMPLES 32.0 
@@ -68,40 +68,40 @@ vec3 renderScene(vec2 uv, float time) {
 
     vec2 p = uv;
     float p_len = length(p);
-    
+
     float warp = fbm(uv * 0.8 + time * 0.08);
     float angle = atan(p.y, p.x);
     p *= rot(warp * 1.5 + angle * 0.2);
 
     vec3 color = vec3(0.0);
-    
+
     for (float i = 0.0; i < 6.0; i++) {
         float z = fract(0.12 * time + i * 0.166);
         float scale = mix(10.0, 0.1, z);
         float fade = smoothstep(0.0, 0.2, z) * smoothstep(1.0, 0.8, z);
-        
+
         float logR = log(length(uv) + 0.01) + time * 0.3;
         vec2 st = vec2(angle * 1.909, logR);
         st *= rot(i * GOLDEN_RATIO);
-        
+
         vec2 gv = fract(st * 4.0) - 0.5;
         vec2 id = floor(st * 4.0);
-        
+
         float n = hash21(id + i);
         gv *= rot(time * (n - 0.5) * 2.0);
-        
+
         float d = sdHexagon(gv, 0.2 + 0.1 * sin(time * n));
         float thickness = 0.01 + 0.05 * z;
-        
+
         vec3 col = spectrum(z + i * 0.3 + p_len * 0.5);
-        
+
         float mask = smoothstep(thickness, 0.0, abs(d));
         float glow = exp(-20.0 * abs(d));
-        
+
         color += col * mask * fade * 2.0;
         color += col * glow * fade * 0.8;
     }
-    
+
     color += spectrum(p_len * 0.2) * (0.05 / (p_len + 0.01));
     return color;
 }
@@ -110,7 +110,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 q = fragCoord / iResolution.xy;
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
     float time = iTime;
-    
+
     float dCentre = length(q - 0.5);
     float blurMap = pow(dCentre * 1.4, 2.5);
     float currentSamples = mix(1.0, MAX_SAMPLES, blurMap);
@@ -118,39 +118,39 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     vec3 acc = vec3(0.0);
     float wAcc = 0.0;
-    
+
     float ang = hash21(fragCoord + time) * 6.28318;
-    
+
     for(float s = 0.0; s < MAX_SAMPLES; s++) {
         if (s >= ceil(currentSamples)) break;
-        
+
         float r = sqrt((s + 0.5) / MAX_SAMPLES);
         float theta = s * GOLDEN_RATIO * 6.28318 + ang;
         vec2 jitter = vec2(cos(theta), sin(theta)) * r * blurRadius;
-        
+
         float shakeT = time * 8.0;
         vec2 shake = vec2(
             fbm(vec2(shakeT, s * 0.11)),
             fbm(vec2(s * 0.13, shakeT + 10.0))
         ) * SHAKE_STR;
-        
+
         vec3 samp = renderScene(uv + jitter + shake, time);
-        
+
         float w = 1.0 - (s / currentSamples) * 0.5;
         acc += samp * w;
         wAcc += w;
     }
-    
+
     vec3 color = acc / max(wAcc, 0.001);
-    
+
     float vig = smoothstep(1.5, 0.3, length(uv));
     color *= pow(vig, 0.8);
-    
+
     color = mix(color, 1.0 - exp(-color * 1.5), 0.5);
     color = pow(color, vec3(1.0 / 2.2));
-    
+
     float noise = hash21(fragCoord + time) * 0.015;
     color += noise;
-    
+
     fragColor = vec4(color, 1.0);
 }

@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 float WaterIor;
 float WaterTurbulence;
 float WaterAbsorption;
@@ -13,11 +13,11 @@ float noise( in vec3 x )
 {
     vec3 p = floor(x);
     vec3 w = fract(x);
-    
+
     vec3 u = w*w*w*(w*(w*6.0-15.0)+10.0);
-    
+
     float n = p.x + 317.0*p.y + 157.0*p.z;
-    
+
     float a = hash1(n+0.0);
     float b = hash1(n+1.0);
     float c = hash1(n+317.0);
@@ -96,7 +96,7 @@ struct Sphere
     vec3 origin;
     float radius;
 };
-    
+
 void GetSphere(int index, out vec3 origin, out float radius)
 {
     Sphere spheres[5];
@@ -147,17 +147,17 @@ float IntersectVolumetric(in vec3 rayOrigin, in vec3 rayDirection, float maxT, f
             QueryVolumetricDistanceField(rayOrigin+rayDirection*t, time) :
             QueryOceanDistanceField(rayOrigin+rayDirection*t, time);
         stepSize += stepIncrement;
-        
+
         if( sdfValue < 0.0 || t>maxT ) break;
         t += max(sdfValue, stepSize);
     }
-    
+
     if(sdfValue < 0.0)
     {
         float start = 0.0;
         float end = stepSize;
         t -= stepSize;
-        
+
         for(int j = 0; j < 6; j++)
         {
             float midPoint = (start + end) * 0.5;
@@ -165,7 +165,7 @@ float IntersectVolumetric(in vec3 rayOrigin, in vec3 rayDirection, float maxT, f
             float sdfVal = (sceneType == 1) ?
                 QueryVolumetricDistanceField(nextMarchPosition, time) :
                 QueryOceanDistanceField(nextMarchPosition, time);
-            
+
             midPoint = clamp(midPoint + sdfVal, start, end);
             if(sdfVal < 0.0)
             {
@@ -178,7 +178,7 @@ float IntersectVolumetric(in vec3 rayOrigin, in vec3 rayDirection, float maxT, f
         }
         t += end;
     }
-    
+
     intersectFound = t<maxT && sdfValue < 0.0;
     return t;
 }
@@ -205,7 +205,7 @@ struct CameraDescription
     float LensHeight;
     float FocalDistance;
 };
-    
+
 CameraDescription Camera = CameraDescription(
     vec3(0, 10, -20),
     vec3(0, 10, 0),
@@ -239,10 +239,10 @@ float PlaneIntersection(vec3 rayOrigin, vec3 rayDirection, vec3 planeOrigin, vec
         vec3 rayToPlane = planeOrigin - rayOrigin; 
         return dot(rayToPlane, -planeNormal) / denom; 
     } 
- 
+
     return t; 
 } 
-    
+
 float SphereIntersection(
     in vec3 rayOrigin, 
     in vec3 rayDirection, 
@@ -324,13 +324,13 @@ float IntersectOpaqueScene(in vec3 rayOrigin, in vec3 rayDirection, out int obje
             1 + i,
             objectID);
     }
-    
+
     UpdateIfIntersected(
         t,
         PlaneIntersection(rayOrigin, rayDirection, vec3(0, 0.0, 0), vec3(0, 1, 0)),
         0,
         objectID);
-    
+
     UpdateIfIntersected(
         t,
         PlaneIntersection(rayOrigin, rayDirection, vec3(0, 22.0 + 15.0, 0), vec3(0, 1, 0)),
@@ -387,7 +387,7 @@ vec3 GetShadowFactor(in vec3 rayOrigin, in vec3 rayDirection, in int maxSteps, i
 float GetApproximateIntersect(vec3 position, vec3 rayDirection)
 {
     float distanceToPlane;
-    
+
     if(abs(rayDirection.y) < 0.01)
     {
         distanceToPlane = 1e20;
@@ -548,29 +548,29 @@ void CalculateLighting(vec3 position, vec3 view, int objectID, inout vec3 color,
             wetnessFactor = 1.0 - max(0.0, (sdfValue - (wetSandDistance - fadeEdge)) / fadeEdge);
             material.albedo *= material.albedo * mix(1.0, 0.5, wetnessFactor);
         }
-        
+
         position = SandParallaxOcclusionMapping(position, view);
     }
 
     vec3 normal = GetOpaqueNormal(position, objectID);
     vec3 reflectionDirection = reflect(view, normal);
-   
+
     int shadowObjectID = -1;
     if(!useFastLighting)
     {
         IntersectOpaqueScene(position, GetSunLightDirection(), shadowObjectID);
     }
-    
+
     vec3 shadowFactor = vec3(0.0);
     if(shadowObjectID == -1)
     {
         shadowFactor = useFastLighting ? 
                 GetApproximateShadowFactor(position, GetSunLightDirection()) :
                 GetShadowFactor(position, GetSunLightDirection(), 10, 7.0);
-        
+
         color += shadowFactor * material.albedo * mix(0.4 * GetAmbientShadowColor(), GetSunLightColor(), max(0.0, dot(normal, GetSunLightDirection())));
         color += shadowFactor * GetSunLightColor() * Specular(reflectionDirection, GetSunLightDirection(), material.shininess);
-        
+
         if(!useFastLighting)
         {
             float waterNoise = fract(GetWaterNoise(position, iTime));
@@ -581,7 +581,7 @@ void CalculateLighting(vec3 position, vec3 view, int objectID, inout vec3 color,
                           3.0 * vec2(cos(waterNoise), sin(waterNoise))), 5.0);
         }
     }
-    
+
     if(!useFastLighting && wetnessFactor > 0.0)
     {
         vec3 wetNormal = vec3(0, 1, 0);
@@ -589,7 +589,7 @@ void CalculateLighting(vec3 position, vec3 view, int objectID, inout vec3 color,
         float fresnel = FresnelFactor(1.0, WaterIor, wetNormal, view);
         color += shadowFactor * wetnessFactor * fresnel * GetSkyColor(refDir);
     }
-    
+
     color += GetAmbientSkyColor() * material.albedo;
 }
 
@@ -597,16 +597,16 @@ vec3 Render( in vec3 rayOrigin, in vec3 rayDirection)
 {
     vec3 accumulatedColor = vec3(0.0);
     vec3 accumulatedColorMultiplier = vec3(1.0);
-    
+
     int materialID = -1;
     float t = IntersectOpaqueScene(rayOrigin, rayDirection, materialID);
     vec3 opaquePosition = rayOrigin + t*rayDirection;
-    
+
     bool outsideVolume = true;
     for(int entry = 0; entry < 1; entry++) 
     { 
         if(!outsideVolume) break;
-        
+
         bool firstEntry = (entry == 0);
         bool intersectFound = false;
         float volumeStart = 
@@ -617,7 +617,7 @@ vec3 Render( in vec3 rayOrigin, in vec3 rayDirection)
                 iTime,
                 (firstEntry ? 1 : 2),
                 intersectFound);
-        
+
         if(!intersectFound) break;
         else
         {
@@ -634,18 +634,18 @@ vec3 Render( in vec3 rayOrigin, in vec3 rayDirection)
             if(firstEntry && rayOrigin.y <= whiteWaterMaxHeight)
             {
                 WaterIor = mix(1.0, WaterIor, groundBlendFactor);
-                
+
                 vec3 voronoisePosition = rayOrigin / 1.5 + vec3(0, -iTime * 2.0, sin(iTime));
                 float noiseValue = abs(fbm(voronoisePosition, 2));
                 voronoisePosition += 1.0 * vec3(cos(noiseValue), 0.0, sin(noiseValue));
-                
+
                 float heightLerp = (whiteWaterMaxHeight - rayOrigin.y) / whiteWaterMaxHeight;
                 whiteWaterFactor = abs(smoothVoronoi(voronoisePosition.xz)) * heightLerp;
                 whiteWaterFactor = clamp(whiteWaterFactor, 0.0, 1.0);
                 whiteWaterFactor = pow(whiteWaterFactor, 0.2) * heightLerp;
                 whiteWaterFactor *= mix(abs(fbm(rayOrigin + vec3(0, -iTime * 5.0, 0), 2)), 1.0, heightLerp);
                 whiteWaterFactor *= groundBlendFactor;
-                
+
                 vec3 shadowFactor = GetShadowFactor(rayOrigin, GetSunLightDirection(), 10, 7.0);
                 vec3 diffuse = 0.5 * shadowFactor * GetSunLightColor() + 
                     0.7 * shadowFactor * mix(GetAmbientShadowColor(), GetSunLightColor(), max(0.0, dot(volumeNormal, GetSunLightDirection())));
@@ -656,11 +656,11 @@ vec3 Render( in vec3 rayOrigin, in vec3 rayDirection)
             }
             accumulatedColorMultiplier *= (1.0 - whiteWaterFactor);
             rayDirection = refract(rayDirection, volumeNormal, 1.0 / WaterIor);
-            
+
             accumulatedColor += accumulatedColorMultiplier * Specular(reflection, GetSunLightDirection(), waterShininess) * GetSunLightColor();
             accumulatedColor += accumulatedColorMultiplier * fresnelFactor * GetSkyColor(reflection);
             accumulatedColorMultiplier *= (1.0 - fresnelFactor);
-            
+
             t = IntersectOpaqueScene(rayOrigin, rayDirection, materialID);
             if( materialID != -1 )
             {
@@ -677,7 +677,7 @@ vec3 Render( in vec3 rayOrigin, in vec3 rayDirection)
             {
                 float marchSize = max(minStepSize, signedDistance);
                 minStepSize += minStepIncrement;
-                
+
                 vec3 nextMarchPosition = rayOrigin + (volumeDepth + marchSize) * rayDirection;
                 signedDistance = QueryOceanDistanceField(nextMarchPosition, iTime);
                 if(signedDistance > 0.0)
@@ -750,7 +750,7 @@ vec3 Render( in vec3 rayOrigin, in vec3 rayDirection)
                     accumulatedColor += fresnelFactorSec * accumulatedColorMultiplier * GetSkyColor(rayDirection);
                 }
                 accumulatedColorMultiplier *= (1.0 - fresnelFactorSec);
-                
+
                 rayDirection = refract(rayDirection, exitNormal, WaterIor / 1.0);
                 rayOrigin = marchPosition;
                 t = IntersectOpaqueScene(marchPosition, rayDirection, materialID);
@@ -779,7 +779,7 @@ vec3 Render( in vec3 rayOrigin, in vec3 rayDirection)
             }
         }
     }
-    
+
     vec3 opaqueColor = vec3(0.0);
     if(materialID != -1)
     {
@@ -792,7 +792,7 @@ vec3 Render( in vec3 rayOrigin, in vec3 rayDirection)
     {
         opaqueColor = GetSkyColor(rayDirection);
     }
-    
+
     return accumulatedColor + accumulatedColorMultiplier * opaqueColor;
 }
 
@@ -816,7 +816,7 @@ void LoadConstants()
     WaterTurbulence = 2.5;
     WaterAbsorption = 0.028;
 }
-     
+
 vec3 GammaCorrect(vec3 color) 
 {
     return pow(color, vec3(1.0/2.2));
@@ -825,33 +825,33 @@ vec3 GammaCorrect(vec3 color)
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     LoadConstants();
-    
+
     vec2 uv = fragCoord.xy / iResolution.xy;
-    
+
     float aspectRatio = iResolution.x / iResolution.y; 
     float lensWidth = Camera.LensHeight * aspectRatio;
-    
+
     vec3 NonNormalizedCameraView = Camera.LookAt - Camera.Position;
     float ViewLength = length(NonNormalizedCameraView);
     vec3 CameraView = NonNormalizedCameraView / ViewLength;
 
     vec3 lensPoint = Camera.Position;
-    
+
     float rotationFactor = GetRotationFactor();
     mat3 viewMatrix = GetViewMatrix(rotationFactor);
     CameraView = CameraView * viewMatrix;
     lensPoint = Camera.LookAt - CameraView * ViewLength;
-    
+
     vec3 CameraRight = cross(CameraView, vec3(0, 1, 0));    
     vec3 CameraUp = cross(CameraRight, CameraView);
 
     vec3 focalPoint = lensPoint - Camera.FocalDistance * CameraView;
     lensPoint += CameraRight * (uv.x * 2.0 - 1.0) * lensWidth / 2.0;
     lensPoint += CameraUp * (uv.y * 2.0 - 1.0) * Camera.LensHeight / 2.0;
-    
+
     vec3 rayOrigin = focalPoint;
     vec3 rayDirection = normalize(lensPoint - focalPoint);
-    
+
     vec3 color = Render(rayOrigin, rayDirection);
     fragColor = vec4(GammaCorrect(color), 1.0);
 }

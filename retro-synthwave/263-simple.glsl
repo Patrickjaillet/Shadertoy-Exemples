@@ -1,8 +1,3 @@
-// ==== Image (image) ====
-// ==========================================================
-// NAME : MEGADEMO 60S LOOPED
-// Credits : Patrick JAILLET
-// https://openshader.xo.je
 
 float getKick() {
     float v = 0.0;
@@ -199,20 +194,20 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float kick = getKick();
     float hihat = getHihat();
     vec2 uv = fragCoord / iResolution.xy;
-    
+
     vec3 cJ = (tMod < T_JULIA_END + T_MORPH) ? sceneJulia(fragCoord, kick, hihat, tMod) : vec3(0.0);
     vec3 cP = (tMod > T_JULIA_END - T_MORPH && tMod < T_PLASMA_END + T_MORPH) ? scenePlasma(fragCoord, kick, hihat, tMod) : vec3(0.0);
     vec3 cB = (tMod > T_PLASMA_END - T_MORPH && tMod < T_BLOB_END + T_MORPH) ? sceneBlob(fragCoord, kick, hihat, tMod) : vec3(0.0);
     vec3 cO = (tMod > T_BLOB_END - T_MORPH && tMod < T_ORGANIC_END + T_MORPH) ? sceneOrganic(fragCoord, kick, hihat, tMod) : vec3(0.0);
     vec3 cF = (tMod > T_ORGANIC_END - T_MORPH) ? sceneFlesh(fragCoord, kick, hihat, tMod) : vec3(0.0);
-    
+
     vec3 col = vec3(0.0);
     if (tMod < T_JULIA_END + T_MORPH) col = (tMod > T_JULIA_END - T_MORPH) ? applyMorph(cJ, cP, smoothstep(T_JULIA_END-T_MORPH, T_JULIA_END+T_MORPH, tMod), uv, tMod) : cJ;
     else if (tMod < T_PLASMA_END + T_MORPH) col = (tMod > T_PLASMA_END - T_MORPH) ? applyMorph(cP, cB, smoothstep(T_PLASMA_END-T_MORPH, T_PLASMA_END+T_MORPH, tMod), uv, tMod) : cP;
     else if (tMod < T_BLOB_END + T_MORPH) col = (tMod > T_BLOB_END - T_MORPH) ? applyMorph(cB, cO, smoothstep(T_BLOB_END-T_MORPH, T_BLOB_END+T_MORPH, tMod), uv, tMod) : cB;
     else if (tMod < T_ORGANIC_END + T_MORPH) col = (tMod > T_ORGANIC_END - T_MORPH) ? applyMorph(cO, cF, smoothstep(T_ORGANIC_END-T_MORPH, T_ORGANIC_END+T_MORPH, tMod), uv, tMod) : cO;
     else col = cF;
-    
+
     col += vec3(kick * 0.04 + hihat * 0.02);
     fragColor = vec4(clamp(col * (1.0 - dot(uv-0.5, uv-0.5) * 0.6), 0.0, 1.0), 1.0);
 }

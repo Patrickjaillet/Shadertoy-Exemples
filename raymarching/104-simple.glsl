@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 o, vec2 f) {
     vec2 r = iResolution.xy,
          u = (f - 0.5 * r) / r.y;
@@ -14,7 +14,7 @@ void mainImage(out vec4 o, vec2 f) {
     for (int i = 0; i < 64 && g < 140.0; i++) {
         p = ro + rd * g;
         q = p;
-        
+
         float c = cos(t + 0.21 * p.z),
               sn = sin(t + 0.21 * p.z);
         q.xy *= mat2(c, sn, -sn, c);

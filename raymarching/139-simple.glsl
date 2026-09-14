@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 r2d(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
 float fSDF(vec3 p,float t){
     float s=1.;
@@ -16,7 +16,7 @@ float map(vec3 p,float t){
 vec3 getNormal(vec3 p,float t){
     vec2 e=vec2(.001,0.);
     return normalize(vec3(map(p+e.xyy,t)-map(p-e.xyy,t),map(p+e.yxy,t)-map(p-e.yxy,t),map(p+e.yyx,t)-map(p-e.yyx,t)));
-// https://github.com/Patrickjaillet/Z-GL
+
 }
 void mainImage(out vec4 fragColor,vec2 fragCoord){
     vec2 uv=(fragCoord-iResolution.xy)/iResolution.y;

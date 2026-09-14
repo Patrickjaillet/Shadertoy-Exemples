@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 const vec3 RAY_PARAMS = vec3(256.0, 0.0001, 100.0);
 const vec3 LIGHT_BASE = vec3(0.12, 0.45, 0.95);
 const vec2 LOOP_PARAMS = vec2(16.0, 48.0);
@@ -138,36 +138,36 @@ vec3 render(vec2 uv, float time, vec2 fragCoord) {
     vec3 cw = normalize(tar - ro);
     vec3 ri = normalize(cross(cw, vec3(0.0, 1.0, 0.0)));
     vec3 up = cross(ri, cw);
-    
+
     cw = normalize(cw + ri * m.look + up * m.tilt);
     vec3 cu = normalize(cross(cw, vec3(0.0, 1.0, 0.0)));
     vec3 cv = cross(cu, cw);
     vec3 rd = normalize(uv.x * cu + uv.y * cv + cw * (1.6 - abs(m.look) * 0.3));
-    
+
     vec3 oP = getOrbPos(time);
     float t = 0.0, d;
     float volAcc = 0.0;
     vec3 volCol = vec3(0.0);
-    
+
     for(int i = 0; i < int(RAY_PARAMS.x); i++) {
         vec3 p = ro + rd * t;
         d = map(p, time);
-        
+
         float distToOrb = length(p - oP);
         float density = exp(-distToOrb * 0.6);
         float hg = henyeyGreenstein(0.6, dot(rd, normalize(oP - p)));
         volCol += density * hg * LIGHT_BASE * 1.5 * d;
-        
+
         if(d < RAY_PARAMS.y || t > RAY_PARAMS.z) break;
         t += d * 0.75;
     }
-    
+
     vec3 col = vec3(0.0);
-    
+
     if(t < RAY_PARAMS.z) {
         vec3 p = ro + rd * t;
         float distToOrb = length(p - oP);
-        
+
         if(distToOrb < 1.0) {
             col = LIGHT_BASE * 50.0;
         } else {
@@ -175,45 +175,45 @@ vec3 render(vec2 uv, float time, vec2 fragCoord) {
             vec3 v = -rd;
             vec3 l = normalize(oP - p);
             vec3 h = normalize(v + l);
-            
+
             float distance = length(oP - p);
             float attenuation = 1.0 / (1.0 + distance * distance * 0.05);
             vec3 radiance = LIGHT_BASE * 200.0 * attenuation;
-            
+
             vec3 albedo = vec3(0.02);
             float roughness = 0.3;
             float metallic = 0.8;
-            
+
             vec3 f0 = mix(vec3(0.04), albedo, metallic);
             vec3 F = fresnelSchlick(max(dot(h, v), 0.0), f0);
             float NDF = ggxDistribution(n, h, roughness);
             float G = geometrySmith(n, v, l, roughness);
-            
+
             vec3 numerator = NDF * G * F;
             float denominator = 4.0 * max(dot(n, v), 0.0) * max(dot(n, l), 0.0) + 0.0001;
             vec3 specular = numerator / denominator;
-            
+
             vec3 kS = F;
             vec3 kD = vec3(1.0) - kS;
             kD *= 1.0 - metallic;
-            
+
             float nDotL = max(dot(n, l), 0.0);
             float shadow = calcSoftShadow(p, l, 0.05, distance, time);
             float ao = calcAO(p, n, time);
-            
+
             col = (kD * albedo / PI + specular) * radiance * nDotL * shadow * ao;
-            
+
             vec3 r = reflect(-v, n);
             vec3 env = textureLod(iChannel0, r, roughness * 5.0).rgb;
             col += env * F * ao * 0.5;
-            
+
             col *= smoothstep(RAY_PARAMS.z, 0.0, t);
         }
     }
-    
+
     col += volCol * (0.85 + 0.15 * hash12(fragCoord + time));
     col = mix(col, vec3(0.005, 0.01, 0.02), 1.0 - exp(-0.01 * t));
-    
+
     col = (col * (2.51 * col + 0.03)) / (col * (2.43 * col + 0.59) + 0.14);
     return pow(max(col, 0.0), vec3(0.4545));
 }
@@ -221,20 +221,20 @@ vec3 render(vec2 uv, float time, vec2 fragCoord) {
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 tot = vec3(0.0);
     float bayer[4] = float[](0.0, 0.5, 0.75, 0.25);
-    
+
     for(int m = 0; m < 4; m++) {
         vec2 off = vec2(float(m % 2), float(m / 2)) * 0.5;
         vec2 p = fragCoord + off;
         vec2 uv = (p - 0.5 * iResolution.xy) / iResolution.y;
-        
+
         float timeOffset = (bayer[m] / 4.0) * (1.0 / 60.0); 
         tot += render(uv, iTime + timeOffset, p);
     }
-    
+
     tot /= 4.0;
-    
+
     vec2 uv0 = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
     tot *= 1.15 * (1.0 - length(uv0) * 0.55);
-    
+
     fragColor = vec4(tot, 1.0);
 }

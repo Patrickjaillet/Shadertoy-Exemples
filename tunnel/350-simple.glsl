@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define T (iTime * 1.5)
 #define PI 3.14159265
 

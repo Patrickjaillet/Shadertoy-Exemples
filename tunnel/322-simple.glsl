@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 fragColor, vec2 fragCoord) {
     float time = iTime * 2.0;
 
@@ -9,7 +9,7 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
 
     vec3 cameraPosition = vec3(12.0 * sin(time * 0.25), 4.0 * cos(time * 0.5), time * 2.0);
     vec3 target = vec3(0.0, 0.0, time * 2.0 + 5.0);
-    
+
     vec3 forward = normalize(target - cameraPosition);
     vec3 right = normalize(cross(forward, vec3(0.0, 1.0, 0.0)));
     vec3 up = cross(right, forward);
@@ -24,12 +24,12 @@ void mainImage(out vec4 fragColor, vec2 fragCoord) {
     for (int i = 0; i < 40; i++) {
         vec3 q = p;
         q.z = mod(q.z, 10.0) - 5.0;
-        
+
         float scale = 1.0;
         for (int j = 0; j < 4; j++) {
             q = abs(q) - 1.0;
             q.xy *= rotation;
-            
+
             float dotQ = dot(q, q);
             float k = 1.2 / clamp(dotQ, 0.2, 1.0);
             q *= k;

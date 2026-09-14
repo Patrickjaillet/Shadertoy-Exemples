@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     vec4 red = vec4(0.9, 0.1, 0.2, 1.0);

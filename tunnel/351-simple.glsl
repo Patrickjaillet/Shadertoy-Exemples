@@ -1,6 +1,6 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 o, in vec2 u)
-{// https://github.com/Patrickjaillet/Z-GL-Shadertoy
+{
     float t = iTime * 2.0;
     vec3 ro = vec3(cos(t * 0.1) * 8.0, sin(t * 0.1) * 8.0, t);
     vec3 fw = normalize(vec3(cos((t + 2.0) * 0.1) * 8.0, sin((t + 2.0) * 0.1) * 8.0, t + 2.0) - ro);

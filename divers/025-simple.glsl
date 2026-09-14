@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 float a(vec3 b,mat2 c,mat2 d,mat2 e,float f) {
   b.xz*=c;
   b.xy*=d;

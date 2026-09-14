@@ -1,9 +1,9 @@
-// ==== Image (image) ====
+
 vec3 rotateZ(vec3 p, float a) {
     float c = cos(a), s = sin(a);
     return vec3(c * p.x - s * p.y, s * p.x + c * p.y, p.z);
 }
-// https://github.com/Patrickjaillet/Z-GL
+
 vec3 palette(float x, int p) {
     x = fract(x);
     if (p == 1) return vec3(x * 1.6, x * x * 0.8, 0.05);
@@ -44,7 +44,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float glow = 0.0;
     float totalDist = 0.0;
 
-    // 0 = Spectral, 1 = Yellow, 2 = Blue, 3 = Green
     int pal = 0;
 
     for (int step = 0; step < 64; step++) {
@@ -53,7 +52,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         p += rd * de;
         totalDist += de;
 
-        // only the very edge of the surface glows
         float surface = exp(-abs(d) * 30.0);
         float shadow = smoothstep(-0.02, 0.08, d);
         float volume = clamp(glow * 0.25 - abs(d) * 1.5, 0.0, 1.0) * shadow;

@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 float hash21(float p){
     return fract(sin(p*127.1)*43758.5453123);
 }

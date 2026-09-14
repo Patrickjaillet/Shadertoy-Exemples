@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 n,in vec2 o){
     vec2 c=(o-.5*iResolution.xy)/iResolution.y;
     float j=dot(c,c),d=iTime*.35;
@@ -24,24 +24,3 @@ void mainImage(out vec4 n,in vec2 o){
     b=pow(b,vec3(1.));
     n=vec4(b,1.);
 }
-/*%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£%*
-ù  ____    _    _   _ ____  _____ _____   _  ___  ____  ____   ù
-ù / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \  ù
-ù \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | | ù
-ù  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| | ù
-ù |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/  ù
-ù            PATRICK JAILLET-VAN DEN BEEMT [PJVDB]             ù
-ù**************************************************************ùùùùùùùùùùùùùùùù
-ù - Software:       https://patrickjaillet.github.io/sandefjord-software      ù
-ù - Social Network: https://x.com/JailletPatrick                              ù
-ù - Music:          https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g  ù
-ù**************************************************************ùùùùùùùùùùùùùùùù
-ù Software used for GLSL shader creation:                      ù
-ù                -----------------------------                 ù
-ù GLSL shader design and value tweaking                        ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù
-ù - Sliders-GL v1.0.1: https://patrickjaillet.github.io/sandefjord-software/software.html?id=sliders-gl ù
-ù 100% safe Code Golfing                                                                                ù
-ù - µShader v3.0.1: https://patrickjaillet.github.io/sandefjord-software/software.html?id=microshader   ù
-ù Formatting & Layout                                                                                   ù
-ù - ShaderFmt v1.0.0: https://patrickjaillet.github.io/sandefjord-software/software.html?id=shaderfmt   ù
-$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*/

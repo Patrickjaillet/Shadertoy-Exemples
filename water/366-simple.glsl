@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 rot(float a) {
     float s = sin(a), c = cos(a);
     return mat2(c, -s, s, c);
@@ -24,11 +24,7 @@ float noise(vec3 p) {
     float h = dot(hash33(i + vec3(1.0, 1.0, 1.0)), vec3(1.0));
     return mix(mix(mix(a, b, f.x), mix(c, d, f.x), f.y), mix(mix(e, _f, f.x), mix(g, h, f.x), f.y), f.z) * 0.125;
 }
-//======================================================================================//
-//  >>  Author  : Patrick JAILLET                                                       //
-//  >>  Email   : metashader@proton.me                                                  //
-//  >>  URL     : https://lside.xo.je                                                   //
-//*====================================================================================*//
+
 float fbm(vec3 p) {
     float v = 0.0, a = 0.5;
     mat2 r = rot(0.37);
@@ -86,7 +82,7 @@ vec3 ACESFilm(vec3 x) {
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
     float time = iTime * 1.5;
-    
+
     vec3 ro = vec3(getPath(time), time);
     vec3 target = vec3(getPath(time + 2.0), time + 2.0);
     vec3 fwd = normalize(target - ro);
@@ -111,20 +107,20 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         vec3 l = normalize(lp - p);
         vec3 v = -rd;
         vec3 r = reflect(-l, n);
-        
+
         vec3 tex = triplanar(iChannel1, p * 0.2, n);
         float diff = max(dot(n, l), 0.0);
         float spec = pow(max(dot(r, v), 0.0), 64.0);
         float fres = pow(1.0 - max(dot(n, v), 0.0), 5.0);
-        
+
         float cau = caustics(p.xy * 0.2 + p.z * 0.1, time);
         vec3 waterCol = vec3(0.1, 0.6, 0.8);
-        
+
         col = tex * waterCol * (diff + 0.1);
         col += cau * waterCol * diff * 2.0;
         col += spec * vec3(0.8, 1.0, 1.0) * 0.5;
         col += waterCol * fres * 0.3;
-        
+
         vec3 ext = exp(-t * vec3(0.4, 0.15, 0.1));
         col *= ext;
         col = mix(col, vec3(0.0, 0.02, 0.04), 1.0 - exp(-t * 0.08));
@@ -133,9 +129,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     col += vec3(0.2, 0.7, 0.9) * vol;
     col = ACESFilm(col * 1.5);
     col = pow(col, vec3(0.4545));
-    
+
     vec2 vuv = fragCoord / iResolution.xy;
     col *= pow(16.0 * vuv.x * vuv.y * (1.0 - vuv.x) * (1.0 - vuv.y), 0.15);
-    
+
     fragColor = vec4(col, 1.0);
 }

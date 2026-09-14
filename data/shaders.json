@@ -435,7 +435,7 @@
   },
   {
     "num": "063",
-    "title": "Test ZCode 3D #2",
+    "title": "Raymarching 063",
     "category": "raymarching",
     "file": "raymarching/063-simple.glsl",
     "unsupported": false
@@ -1194,7 +1194,7 @@
     "title": "Raymarching 171",
     "category": "raymarching",
     "file": "raymarching/171-simple.glsl",
-    "unsupported": true
+    "unsupported": false
   },
   {
     "num": "172",
@@ -1709,7 +1709,7 @@
   },
   {
     "num": "245",
-    "title": "HYPER-RECURSIVE MONOLITH",
+    "title": "Raymarching 245",
     "category": "raymarching",
     "file": "raymarching/245-simple.glsl",
     "unsupported": false
@@ -1723,7 +1723,7 @@
   },
   {
     "num": "247",
-    "title": "PYTHAGOREAN THEOREM",
+    "title": "Raymarching 247",
     "category": "raymarching",
     "file": "raymarching/247-simple.glsl",
     "unsupported": false
@@ -1835,28 +1835,28 @@
   },
   {
     "num": "263",
-    "title": "MEGADEMO 60S LOOPED",
+    "title": "Retro-synthwave 263",
     "category": "retro-synthwave",
     "file": "retro-synthwave/263-simple.glsl",
     "unsupported": true
   },
   {
     "num": "264",
-    "title": "TRON RIDER",
+    "title": "Retro-synthwave 264",
     "category": "retro-synthwave",
     "file": "retro-synthwave/264-simple.glsl",
     "unsupported": false
   },
   {
     "num": "265",
-    "title": "INFINITE GYROID CRYSTAL TUNNEL",
+    "title": "Space-cosmos 265",
     "category": "space-cosmos",
     "file": "space-cosmos/265-simple.glsl",
     "unsupported": false
   },
   {
     "num": "266",
-    "title": "INDUSTRIAL TECHNO TUNNEL",
+    "title": "Space-cosmos 266",
     "category": "space-cosmos",
     "file": "space-cosmos/266-simple.glsl",
     "unsupported": true
@@ -1870,14 +1870,14 @@
   },
   {
     "num": "268",
-    "title": "PROCEDURAL ROBOTIC JUMP",
+    "title": "Space-cosmos 268",
     "category": "space-cosmos",
     "file": "space-cosmos/268-simple.glsl",
     "unsupported": false
   },
   {
     "num": "269",
-    "title": "QUANTUM WAVE INTERFERENCE",
+    "title": "Space-cosmos 269",
     "category": "space-cosmos",
     "file": "space-cosmos/269-simple.glsl",
     "unsupported": false
@@ -1954,7 +1954,7 @@
   },
   {
     "num": "280",
-    "title": "SHINY VORTEX",
+    "title": "Space-cosmos 280",
     "category": "space-cosmos",
     "file": "space-cosmos/280-simple.glsl",
     "unsupported": false
@@ -2066,7 +2066,7 @@
   },
   {
     "num": "296",
-    "title": "QUANTUM COSMIC SANCTUARY RAYMARCHER",
+    "title": "Space-cosmos 296",
     "category": "space-cosmos",
     "file": "space-cosmos/296-simple.glsl",
     "unsupported": false
@@ -2108,7 +2108,7 @@
   },
   {
     "num": "302",
-    "title": "PULSATING GYROID ORBS",
+    "title": "Space-cosmos 302",
     "category": "space-cosmos",
     "file": "space-cosmos/302-simple.glsl",
     "unsupported": true
@@ -2122,7 +2122,7 @@
   },
   {
     "num": "304",
-    "title": "SCHRODINGER QUANTUM PROBABILITY",
+    "title": "Space-cosmos 304",
     "category": "space-cosmos",
     "file": "space-cosmos/304-simple.glsl",
     "unsupported": false
@@ -2136,14 +2136,14 @@
   },
   {
     "num": "306",
-    "title": "SPACETIME FABRIC DISTORTION",
+    "title": "Space-cosmos 306",
     "category": "space-cosmos",
     "file": "space-cosmos/306-simple.glsl",
     "unsupported": false
   },
   {
     "num": "307",
-    "title": "VISCERAL ORGANIC TUNNEL",
+    "title": "Tunnel 307",
     "category": "tunnel",
     "file": "tunnel/307-simple.glsl",
     "unsupported": false
@@ -2514,7 +2514,7 @@
   },
   {
     "num": "360",
-    "title": "ORGANIC PLASMA TUNNEL",
+    "title": "Water 360",
     "category": "water",
     "file": "water/360-simple.glsl",
     "unsupported": false
@@ -2633,14 +2633,14 @@
   },
   {
     "num": "377",
-    "title": "MAXWELL'S ELECTROMAGNETIC PROPAG",
+    "title": "Water 377",
     "category": "water",
     "file": "water/377-simple.glsl",
     "unsupported": false
   },
   {
     "num": "378",
-    "title": "NAVIER-STOKES LAMINAR FLOW",
+    "title": "Water 378",
     "category": "water",
     "file": "water/378-simple.glsl",
     "unsupported": false

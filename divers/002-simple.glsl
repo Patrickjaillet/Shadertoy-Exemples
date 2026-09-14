@@ -1,70 +1,55 @@
-// ============================================================================
-// UNIFORMS & SLIDERS (Contrôles dynamiques auto-détectés par Le Petit Éditeur GLSL)
-// ============================================================================
 
-// --- CAMÉRA & ESPACE ---
-uniform float u_CamFov;          // Slider: [0.1, 5.0], default: 0.964
-uniform float u_CamSpeed;        // Slider: [0.0, 10.0], default: 4.0
-uniform float u_RotSpeedX;       // Slider: [-2.0, 2.0], default: 0.8
-uniform float u_RotSpeedY;       // Slider: [-2.0, 2.0], default: 0.4
-uniform float u_RotAmpX;         // Slider: [0.0, 2.0], default: 0.5848
-uniform float u_RotAmpY;         // Slider: [0.0, 2.0], default: 0.2
-uniform float u_MouseSens;       // Slider: [0.1, 10.0], default: 2.0
+uniform float u_CamFov;
+uniform float u_CamSpeed;
+uniform float u_RotSpeedX;
+uniform float u_RotSpeedY;
+uniform float u_RotAmpX;
+uniform float u_RotAmpY;
+uniform float u_MouseSens;
 
-// --- GEOMÉTRIE & RÉFRACTION ---
-uniform float u_CylinderRadius;  // Slider: [0.1, 5.0], default: 1.5
-uniform float u_RefractThresh;   // Slider: [0.0, 0.5], default: 0.05
-uniform float u_RefractIndex;    // Slider: [0.1, 2.0], default: 0.85
+uniform float u_CylinderRadius;
+uniform float u_RefractThresh;
+uniform float u_RefractIndex;
 
-// --- DOMAIN WARPING & DEFORMATIONS ---
-uniform float u_TwistStrength;   // Slider: [-2.0, 2.0], default: 0.0
-uniform float u_BendStrength;    // Slider: [-2.0, 2.0], default: 0.0
-uniform float u_LogPolarScale;   // Slider: [0.1, 5.0], default: 1.0
-uniform float u_LogPolarSwirl;   // Slider: [-5.0, 5.0], default: 0.0
-uniform float u_KaleidoSectors;  // Slider: [1.0, 16.0], default: 6.0
+uniform float u_TwistStrength;
+uniform float u_BendStrength;
+uniform float u_LogPolarScale;
+uniform float u_LogPolarSwirl;
+uniform float u_KaleidoSectors;
 
-// --- ONDULATION & ÉNERGIE ---
-uniform float u_WaveZScale;      // Slider: [0.0, 2.0], default: 0.5
-uniform float u_WaveSpeed;       // Slider: [0.0, 5.0], default: 2.0
-uniform float u_WaveSinAmp;      // Slider: [0.0, 2.0], default: 0.75
-uniform float u_WaveSinFreq;     // Slider: [0.1, 5.0], default: 1.5
-uniform float u_InterferenceFreq;// Slider: [1.0, 30.0], default: 15.0
-uniform float u_WaveEnergyMult;  // Slider: [0.0001, 0.05], default: 0.008
+uniform float u_WaveZScale;
+uniform float u_WaveSpeed;
+uniform float u_WaveSinAmp;
+uniform float u_WaveSinFreq;
+uniform float u_InterferenceFreq;
+uniform float u_WaveEnergyMult;
 
-// --- RENDU & FOG ---
-uniform float u_MaxSteps;        // Slider: [10.0, 120.0], default: 60.0
-uniform float u_StepPull;        // Slider: [0.001, 0.1], default: 0.01
-uniform float u_FogAttenuation;  // Slider: [0.0, 0.5], default: 0.1
+uniform float u_MaxSteps;
+uniform float u_StepPull;
+uniform float u_FogAttenuation;
 
-// --- ÉCLAIRAGE, OMBRES & AO ---
-uniform float u_UseLighting;     // Slider: [0.0, 1.0], default: 0.0
-uniform float u_SpecPower;       // Slider: [1.0, 128.0], default: 32.0
-uniform float u_UseSoftShadows;  // Slider: [0.0, 1.0], default: 0.0
-uniform float u_ShadowK;         // Slider: [1.0, 64.0], default: 16.0
-uniform float u_UseAO;           // Slider: [0.0, 1.0], default: 0.0
-uniform float u_AOIntensity;     // Slider: [0.0, 3.0], default: 1.5
+uniform float u_UseLighting;
+uniform float u_SpecPower;
+uniform float u_UseSoftShadows;
+uniform float u_ShadowK;
+uniform float u_UseAO;
+uniform float u_AOIntensity;
 
-// --- COULEURS & MATÉRIAUX ---
-uniform float u_ColorMode;       // Slider: [0.0, 4.0], default: 0.0
-uniform float u_PaletteFreq;     // Slider: [0.1, 5.0], default: 1.0
-uniform float u_PaletteSpeed;    // Slider: [0.0, 2.0], default: 0.1
+uniform float u_ColorMode;
+uniform float u_PaletteFreq;
+uniform float u_PaletteSpeed;
 
-// --- POST-PROCESSING FX ---
-uniform float u_Contrast;        // Slider: [0.1, 3.0], default: 1.0
-uniform float u_Saturation;      // Slider: [0.0, 3.0], default: 1.0
-uniform float u_Gamma;           // Slider: [0.1, 3.0], default: 1.0
-uniform float u_Vignette;        // Slider: [0.0, 1.0], default: 0.0
-uniform float u_Aberration;      // Slider: [0.0, 0.02], default: 0.0
-uniform float u_BloomStrength;   // Slider: [0.0, 2.0], default: 0.0
+uniform float u_Contrast;
+uniform float u_Saturation;
+uniform float u_Gamma;
+uniform float u_Vignette;
+uniform float u_Aberration;
+uniform float u_BloomStrength;
 
-// --- SHADERTOY / ONGLET PASS INPUTS ---
 uniform vec3 iResolution;
 uniform float iTime;
 uniform vec4 iMouse;
 
-// ============================================================================
-// MACROS DE CONFIGURATION OPTIONNELLES
-// ============================================================================
 #define USE_DOMAIN_TWIST 0
 #define USE_DOMAIN_BEND 0
 #define USE_KALEIDOSCOPE 0
@@ -267,17 +252,17 @@ float calcAO(vec3 p, vec3 N) {
 vec3 computeLighting(vec3 p, vec3 N, vec3 V, vec3 baseColor) {
     vec3 L = normalize(LIGHT_DIR);
     vec3 H = normalize(L + V);
-    
+
     float shadow = 1.0;
     if (u_UseSoftShadows > 0.5) {
         shadow = calcSoftShadow(p + N * 0.005, L);
     }
-    
+
     float ao = 1.0;
     if (u_UseAO > 0.5) {
         ao = calcAO(p, N);
     }
-    
+
     float diff = max(dot(N, L), 0.0);
     float spec = pow(max(dot(N, H), 0.0), u_SpecPower);
     vec3 diffuse = diff * shadow * LIGHT_COLOR * baseColor;
@@ -306,7 +291,7 @@ vec4 march(vec2 u, vec2 r, float t, vec2 m) {
     vec4 o = vec4(0.0);
     vec3 c = vec3(0.0, 0.0, t * u_CamSpeed);
     vec3 rd = normalize(vec3((u + u - r.xy) / r.y, u_CamFov));
-    
+
     mat2 rotX = rot2D(m.y);
     mat2 rotY = rot2D(m.x);
     rd.xz *= rotY;
@@ -320,7 +305,7 @@ vec4 march(vec2 u, vec2 r, float t, vec2 m) {
     for (o *= 0.0; i++ < u_MaxSteps; distAccum += max(s, u_StepPull)) {
         vec3 p = c + distAccum * dVec;
         vec3 pWarped = applyDomainWarping(p);
-        
+
         float rCyl = max(length(pWarped.xy), 0.001);
         s = u_CylinderRadius - rCyl;
 
@@ -338,7 +323,7 @@ vec4 march(vec2 u, vec2 r, float t, vec2 m) {
                   sin(u_InterferenceFreq * length(uvPattern + vec2(0.2, 0.0)) + t * 3.0);
 
         vec3 baseCol = computeMaterialColor(pWarped, uvPattern, f, distAccum);
-        
+
         if (u_UseLighting > 0.5) {
             vec3 N = calcNormal(pWarped);
             baseCol = computeLighting(pWarped, N, -dVec, baseCol);
@@ -354,13 +339,13 @@ vec3 applyPostFX(vec3 col, vec2 u, vec2 r) {
     col = mix(vec3(dot(col, vec3(0.2126, 0.7152, 0.0722))), col, u_Saturation);
     col = (col - 0.5) * u_Contrast + 0.5;
     col = pow(max(col, 0.0), vec3(1.0 / u_Gamma));
-    
+
     if (u_Vignette > 0.0) {
         vec2 q = u / r;
         float vig = pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.25);
         col *= mix(1.0, vig, u_Vignette);
     }
-    
+
     return clamp(col, 0.0, 1.0);
 }
 

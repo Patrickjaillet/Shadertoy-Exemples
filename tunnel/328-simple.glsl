@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 a(in float b) {
     float c = cos(b), d = sin(b);
     return mat2(c, d, -d, c);

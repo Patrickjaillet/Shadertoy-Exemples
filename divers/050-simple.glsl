@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define PHOSPHOR_DECAY 0.28
 #define CHROMATIC_ABERRATION 0.0065
 #define CURVATURE 4.5
@@ -33,7 +33,7 @@ float glyph(vec2 p, float id, float time) {
     float seed = floor(time * 18.0) + id;
     float h = gold_noise(vec2(seed, id), 1.234);
     float shape = 0.0;
-    
+
     if(h > 0.9) {
         shape = smoothstep(0.12, 0.02, abs(sdRect(p, vec2(0.25, 0.35))));
     } else if(h > 0.78) {
@@ -46,7 +46,7 @@ float glyph(vec2 p, float id, float time) {
     } else {
         shape = step(0.85, gold_noise(p * 3.1 + seed, 0.9)) * smoothstep(0.45, 0.0, length(p));
     }
-    
+
     float flicker = step(0.015, gold_noise(vec2(time * 0.92, id), 2.1));
     return shape * flicker;
 }
@@ -62,23 +62,23 @@ vec3 getSignal(vec2 uv, float time) {
     vec2 grid = uv * vec2(80.0, 36.0);
     vec2 ipos = floor(grid);
     vec2 fpos = fract(grid);
-    
+
     float rowTime = floor(time * (10.0 + gold_noise(vec2(ipos.y), 6.6) * 12.0));
     float rowHash = gold_noise(vec2(ipos.y, rowTime), 7.7);
     float textActivity = step(0.25, gold_noise(vec2(ipos.y, floor(time * 5.0)), 8.8));
     float charMask = step(gold_noise(ipos + floor(time * 0.05), 9.9), rowHash);
-    
+
     float g = glyph(fpos, gold_noise(ipos, 10.1), time);
     float margin = smoothstep(0.0, 0.02, uv.x) * smoothstep(1.0, 0.98, uv.x) * smoothstep(0.0, 0.05, uv.y) * smoothstep(1.0, 0.95, uv.y);
-    
+
     float val = g * charMask * textActivity * margin;
-    
+
     vec3 amberPhosphor = vec3(1.0, 0.72, 0.2); 
     vec3 greenPhosphor = vec3(0.2, 1.0, 0.5);
     vec3 color = mix(greenPhosphor, amberPhosphor, 0.15) * val;
-    
+
     color += vec3(0.01, 0.04, 0.035) * margin * (0.9 + 0.1 * sin(time * 0.8 + uv.y * 6.0));
-    
+
     return color;
 }
 
@@ -98,13 +98,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     color.b = getSignal(dUV - vec2(CHROMATIC_ABERRATION, 0.0), time).b;
 
     float scanline = sin(dUV.y * iResolution.y * SCANLINE_DENSITY + time * 2.0) * 0.15 + 0.85;
-    
+
     vec3 mask = vec3(0.8);
     float x_mod = mod(fragCoord.x, 3.0);
     if(x_mod < 1.0) mask.r = 1.1;
     else if(x_mod < 2.0) mask.g = 1.1;
     else mask.b = 1.1;
-    
+
     color *= scanline;
     color *= mask;
 

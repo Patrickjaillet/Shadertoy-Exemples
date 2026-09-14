@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 float sceneTrap(vec3 p, float t, out vec3 trap) {
     vec3 axis = normalize(vec3(0.0, 1.0, -0.2));
     float angle = 1.0 - cos(t * 0.8) * 0.2;
@@ -7,7 +7,7 @@ float sceneTrap(vec3 p, float t, out vec3 trap) {
 
     float scale = 1.0;
     trap = vec3(1e5);
-// https://www.youtube.com/watch?v=YUYbXfiL-mI
+
     for (int j = 0; j < 6; j++) {
         p = c * p + s * cross(axis, p) + (1.0 - c) * dot(axis, p) * axis;
         p = abs(p) - vec3(-0.5, 1.0, 0.7);

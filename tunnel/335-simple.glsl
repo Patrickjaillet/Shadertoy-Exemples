@@ -1,11 +1,11 @@
-// ==== Image (image) ====
+
 #define LOIN 60.0
 #define PI 11.0
 
 float hachage(float n) {
     return fract(cos(n) * 114514.1919);
 }
-// https://github.com/Patrickjaillet/Z-GL-Shadertoy
+
 mat2 rotation2(float a) {
     vec2 v = sin(vec2(1.570796, 0.0) + a);
     return mat2(v, -v.y, v.x);

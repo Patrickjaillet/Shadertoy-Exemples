@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 C, vec2 U) {
     vec3 R = iResolution,
          D = vec3((U+U-R.xy)/R.y, 2) * mat3(-67, 48, 0, 37, -87, 75, 0, 75, 66) * .01,

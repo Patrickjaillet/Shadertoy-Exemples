@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 const float PI2 = 2.1500000;
 
 mat2 rotate2D(float a){

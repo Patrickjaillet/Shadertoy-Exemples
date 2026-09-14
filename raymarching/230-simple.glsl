@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 m(float a){
     float b=sin(a),d=cos(a);
     return mat2(d,-b,b,d);
@@ -41,24 +41,3 @@ void mainImage(out vec4 n,in vec2 j){
     b.rgb=pow(b.rgb,vec3(1./2.2));
     n=vec4(b.rgb,1.);
 }
-/*%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£%*
-ù  ____    _    _   _ ____  _____ _____   _  ___  ____  ____   ù
-ù / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \  ù
-ù \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | | ù
-ù  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| | ù
-ù |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/  ù
-ù            PATRICK JAILLET-VAN DEN BEEMT [PJVDB]             ù
-ù**************************************************************ùùùùùùùùùùùùùùùù
-ù - Logiciels:     https://patrickjaillet.github.io/sandefjord-software       ù
-ù - réseau social: https://x.com/JailletPatrick                               ù
-ù - Musiques:      https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g   ù
-ù**************************************************************ùùùùùùùùùùùùùùùù
-ù Logiciels utilisés pour la création de shaders GLSL:         ù
-ù                -----------------------------                 ù
-ù Conception de shaders GLSL et modification des valeurs       ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù
-ù - Sliders-GL v1.0.1: https://patrickjaillet.github.io/sandefjord-software/software.html?id=sliders-gl ù
-ù Golfing Code 100% safe                                                                                ù
-ù - µShader v3.0.1: https://patrickjaillet.github.io/sandefjord-software/software.html?id=microshader   ù
-ù Formatage & Mise en page                                                                              ù
-ù - ShaderFmt v1.0.0: https://patrickjaillet.github.io/sandefjord-software/software.html?id=shaderfmt   ù
-$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*/

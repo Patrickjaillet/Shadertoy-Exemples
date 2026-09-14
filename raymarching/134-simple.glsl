@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 float C(float a){
   return fract(sin(a*127.1)*4.3758547e4);
 }

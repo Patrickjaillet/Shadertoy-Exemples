@@ -1,17 +1,4 @@
-// ==== Image (image) ====
-/**************************************************************
-*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____  *
-* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \ *
-* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |*
-*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |*
-* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/ *
-***************************************************************
-* - X: https://x.com/JailletPatrick                           *
-***************************************************************
-* https://patrickjaillet.github.io/sandefjord-software        *
-* GLSL shader design and value tweaking - Sliders-GL v1.0.1:  *
-* 100% safe Code Golfing - µShader v3.0.1:                    *
-**************************************************************/
+
 void mainImage(out vec4 G, in vec2 H) {
     vec2 R = iResolution.xy;
     vec2 uv = (H - .5 * R) / R.y;
@@ -19,7 +6,7 @@ void mainImage(out vec4 G, in vec2 H) {
     float t = iTime * .3;
     vec3 ro = vec3(1.1 * sin(t), 1.3, 1.1 * cos(t)); 
     vec3 ta = vec3(0.0, -0.1, 0.0);                
-    
+
     vec3 ww = normalize(ta - ro);
     vec3 uu = normalize(cross(ww, vec3(0, 1, 0)));
     vec3 vv = cross(uu, ww);
@@ -31,7 +18,7 @@ void mainImage(out vec4 G, in vec2 H) {
     if (tp > 0.0) {
         vec3 p = ro + rd * tp;
         vec2 z = p.xz;
-        
+
         vec2 c = vec2(-.72 + .08 * sin(iTime * .4), .26 + .06 * cos(iTime * .4));
         float m = 1e5;
         mat2 r = mat2(cos(t * .2), -sin(t * .2), sin(t * .2), cos(t * .2));

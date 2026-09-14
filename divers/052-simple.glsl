@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define MAX_STEPS 180
 #define SURF_DIST .001
 #define MAX_DIST 140.
@@ -149,40 +149,40 @@ float drawSlider(vec2 uv, float val) {
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    
+
     float speedMult = (iMouse.z > 0.5) ? clamp((iMouse.y / iResolution.y - 0.1) / 0.8, 0.0, 1.0) : 0.5;
     float speed = mix(5.0, 10.0, speedMult);
     float time = iTime * speed; 
-    
+
     vec3 ro, T, N, B;
     getFrame(time, ro, T, N, B);
     ro += N * 1.6; 
-    
+
     vec3 sunDir = normalize(vec3(0.5, 0.7, -0.4));
     vec3 rd = normalize(T * 1.2 + uv.x * B + uv.y * N);
     vec3 col = getSkyColor(rd, sunDir);
     col = renderClouds(col, ro, rd, sunDir);
-    
+
     float d = 0.0;
     for(int i=0; i<MAX_STEPS; i++) {
         float res = map(ro + rd * d);
         if(res < SURF_DIST || d > MAX_DIST) break;
         d += res;
     }
-    
+
     if(d < MAX_DIST) {
         vec3 p = ro + rd * d;
         vec3 n = getNormal(p);
         float dif = clamp(dot(n, sunDir), 0.0, 1.0);
         float spe = pow(clamp(dot(reflect(-sunDir, n), -rd), 0.0, 1.0), 40.0);
         float occ = clamp(map(p + n * 0.8) / 0.8, 0.0, 1.0);
-        
+
         float tVal = p.z / 10.0;
         vec3 cP, cT, cN, cB;
         getFrame(tVal, cP, cT, cN, cB);
         vec3 q = p - cP;
         vec3 pL = vec3(dot(q, cB), dot(q, cN), dot(q, cT));
-        
+
         vec3 albedo = vec3(0.2); 
         if(p.y < cP.y - 5.0) {
             albedo = vec3(0.1, 0.15, 0.05);
@@ -200,12 +200,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         vec3 lighting = albedo * (dif + 0.2) * occ + spe * 0.4;
         col = mix(lighting, getSkyColor(rd, sunDir), 1.0 - exp(-0.00015 * d * d));
     }
-    
+
     col = pow(col, vec3(0.4545)); 
     col *= 1.0 - dot(uv, uv) * 0.3;
-    
+
     float s = drawSlider(uv, speedMult);
     col = mix(col, vec3(1.0), s);
-    
+
     fragColor = vec4(col, 1.0);
 }

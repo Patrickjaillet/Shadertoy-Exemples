@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float angle = iTime * (2.0 * 3.14159265359 / 40.0);
     float tCos = cos(angle);

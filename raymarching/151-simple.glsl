@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 O, vec2 U) {
     vec3 R = iResolution, ro = vec3(0,0,533.8),
          rd = normalize(vec3((U-.5*R.xy)/R.y, -1.1)),
@@ -20,29 +20,3 @@ void mainImage(out vec4 O, vec2 U) {
     if(t<1e4) c = h ? vec3(smoothstep(900., 80., tf)) : mix(c, (.5+.5*cos(6.28*(m*.31+vec3(0,.33,.67))))*1.5, f);
     O = vec4(c+g, 1);
 }
-/***********************************************************************************
-*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____                       *
-* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \                      *
-* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |                     *
-*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |                     *
-* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/                      *
-*            PATRICK JAILLET-VAN DEN BEEMT [PJVDB]                                 *
-************************************************************************************
-* - Software:       https://patrickjaillet.github.io/sandefjord-software           *
-* - Social Network: https://x.com/JailletPatrick                                   *
-* - Music:          https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g       *
-************************************************************************************
-*           Software used for GLSL shader creation:                                *
-*                ******************************                                    *
-* GLSL shader design and value tweaking                                            *
-* - Sliders-GL v1.0.1:                                                             *
-* https://patrickjaillet.github.io/sandefjord-software/software.html?id=sliders-gl *
-*                                                                                  *
-* 100% safe Code Golfing                                                           *
-* - µShader v3.0.1:                                                                *
-* https://patrickjaillet.github.io/sandefjord-software/software.html?id=microshader*
-*                                                                                  *
-* Formatting & Layout                                                              *
-* - ShaderFmt v1.0.0:                                                              *
-* https://patrickjaillet.github.io/sandefjord-software/software.html?id=shaderfmt  *
-***********************************************************************************/

@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 const float p=3.1415927e0;
 mat2 g(float c){
     float a=cos(c);

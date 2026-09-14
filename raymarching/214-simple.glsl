@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define M_STEPS 120
 #define S_DIST 0.001
 #define M_DIST 60.0
@@ -96,31 +96,31 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     crtUV = crtUV + centeredUV * d_uv * 0.05; 
 
     float time = iTime;
-    
+
     float shiftX = sin(time * 0.4) * 3.5; 
-    
+
     vec3 ro = vec3(shiftX, 0.0, time * 3.0);
-    
+
     vec3 lookAt = vec3(0.0, 0.0, ro.z + 3.0); 
-    
+
     vec3 f = normalize(lookAt - ro);
     vec3 r = normalize(cross(vec3(0, 1, 0), f));
     vec3 u = cross(f, r);
     vec3 rd = normalize(f * 1.1 + uv.x * r + uv.y * u);
-    
+
     rd.xy *= Rot(sin(time * 0.1) * 0.15);
 
     vec3 finalCol = vec3(0.0);
     float t = 0.0;
     vec3 colA = vec3(1.0, 0.1, 0.5); 
     vec3 colB = vec3(0.0, 1.0, 0.9); 
-    
+
     for(int i = 0; i < 90; i++) {
         vec3 p = ro + rd * t;
         float d = GetDist(p);
         vec3 col = mix(colA, colB, sin(p.z * 0.15 + time) * 0.5 + 0.5);
         col += exp(-gOrbitTrap.y * 12.0) * colB * 1.2;        
-        
+
         if(d < 0.005) {
             vec3 n = GetNormal(p);
             finalCol += col * max(dot(n, -rd), 0.0) * 0.07;
@@ -134,7 +134,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     finalCol = ACESTonemap(finalCol * 2.0);
     finalCol = pow(finalCol, vec3(0.4545)); 
     finalCol = applyCRT(finalCol, crtUV);
-    
+
     if (crtUV.x < 0.0 || crtUV.x > 1.0 || crtUV.y < 0.0 || crtUV.y > 1.0) {
         finalCol = vec3(0.0);
     }

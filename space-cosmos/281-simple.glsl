@@ -1,5 +1,3 @@
-// ==== Image (image) ====
-// https://patrickjaillet.github.io/sandefjord-software
 
 const float t=3.1415927e0;
 mat2 c(float a){

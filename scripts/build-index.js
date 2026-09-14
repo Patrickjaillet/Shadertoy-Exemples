@@ -21,19 +21,8 @@ function listGlslFiles(dir) {
     .sort((a, b) => a.localeCompare(b, 'fr'));
 }
 
-function extractTitle(content, num, category) {
-  const nameMatch = content.match(/^\/\/\s*NAME\s*:\s*(.+)$/mi);
-  if (nameMatch) {
-    return nameMatch[1].trim();
-  }
+function buildTitle(num, category) {
   return `${category.charAt(0).toUpperCase()}${category.slice(1)} ${num}`;
-}
-
-function extractImageSource(content) {
-  const marker = /\/\/\s*====\s*Image\s*\(image\)\s*====/i;
-  const match = marker.exec(content);
-  if (!match) return content.trim();
-  return content.slice(match.index + match[0].length).trim();
 }
 
 function detectUnsupported(source) {
@@ -82,9 +71,8 @@ function buildEntries() {
     const numMatch = item.file.match(/^(\d+)-simple\.glsl$/i);
     if (!numMatch) continue;
     const num = numMatch[1];
-    const content = fs.readFileSync(path.join(item.dir, item.file), 'utf-8');
-    const title = extractTitle(content, num, item.category);
-    const source = extractImageSource(content);
+    const source = fs.readFileSync(path.join(item.dir, item.file), 'utf-8').trim();
+    const title = buildTitle(num, item.category);
     const unsupportedReason = detectUnsupported(source);
 
     entries.push({

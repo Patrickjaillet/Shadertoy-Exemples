@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define MAX_STEPS 200
 #define MAX_DIST 60.
 #define SURF_DIST .0005
@@ -35,29 +35,29 @@ float sdGyroid(vec3 p, float scale) {
 
 float map(vec3 p) {
     float time = iTime * 0.4;
-    
+
     float r = length(p);
     float horizon = 0.8;
     if(r < horizon + 0.1) return 0.1; 
-    
+
     float distortion = 1.0 + 0.15 * sin(r * 0.8 - time * 2.0);
     p /= distortion; 
-    
+
     vec3 p1 = p;
     p1.xz *= rot(time * 0.5);
     p1.yz *= rot(time * 0.3);
 
     float m = clamp(sin(time * 0.5) * 0.5 + 0.5, 0.0, 1.0);
-    
+
     float d1 = sdFractal(p1);
     float d2 = sdGyroid(p1, 3.5 + 1.5 * sin(time * 0.7));
     float d3 = (length(p1) - 2.8);
-    
+
     float shape = mix(d1, d2, m);
-    
+
     float k = 0.8 * (1.0 - 0.4 * m); 
     float res = smin(shape, d3, k);
-    
+
     return res * 0.5 * distortion;
 }
 
@@ -84,10 +84,10 @@ float getAO(vec3 p, vec3 n) {
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
     float hash = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
-    
+
     vec3 ro = vec3(0, 0, -18.0);
     vec3 rd = normalize(vec3(uv, 2.5));
-    
+
     float l = length(uv);
     rd.xy *= rot(0.15 * exp(-l * 1.5) * sin(iTime * 0.5));
 
@@ -97,32 +97,32 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         if(abs(d) < SURF_DIST || t > MAX_DIST) break;
         t += d;
     }
-    
+
     vec3 col = vec3(0.002, 0.004, 0.012) * (1.2 - l);
-    
+
     if(t < MAX_DIST) {
         vec3 p = ro + rd * t;
         vec3 n = getNormal(p);
         vec3 r = reflect(rd, n);
         float ao = getAO(p, n);
-        
+
         float vel = dot(n, -rd); 
         vec3 blueShift = vec3(0.3, 0.7, 1.8) * pow(max(0.0, vel), 3.0);
         vec3 redShift = vec3(1.8, 0.4, 0.1) * pow(max(0.0, 1.0 - vel), 2.0);
         vec3 spectral = mix(redShift, blueShift, 0.5 + 0.5 * sin(iTime + length(p) * 0.2));
-        
+
         vec3 lightPos = vec3(8.0, 12.0, -8.0);
         vec3 lDir = normalize(lightPos - p);
         float diff = max(dot(n, lDir), 0.0);
         float fresnel = pow(clamp(1.0 + dot(rd, n), 0.0, 1.0), 5.0);
         float spec = pow(max(dot(r, lDir), 0.0), 64.0);
-        
+
         col = spectral * (diff + 0.05) * ao;
         col += spec * ao * 1.5;
         col += spectral * fresnel * 3.5;
         col *= exp(-0.02 * t);
     }
-    
+
     vec3 bloom = vec3(0);
     float weights = 0.0;
     for(float i = -3.0; i <= 3.0; i++) {
@@ -135,6 +135,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     col = ACES(col);
     col = pow(col, vec3(0.4545));
     col += (hash - 0.5) * 0.004;
-    
+
     fragColor = vec4(col, 1.0);
 }

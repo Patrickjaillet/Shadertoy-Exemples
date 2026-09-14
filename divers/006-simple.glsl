@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 float N(vec3 p){
     vec3 i=floor(p),f=fract(p);
     f=f*f*(3.-2.*f);

@@ -1,6 +1,4 @@
-// ==== Image (image) ====
-// https://patrickjaillet.github.io/sandefjord-software
-// https://x.com/JailletPatrick
+
 mat2 s(float a){
     float b=cos(a),c=sin(a);
     return mat2(b,-c,c,b);

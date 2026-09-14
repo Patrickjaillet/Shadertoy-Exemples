@@ -1,17 +1,4 @@
-// ==== Image (image) ====
-/**************************************************************
-*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____  *
-* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \ *
-* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |*
-*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |*
-* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/ *
-***************************************************************
-* - X: https://x.com/JailletPatrick                           *
-***************************************************************
-* https://patrickjaillet.github.io/sandefjord-software        *
-* GLSL shader design and value tweaking - Sliders-GL v1.0.1:  *
-* 100% safe Code Golfing - µShader v3.0.1:                    *
-**************************************************************/
+
 float hash31(vec3 p3) {
 p3 = fract(p3 * vec3(.6031, .5030, .4973));
 p3 += dot(p3, p3.zyx + 43.527);
@@ -27,14 +14,14 @@ float dz = 1.0;
 for (int i = 0; i < 7; i++) {
     float r = length(w);
     if (r < 1e-6) break;
-    
+
     dz = power * pow(r, power - 1.0) * dz + 1.0;
-    
+
     float b = power * acos(clamp(w.y / r, -1.0, 1.0));
     float a = power * atan(w.x, w.z);
-    
+
     w = p + pow(r, power) * vec3(sin(b) * sin(a), cos(b), sin(b) * cos(a));
-    
+
     m = dot(w, w);
     if (m > 150.0) break;
 }

@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 O, vec2 fragCoord)
 {
     vec2 R = iResolution.xy;

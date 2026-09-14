@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 float q(float b){
   return(9.8696044*b)/(4.+sqrt(34.+39.4784176*b*b));
 }

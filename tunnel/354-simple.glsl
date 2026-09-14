@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define R iResolution.xy
 #define T (iTime * 0.2)
 
@@ -25,7 +25,7 @@ vec2 smin(vec2 a, vec2 b, float k) {
 vec2 map(vec3 p, float t) {
     vec3 cp = p - path(p.z);
     float tun = length(cp.xy) - 3.8 + 0.3 * sin(cp.z * 2.0 + t) * cos(atan(cp.y, cp.x) * 4.0);
-    
+
     vec3 id = floor(p * 1.5);
     vec3 q = fract(p * 1.5) - 0.5;
     float h = hash(id);
@@ -35,9 +35,9 @@ vec2 map(vec3 p, float t) {
     float petal = 0.18 + 0.12 * sin(a * 5.0 + h * 5.0) * cos(r * 15.0 - t * 2.0);
     float f = max(r - petal, abs(q.z) - 0.01);
     f = smin(vec2(f, 1.0), vec2(length(q) - 0.06, 2.0), 0.02).x / 1.5;
-    
+
     float vine = length(vec2(length(cp.xy) - 3.5, cp.z * 0.5)) - 0.1;
-    
+
     vec2 res = vec2(-tun, 0.0);
     res = f < res.x ? vec2(f, 1.0) : res;
     res = vine < res.x ? vec2(vine, 3.0) : res;
@@ -66,7 +66,7 @@ vec3 render(vec3 ro, vec3 rd, float t, out float depth) {
     float d = 0.0;
     vec2 res;
     vec3 glow = vec3(0.0);
-    
+
     for(int i = 0; i < 75; i++) {
         vec3 p = ro + rd * d;
         res = map(p, t);
@@ -75,17 +75,17 @@ vec3 render(vec3 ro, vec3 rd, float t, out float depth) {
         if(abs(res.x) < 0.001 || d > 45.0) break;
         d += res.x * 0.8;
     }
-    
+
     depth = d;
     vec3 col = vec3(0.005, 0.01, 0.03);
-    
+
     if(d < 45.0) {
         vec3 p = ro + rd * d;
         vec3 n = normal(p, t);
-        
+
         vec3 albedo = vec3(0.05);
         vec3 emiCol = vec3(0.0);
-        
+
         if(res.y == 1.0) {
             albedo = 0.5 + 0.5 * cos(hash(floor(p * 1.5)) * 12.0 + vec3(0.0, 2.0, 4.0));
             if(length(fract(p * 1.5) - 0.5) < 0.08) emiCol = albedo * 5.0;
@@ -95,14 +95,14 @@ vec3 render(vec3 ro, vec3 rd, float t, out float depth) {
         } else {
             albedo = vec3(0.08, 0.08, 0.1) * (0.8 + 0.2 * hash(floor(p * 4.0)));
         }
-        
+
         vec3 lig = normalize(vec3(sin(t), 1.5, cos(t * 0.8)));
         vec3 hal = normalize(lig - rd);
-        
+
         float dif = clamp(dot(n, lig), 0.0, 1.0);
         float sha = softshadow(p, lig, t);
         float spe = pow(clamp(dot(n, hal), 0.0, 1.0), 32.0) * dif * sha;
-        
+
         col = albedo * (dif * sha * vec3(2.5, 2.3, 2.1) + 0.1) + spe * 2.0 + emiCol;
         col = mix(col, vec3(0.005, 0.01, 0.03), 1.0 - exp(-0.008 * d * d));
     }
@@ -119,30 +119,30 @@ void mainImage(out vec4 O, in vec2 U) {
     vec3 ro = path(t * 6.0);
     ro.xy += sin(t * 10.0) * 0.01;
     vec3 ta = path(t * 6.0 + 1.2);
-    
+
     vec3 fwd = normalize(ta - ro);
     float inc = (path(t * 6.0 + 0.5).x - ro.x) * 0.25;
     vec3 rgt = normalize(cross(vec3(sin(inc), cos(inc), 0.0), fwd));
     vec3 up = cross(fwd, rgt);
-    
+
     vec3 col = vec3(0.0);
     float d1, d2, d3;
-    
+
     float ab = 0.015 * length(uv);
     vec3 rdR = normalize((uv.x * (1.0 + ab)) * rgt + (uv.y * (1.0 + ab)) * up + fwd * 1.5);
     vec3 rdG = normalize(uv.x * rgt + uv.y * up + fwd * 1.5);
     vec3 rdB = normalize((uv.x * (1.0 - ab)) * rgt + (uv.y * (1.0 - ab)) * up + fwd * 1.5);
-    
+
     col.r = render(ro, rdR, t, d1).r;
     col.g = render(ro, rdG, t, d2).g;
     col.b = render(ro, rdB, t, d3).b;
-    
+
     vec2 sPos = vec2(sin(t * 0.5) * 0.8, cos(t * 0.3) * 0.8); 
     vec2 p = U / R * 2.0 - 1.0;
     vec2 dir = sPos - p;
     float dist = length(dir);
     vec2 nDir = normalize(dir);
-    
+
     vec3 flare = vec3(0.0);
     float falloff = 1.0 - clamp(length(sPos), 0.0, 1.0);
     for (int i = 0; i < 5; i++) {
@@ -152,12 +152,12 @@ void mainImage(out vec4 O, in vec2 U) {
         vec3 cf = vec3(0.1) * (f == 0.0 ? vec3(1.0, 0.3, 0.1) : (f == 1.0 ? vec3(0.6, 1.0, 0.3) : vec3(0.1, 0.6, 1.0)));
         flare += cf * fr * falloff;
     }
-    
+
     col += flare * smoothstep(20.0, 40.0, d2);
     col *= 1.0 - 0.7 * dot(uv, uv);
     col = aces(col * 1.3);
     col = pow(col, vec3(0.4545));
     col += (hash(vec3(U, t)) - 0.5) * 0.04;
-    
+
     O = vec4(col, 1.0);
 }

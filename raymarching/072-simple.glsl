@@ -1,5 +1,4 @@
-// ==== Image (image) ====
-// https://github.com/Patrickjaillet
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
     vec3 ro = vec3(0.0, 0.0, 0.1);

@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define PI 3.14159265359
 #define TAU 6.28318530718
 #define MAX_STEPS 160
@@ -107,7 +107,7 @@ vec3 getStarField(vec2 uv, float zoom, float time, float seed) {
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
     float t = iTime * 0.2;
-    
+
     vec3 ro = vec3(22.0 * cos(t * 0.4), 8.0 + 4.0 * sin(t * 0.3), 22.0 * sin(t * 0.4));
     vec3 ta = vec3(0.0, 0.0, 0.0);
     vec3 cw = normalize(ta - ro);
@@ -119,7 +119,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float pas = MAX_DIST / float(MAX_STEPS);
     float jitter = hache(vec3(fragCoord, iFrame)) * pas;
     vec3 p = ro + rd * jitter;
-    
+
     vec4 res = vec4(0.0);
     float T = 1.0;
     for (int i = 0; i < MAX_STEPS; i++) {
@@ -140,7 +140,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float starT = iTime * 0.15;
     vec2 camPath = vec2(sin(starT * 0.5), cos(starT * 0.3)) * 2.0;
     float camRot = sin(starT * 0.2) * 0.4;
-    
+
     for (float i = 0.0; i < 1.0; i += 1.0/8.0) {
         float depth = fract(i - starT * 0.5);
         float zoom = mix(15.0, 0.05, depth);
@@ -152,19 +152,19 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     }
 
     vec3 finalCol = res.rgb + starField * T;
-    
+
     finalCol = pow(finalCol, vec3(0.8));
     finalCol *= 1.2;
     vec2 screenUv = fragCoord / iResolution.xy;
     float vign = length(screenUv - 0.5);
     finalCol *= smoothstep(1.2, 0.3, vign);
-    
+
     float noise = hash12(fragCoord + iTime);
     finalCol += (noise - 0.5) * 0.012;
-    
+
     vec3 bloom = finalCol * finalCol;
     finalCol += bloom * 0.3;
     finalCol = mix(finalCol, vec3(dot(finalCol, vec3(0.299, 0.587, 0.114))), -0.1);
-    
+
     fragColor = vec4(clamp(finalCol, 0.0, 1.0), 1.0);
 }

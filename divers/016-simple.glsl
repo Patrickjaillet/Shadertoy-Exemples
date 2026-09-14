@@ -1,16 +1,4 @@
-// ==== Image (image) ====
-/**************************************************************
-*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____  *
-* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \ *
-* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |*
-*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |*
-* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/ *
-***************************************************************
-* - X: https://x.com/JailletPatrick                           *
-***************************************************************
-* https://patrickjaillet.github.io/sandefjord-software        *
-* GLSL shader design and value tweaking - Sliders-GL v1.0.1:  *
-**************************************************************/
+
 #define F float
 F H(float p){p=fract(p);p*=p;p*=p+p;return fract(p);}
 mat2 R(float a){F c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
@@ -165,7 +153,7 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord){
     F beat = t * (bpm / 60.0);
     F beatIndex = floor(beat);
     F isKickStep8 = step(0.5, rb) * step(7.5, mod(beatIndex, 8.0));
-    
+
     vec2 p=(-iResolution.xy+2.*fragCoord)/iResolution.y;
 
     if(isKickStep8 > 0.0){
@@ -175,7 +163,7 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord){
 
     vec3 bg=RT(p,t,b,m,h,K),col=bg;
     F op=mod(t,20.),aw=smoothstep(4.,5.5,op)-smoothstep(14.,15.5,op);
-    
+
     vec3 halo = vec3(0);
 
     if(aw>.001){
@@ -187,7 +175,7 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord){
             if(dS<.001){hit=true;break;}
             if(dO>5.)break;
         }
-        
+
         F dist = length(p);
         F glowIntensity = b * 0.25 * aw;
         vec3 glowColor = P(t * 0.2, K);
@@ -202,7 +190,7 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord){
                  oc=mix(rc*.85,vec3(1),fr*.4)+sp;
             col=mix(bg,oc,aw);
         }
-        
+
         col += halo;
     }
     if(t<5.0){
@@ -221,7 +209,7 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord){
 
     F scale = 0.18; 
     vec2 su = p - vec2(0.0, -0.65); 
-    
+
     F shadow = SText(su - vec2(0.02, -0.02), t, scale);
     F textAlpha = SText(su, t, scale);
     vec3 textCol = P(t * 0.4 + p.x * 0.2, K) * (1.3 + h * 0.8) + vec3(b * 0.5);

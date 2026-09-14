@@ -1,11 +1,11 @@
-// ==== Image (image) ====
+
 #define R(a) mat2(cos(a),sin(a),-sin(a),cos(a))
 
 void mainImage(out vec4 O, vec2 U) {
     vec2 r = iResolution.xy;
     vec3 p, d = vec3((U + U - r) / r.y, -2), o = vec3(0, 0, 7);
     float t = iTime, s, i;
-    
+
     o.yz *= R(.35); d.yz *= R(.35);
     o.xz *= R(t);  d.xz *= R(t);
     o.xy *= R(t);  d.xy *= R(t);

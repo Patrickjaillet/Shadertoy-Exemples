@@ -1,7 +1,4 @@
-// ==== Image (image) ====
-// Par : Patrick JAILLET (Sandefjord)
-// ---------------------------------------------
-// Kymatix VJ : https://kymatix.netlify.app
+
 float bruit2(vec2 p) {
     vec2 i = floor(p), f = fract(p);
     f = f * f * (3. - 2. * f);
@@ -37,13 +34,13 @@ vec3 couleurCiel(vec3 rd) {
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    
+
     float t_mouv = iTime * 0.3;
     float avancement = iTime * 10.0;
-    
+
     vec3 ro = vec3(10.0 * sin(t_mouv), 8.0 + 2.0 * cos(t_mouv * 1.2), avancement);
     vec3 cible = vec3(15.0 * sin(t_mouv + 0.4), 6.0 + 2.0 * sin(t_mouv * 0.7), avancement + 20.0);
-    
+
     float roulis = 0.15 * sin(t_mouv * 0.5);
     vec3 cw = normalize(cible - ro);
     vec3 cp = vec3(sin(roulis), cos(roulis), 0.0);
@@ -53,7 +50,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     vec3 col = couleurCiel(rd);
     float dist = 0.0;
-    
+
     for(int i = 0; i < 120; i++) {
         vec3 p = ro + rd * dist;
         float d = sdTerrain(p);
@@ -69,18 +66,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
             0.3,
             sdTerrain(p + e.yyx) - sdTerrain(p - e.yyx)
         ));
-        
+
         vec3 lum = normalize(vec3(0.8, 0.6, 0.3));
         float diff = max(dot(n, lum), 0.0);
         float ombre = smoothstep(0.0, 0.4, n.y);
-        
+
         vec3 sable = vec3(0.6, 0.3, 0.1);
         vec3 roche = vec3(0.3, 0.15, 0.1);
         vec3 albedo = mix(roche, sable, ombre);
         albedo *= 0.8 + 0.2 * bruit2(p.xz * 0.5);
-        
+
         col = albedo * (diff + 0.15);
-        
+
         float brume = 1.0 - exp(-0.0004 * dist * dist);
         col = mix(col, couleurCiel(rd), brume);
     }

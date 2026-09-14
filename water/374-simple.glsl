@@ -1,6 +1,3 @@
-// ==== Image (image) ====
-// *** KYMATIX STUDIO ***
-// *** https://kymatix.netlify.app ***
 
 #define MAX_STEPS 100
 #define MAX_DIST 100.0
@@ -13,10 +10,10 @@ mat2 rot(float a) {
 vec4 HexCoords(vec2 uv) {
     vec2 r = vec2(1, 1.73);
     vec2 h = r * 0.5;
-    
+
     vec2 a = mod(uv, r) - h;
     vec2 b = mod(uv - h, r) - h;
-    
+
     vec2 gv = dot(a, a) < dot(b, b) ? a : b;
     vec2 id = uv - gv;
     return vec4(gv.x, gv.y, id.x, id.y);
@@ -37,9 +34,9 @@ float GetDist(vec3 p) {
     p.y -= -2.0 + curve * curve * 0.5; 
     p.y += p.z * 0.2; 
     p.z += iTime * 2.0;
-    
+
     vec4 hc = HexCoords(p.xz); 
-    
+
     float d = length(hc.zw);
     float wave = sin(d * 0.5 - iTime * 1.5) * 0.5 + sin(hc.z * 0.8 + hc.w * 0.2 + iTime) * 0.3; 
     float height = 0.5 + wave * 0.4;
@@ -47,7 +44,7 @@ float GetDist(vec3 p) {
     vec3 pHex = vec3(hc.x, p.y - height + 1.0, hc.y);
 
     float hex = sdHexPrism(pHex.xzy, vec2(0.45, height)) - 0.05;
-    
+
     return hex * 0.7;
 }
 vec3 GetNormal(vec3 p) {
@@ -84,12 +81,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         float dif = clamp(dot(n, l), 0.0, 1.0);
         float spec = pow(max(dot(r, l), 0.0), 32.0);
         float edgeFactor = 1.0 - smoothstep(0.8, 0.98, n.y);
-        
+
         vec3 colBlue = vec3(0.02, 0.1, 0.18);
         vec3 colGold = vec3(1.0, 0.7, 0.2);   
         vec3 albedo = mix(colBlue, colGold, edgeFactor);
         vec3 specColor = mix(vec3(1.0), colGold, edgeFactor); 
-        
+
         col = albedo * (dif + 0.1); 
         col += spec * specColor * 2.0; 
 
@@ -97,7 +94,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         col += fresnel * vec3(0.0, 0.5, 1.0) * 0.5 * (1.0 - edgeFactor);
         col *= 1.0 / (1.0 + d * d * 0.01);
     }
-    
+
     col = pow(col, vec3(0.4545));
 
     fragColor = vec4(col, 1.0);

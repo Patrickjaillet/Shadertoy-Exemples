@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 rot(float a) {
     float s = sin(a), c = cos(a);
     return mat2(c, -s, s, c);
@@ -42,22 +42,22 @@ float greebleNoise(vec3 p) {
 
 vec2 mapFalcon(vec3 p) {
     p.y *= 1.35;
-    
+
     vec3 pHull = p;
     float hullCenter = length(pHull * vec3(1.0, 2.2, 0.95)) - 1.85;
     float topPillow = length(pHull * vec3(1.2, 3.5, 1.1) + vec3(0.0, 0.2, 0.0)) - 1.45;
     float hullMain = min(hullCenter, topPillow);
-    
+
     vec3 pMand = p;
     pMand.x = abs(pMand.x);
     vec3 pProng = pMand - vec3(0.82, -0.05, 1.65);
     pProng.xy *= rot(0.05);
     float mandible = sdBox(pProng, vec3(0.38, 0.22, 1.25));
-    
+
     vec3 pNotch = pMand - vec3(0.0, -0.05, 1.7);
     float notchCut = sdBox(pNotch, vec3(0.48, 0.5, 1.3));
     mandible = max(mandible, -notchCut);
-    
+
     vec3 pMandSlope = pProng - vec3(0.0, 0.15, 0.4);
     pMandSlope.yz *= rot(-0.18);
     float mandBevel = sdBox(pMandSlope, vec3(0.4, 0.2, 1.0));
@@ -71,7 +71,7 @@ vec2 mapFalcon(vec3 p) {
 
     vec3 pPod = p - vec3(2.15, 0.08, 0.95);
     float podBase = sdCylinderZ(pPod, 0.55, 0.38);
-    
+
     vec3 pCone = pPod - vec3(0.0, 0.0, 0.55);
     float podCone = sdCone(pCone.xzy, vec2(0.38, 0.55), 0.55);
     float pod = min(podBase, podCone);
@@ -79,7 +79,7 @@ vec2 mapFalcon(vec3 p) {
     vec3 pDishBase = p - vec3(-0.95, 0.62, -0.35);
     pDishBase.xz *= rot(0.35);
     float dishMount = sdCylinder(pDishBase, 0.18, 0.12);
-    
+
     vec3 pDish = pDishBase - vec3(0.0, 0.22, 0.0);
     pDish.yz *= rot(-0.55);
     pDish.xy *= rot(0.2);
@@ -112,7 +112,7 @@ vec2 mapFalcon(vec3 p) {
     pPanels.x = abs(pPanels.x);
     float greeble = greebleNoise(pPanels) * 0.018;
     float panelLines = sin(pPanels.x * 24.0) * sin(pPanels.z * 24.0) * 0.008;
-    
+
     structure -= (greeble + panelLines);
 
     vec3 pEngine = p - vec3(0.0, -0.02, -1.65);
@@ -163,10 +163,10 @@ float softShadow(vec3 ro, vec3 rd, float mint, float maxt) {
 vec3 renderSpace(vec3 rd) {
     float stars = pow(fract(sin(dot(rd, vec3(12.9898, 78.233, 45.164))) * 43758.5453), 32.0);
     stars *= step(0.985, stars);
-    
+
     float nebula = sin(rd.x * 3.0 + iTime * 0.05) * cos(rd.y * 3.0) * sin(rd.z * 3.0);
     vec3 nebColor = mix(vec3(0.02, 0.05, 0.12), vec3(0.15, 0.04, 0.18), nebula * 0.5 + 0.5);
-    
+
     return nebColor + vec3(stars * 1.5);
 }
 
@@ -193,7 +193,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     for (int i = 0; i < 140; i++) {
         vec3 p = ro + rd * t;
         vec2 res = mapFalcon(p);
-        
+
         vec3 pEng = p - vec3(0.0, -0.02, -1.65);
         float dEng = length(pEng) - 0.6;
         if (dEng < 1.2) {
@@ -225,7 +225,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         float spec = pow(clamp(dot(ref, keyLightDir), 0.0, 1.0), 32.0);
 
         vec3 baseHullColor = vec3(0.72, 0.70, 0.66);
-        
+
         float panelNoise = greebleNoise(p * 2.0);
         if (panelNoise > 0.65) baseHullColor *= vec3(0.65, 0.25, 0.2);
         else if (panelNoise < 0.2) baseHullColor *= vec3(0.45, 0.48, 0.52);

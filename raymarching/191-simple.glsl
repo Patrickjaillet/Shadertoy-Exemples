@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 vec2 gViewCoord;
 vec2 gCoord;
 vec2 gPixelScale;

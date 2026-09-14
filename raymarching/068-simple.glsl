@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 R(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
 
 vec3 pal(float t){

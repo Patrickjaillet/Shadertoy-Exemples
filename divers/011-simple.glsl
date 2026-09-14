@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define R iResolution.xy
 #define T iTime
 
@@ -49,14 +49,14 @@ vec4 rmC(vec3 ro, vec3 rd, vec3 bg, vec2 px) {
     vec4 sum = vec4(0.0);
     float t = 0.05 * h12(px);
     vec3 sun = vec3(-0.7071, 0.0, -0.7071);
-    
+
     for(int i = 0; i < 60; i++) {
         vec3 pos = ro + t * rd;
         if(pos.y < -3.0 || pos.y > 2.0 || sum.a > 0.99) break;
-        
+
         int lod = t < 15.0 ? 4 : (t < 30.0 ? 3 : 2);
         float den = mapC(pos, lod);
-        
+
         if(den > 0.01) {
             float dif = clamp((den - mapC(pos + 0.3 * sun, lod)) / 0.6, 0.0, 1.0);
             vec3 lin = vec3(1.0, 0.6, 0.3) * dif + vec3(0.91, 0.98, 1.05);
@@ -109,19 +109,19 @@ vec3 fgR(vec2 uv, vec2 coff) {
         for(int j = 0; j < aa; j++) {
             vec2 o = (vec2(float(i), float(j)) / float(aa) - 0.5) * 2.0 / R.y;
             vec2 puv = uv + o;
-            
+
             vec3 sC = vec3(0.0);
             for(int k = 0; k < 3; k++) {
                 vec2 cuv = puv;
                 if(k == 0) cuv += coff;
                 if(k == 2) cuv -= coff;
-                
+
                 float dist = dS(cuv, T);
                 float y = fS(cuv.x, T);
                 float fill = smoothstep(0.01, -0.01, cuv.y - y);
                 float line = smoothstep(0.015, 0.0, dist);
                 float glow = 0.005 / (dist * dist + 1e-4);
-                
+
                 vec3 col = pS(cuv.x * 0.2 + T * 0.15);
                 sC[k] = mix(col[k] * 0.2, col[k], fill) + col[k] * glow * 1.5 + line;
             }
@@ -139,24 +139,24 @@ void mainImage(out vec4 O, in vec2 U) {
     vec2 uv = (U * 2.0 - R) / R.y;
     vec2 m = iMouse.xy / R;
     vec2 p = (2.0 * U - R) / R.y;
-    
+
     vec3 ro = 4.0 * normalize(vec3(sin(3.0 * m.x), 0.8 * m.y, cos(3.0 * m.x))) - vec3(0.0, 0.1, 0.0);
     vec3 ta = vec3(0.0, -1.0, 0.0);
     mat3 ca = setCam(ro, ta, 0.07 * cos(0.25 * T));
     vec3 rd = ca * normalize(vec3(p, 1.5));
-    
+
     vec3 bg = bgR(ro, rd, U);
-    
+
     vec2 nuv = U / R - 0.5;
     vec2 coff = normalize(nuv) * 10. * length(nuv) * length(nuv);
-    
+
     vec3 fg = fgR(uv, coff);
-    
+
     vec3 comp = bg + fg;
     comp *= 0.8 - smoothstep(0.4, 1.5, length(nuv) * 1.5);
     comp = aces(comp * 1.4);
-    
+
     comp += (h12(U + T) - 0.5) * 0.05;
-    
+
     O = vec4(comp, 1.0);
 }

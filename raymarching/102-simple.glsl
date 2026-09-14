@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 O,vec2 C){
     vec2 R=iResolution.xy,u=(C*2.-R)/R.y;
     float t=iTime,d=fract(sin(dot(C,vec2(12.9898,78.233)))*43758.5453)*.02;

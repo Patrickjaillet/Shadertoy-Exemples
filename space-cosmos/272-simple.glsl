@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 rot(float a) {
     float c = cos(a), s = sin(a);
     return mat2(c, -s, s, c);
@@ -37,7 +37,7 @@ vec3 getShipPosition(float t) {
     vec3 pos = vec3(0.0);
     pos.x = sin(cycle * 0.8) * 0.4;
     pos.y = cos(cycle * 0.6) * 0.25;
-    
+
     if (cycle > 5.0) {
         float jumpProgress = (cycle - 5.0) / 5.0;
         float accel = pow(jumpProgress, 4.0) * 350.0;
@@ -178,7 +178,7 @@ float calcSoftShadow(vec3 ro, vec3 rd, float mint, float maxt) {
 vec3 renderSpace(vec3 ro, vec3 rd) {
     float cycle = mod(iTime, 10.0);
     float warpIntensity = smoothstep(4.0, 8.0, cycle);
-    
+
     vec3 streakRd = rd;
     if (warpIntensity > 0.0) {
         float stretchFactor = 1.0 + warpIntensity * 40.0;
@@ -188,20 +188,20 @@ vec3 renderSpace(vec3 ro, vec3 rd) {
 
     float starSeed = clamp(fract(sin(dot(streakRd, vec3(12.9898, 78.233, 45.164))) * 43758.5453), 0.0, 1.0);
     float stars = pow(starSeed, 180.0) * (2.5 + warpIntensity * 15.0);
-    
+
     vec3 col = vec3(stars);
 
     float zOffset = (cycle > 5.0) ? pow((cycle - 5.0), 2.0) * 10.0 : 0.0;
     float neb1 = fbm(rd * 3.0 + vec3(0.0, 0.0, iTime * 0.02 + zOffset * 0.05));
     float neb2 = fbm(rd * 5.0 - vec3(iTime * 0.01));
     vec3 nebCol = mix(vec3(0.02, 0.05, 0.15), vec3(0.18, 0.04, 0.12), neb1);
-    
+
     if (warpIntensity > 0.0) {
         nebCol = mix(nebCol, vec3(0.05, 0.35, 0.85), warpIntensity * 0.7);
     }
-    
+
     col += nebCol * neb2 * (1.5 + warpIntensity * 3.0);
-    
+
     if (warpIntensity > 0.0) {
         float tunnel = pow(abs(rd.z), 3.0) * warpIntensity;
         col += vec3(0.2, 0.5, 1.0) * tunnel * 2.0;

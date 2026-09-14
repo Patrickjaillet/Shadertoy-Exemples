@@ -1,12 +1,4 @@
-// ==== Image (image) ====
-//======================================================================================//
-//:: [ Optimized for NVIDIA GeForce GeForce GTX 1080 Ti ] ::                            //
-//======================================================================================//
-//  >>  Author  : Patrick JAILLET (Sandefjord)                                          //
-//  >>  Email   : metashader@proton.me                                                  //
-//  >>  Engine  : MetaShader                                                            //
-//  >>  URL     : https://gotoy.xo.je                                                   //
-//*====================================================================================*//
+
 void mainImage(out vec4 o, vec2 u) {
     vec3 p, R = iResolution, D = vec3((u+u-R.xy)/R.y, 1);
     o -= o;

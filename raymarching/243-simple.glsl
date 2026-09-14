@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define MAX_STEPS 100
 #define SURF_DIST .001
 #define MAX_DIST 20.

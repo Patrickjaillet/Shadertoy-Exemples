@@ -1,6 +1,4 @@
-// ==== Image (image) ====
-// https://patrickjaillet.github.io/sandefjord-software
-// https://x.com/JailletPatrick
+
 void mainImage(out vec4 q,in vec2 r){
     vec2 g=iResolution.xy,h=(r-.5*g)/g.y;
     float b=iTime,s=6.+sin(b*.5)*2.;

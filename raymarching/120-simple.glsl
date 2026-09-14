@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat2 rot(float a){ float c=cos(a), s=sin(a); return mat2(c,-s,s,c); }
 
 vec3 palette(float t){

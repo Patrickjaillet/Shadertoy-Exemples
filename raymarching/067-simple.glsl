@@ -1,5 +1,3 @@
-// ==== Image (image) ====
-// https://github.com/Patrickjaillet/Z-GL
 
 void mainImage(out vec4 O,vec2 C){
     vec3 r=vec3(0,1,-18.6),p,d=normalize(vec3((C-.5*iResolution.xy)/iResolution.y,2.5));

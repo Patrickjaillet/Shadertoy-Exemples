@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 r = iResolution.xy;
     float t = iTime;
@@ -21,7 +21,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
         p.y -= 1.0;
         e = p.y;
-        
+
         for (; s < 498.0; s += s) {
             e += dot(sin(p.zxx * s), 1.0 - cos(p.yyz * s)) / s * 0.18;
         }
@@ -33,26 +33,3 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     fragColor = vec4(pow(o.rgb, vec3(1.00)), 1.0);
 }
-
-// Version golfé
-/*
-void mainImage(out vec4 O, in vec2 F) {
-    vec2 R = iResolution.xy;
-    float t = iTime;
-    vec4 c = vec4(0);
-    float e = 0., s, L = 0.;
-    vec3 Q = vec3(0, 5.6, .2), P, D = vec3((F - R * .5) / R.y, .5);
-    for (int i = 0; i < 95; i++) {
-        s = 12.9;
-        Q += D * e * L;
-        P = Q;
-        L = length(P) + 10.;
-        P = vec3(log(L) - t * .3, exp(-clamp(P.z / L, -.1, 1.4)) + .29, atan(P.y, P.x) + t * .15);
-        P.y -= 1.;
-        e = P.y;
-        for (; s < 498.; s += s) e += dot(sin(P.zxx * s), 1. - cos(P.yyz * s)) / s * .18;
-        c.rgb += clamp(e * s, 0., 1.) / 94.1;
-    }
-    O = vec4(c.rgb, 1);
-}
-*/

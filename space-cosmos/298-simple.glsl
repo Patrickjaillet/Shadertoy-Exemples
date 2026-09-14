@@ -1,11 +1,4 @@
-// ==== Image (image) ====
-/***************************************************************************
-https://patrickjaillet.github.io/sandefjord-software
-/***************************************************************************
-Fractal raymarching utilizing logarithmic-spherical space folding. 
-Continuous domain traversal via modular tiling, iterative sphere inversions, 
-and fixed YZ orthogonal rotations.
-***************************************************************************/
+
 mat2 g(float c){
     float a=sin(c),b=cos(c);
     return mat2(b,-a,a,b);
@@ -45,7 +38,7 @@ void mainImage(out vec4 i,in vec2 q){
         j=p;
         h+=max(j,1e-4);
         float u=min(1.,e*.02);
-        
+
         float color_index=floor(mod(orbit*0.125+b*0.5,8.0));
         vec3 v;
         if(color_index<1.)      v=vec3(1.0,0.1,0.1);
@@ -56,7 +49,7 @@ void mainImage(out vec4 i,in vec2 q){
         else if(color_index<6.) v=vec3(0.1,0.3,1.0);
         else if(color_index<7.) v=vec3(0.6,0.1,0.9);
         else                    v=vec3(1.0,0.2,0.6);
-        
+
         f+=.015/exp(p*414.6)*vec4(v*u,0.);
         if(h>40.)break;
     }

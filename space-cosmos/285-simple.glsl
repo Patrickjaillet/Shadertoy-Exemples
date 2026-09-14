@@ -1,9 +1,9 @@
-// ==== Image (image) ====
+
 float k(vec2 d){
     vec3 a=fract(vec3(d.xyx)*.1031);
     a+=dot(a,a.yzx+33.33);
     return fract((a.x+a.y)*a.z);
-}// https://github.com/Patrickjaillet/Z-GL-Shadertoy
+}
 vec2 u(vec2 d){
     vec3 a=fract(vec3(d.xyx)*vec3(.1031,.103,.0973));
     a+=dot(a,a.yzx+33.33);

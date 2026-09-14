@@ -1,10 +1,10 @@
-// ==== Image (image) ====
+
 const float h=3.1415927e0;
 mat2 k(float c){
     float b=cos(c);
     float a=sin(c);
     return mat2(b,-a,a,b);
-}// https://patrickjaillet.github.io/sandefjord-software
+}
 float B(float a){
     return-1./1.*cos(.73*a)-.51/6.44*cos(1.61*a+1.7)-0./6.55*cos(3.11*a+4.2);
 }

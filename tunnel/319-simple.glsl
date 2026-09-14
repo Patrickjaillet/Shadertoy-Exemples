@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define R iResolution
 #define T iTime
 #define L length

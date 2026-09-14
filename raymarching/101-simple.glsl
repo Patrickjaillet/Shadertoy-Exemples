@@ -1,17 +1,4 @@
-// ==== Image (image) ====
-/**************************************************************
-*  ____    _    _   _ ____  _____ _____   _  ___  ____  ____  *
-* / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \ *
-* \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | |*
-*  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| |*
-* |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/ *
-***************************************************************
-* - X: https://x.com/JailletPatrick                           *
-***************************************************************
-* https://patrickjaillet.github.io/sandefjord-software        *
-* GLSL shader design and value tweaking - Sliders-GL v1.0.1:  *
-* 100% safe Code Golfing - µShader v3.0.1:                    *
-**************************************************************/
+
 mat2 rot(float a) {
     float s = sin(a), c = cos(a);
     return mat2(c, -s, s, c);
@@ -52,10 +39,10 @@ float map(vec3 p) {
 
     vec2 v1 = cp5(z1);
     vec2 v2 = cp5(z2);
-    
+
     float cx = sin(iTime * 0.215) * 1.8 * cos(iTime * 0.131);
     float cy = cos(iTime * 0.178) * 1.8 * sin(iTime * 0.194);
-    
+
     vec2 val = v1 + v2 - vec2(cx, cy);
 
     float f = length(val);
@@ -120,7 +107,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     vec3 volColor = vec3(0.0);
     float rayDistance = 0.0;
-    
+
     vec3 shift = vec3(
         sin(iTime * 0.4) * 0.3 + 0.5,
         cos(iTime * 0.3) * 0.3 + 0.7,
@@ -129,10 +116,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     for (int step = 0; step < 16; step++) {
         vec3 vp = vec3(uv * (4.0 + sin(iTime) * 1.0), rayDistance + 0.1);
-        
+
         vp.xy *= rot(iTime * 0.25);
         vp.yz *= rot(iTime * 0.18);
-        
+
         float scale = 1.0;
         for (int i = 0; i < 5; i++) {
             vp = abs(vp) - shift;
@@ -140,24 +127,24 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
             vp *= factor;
             scale *= factor;
         }
-        
+
         float density = length(vp.xy) / scale;
         rayDistance += density * 0.4;
-        
+
         float hue = 0.6 + sin(iTime * 0.1) * 0.1;
         float val = scale * 0.0002;
         vec3 hsvBase = clamp(abs(mod(hue * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
         vec3 rgb = val * mix(vec3(1.0), hsvBase, 0.5);
-        
+
         volColor += rgb;
     }
 
     vec3 ro = vec3(0.0, 0.0, 3.9);
-    
+
     vec3 p = vec3(uv * 3.0, 0.5);
     float angle = iTime * 0.2;
     p.xy *= mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
-    
+
     vec3 rd = normalize(p - ro);
 
     vec2 m = iMouse.xy / iResolution.xy;

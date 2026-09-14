@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 O, vec2 I) {
     vec3 r = iResolution, d = vec3(I - .5 * r.xy, r.y), q = vec3(0, .8, -.9), p;
     O = vec4(.1);

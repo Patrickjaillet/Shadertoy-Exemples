@@ -1,8 +1,8 @@
-// ==== Image (image) ====
+
 mat2 f(float a){
     float b=cos(a),c=sin(a);
     return mat2(b,-c,c,b);
-}// https://patrickjaillet.github.io/sandefjord-software/
+}
 void mainImage(out vec4 j,in vec2 k){
     vec2 l=(k-.5*iResolution.xy)/iResolution.y;
     float g=iTime,e=0.;

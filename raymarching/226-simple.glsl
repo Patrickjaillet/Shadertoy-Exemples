@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define AA 2.
 #define I 1e3
 #define P 3.14159

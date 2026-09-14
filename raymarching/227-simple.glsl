@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define P(z) vec3(sin(z*.21)*11., cos(z*.31)*8., z + sin(z*.1)*2.)
 #define R(a) mat2(cos(a+vec4(0,33,11,0)))
 

@@ -1,15 +1,4 @@
-// ==== Image (image) ====
-/*%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£%*
-ù  ____    _    _   _ ____  _____ _____   _  ___  ____  ____   ù
-ù / ___|  / \  | \ | |  _ \| ____|  ___| | |/ _ \|  _ \|  _ \  ù
-ù \___ \ / _ \ |  \| | | | |  _| | |_ _  | | | | | |_) | | | | ù
-ù  ___) / ___ \| |\  | |_| | |___|  _| |_| | |_| |  _ <| |_| | ù
-ù |____/_/   \_\_| \_|____/|_____|_|  \___/ \___/|_| \_\____/  ù
-ù                       PATRICK JAILLET                        ù
-ù - https://patrickjaillet.github.io/sandefjord-software       ù
-ù - https://x.com/JailletPatrick                               ù
-ù - https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g   ù
-$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£*/
+
 void mainImage(out vec4 n, in vec2 o) {
     vec2 p = iResolution.xy;
     float c = iTime, t = floor(c * .08), t2 = fract(c * .08);

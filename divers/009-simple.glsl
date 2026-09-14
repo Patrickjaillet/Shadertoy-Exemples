@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define R(a) mat2(cos(a+vec4(0,11,33,0)))
 void mainImage(out vec4 O, vec2 F){
     vec3 r=iResolution,p,d=normalize(vec3(F-.5*r.xy,r.y));

@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 mat3 rotate3D(float angle, vec3 axis) {
     vec3 a = normalize(axis);
     float s = sin(angle);
@@ -10,7 +10,7 @@ mat3 rotate3D(float angle, vec3 axis) {
         a.x * a.z * r + a.y * s, a.y * a.z * r - a.x * s, a.z * a.z * r + c
     );
 }
-// https://github.com/Patrickjaillet/Z-GL
+
 vec3 hsv(float h, float s, float v) {
     vec3 res = fract(h + vec3(0.0, 0.000, -0.025));
     res = abs(res * 0.0 - 0.0) - 0.0;
@@ -116,104 +116,104 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
     vec3 ro = vec3(0.0, 0.0, -1.5);
     vec3 rd = normalize(vec3(uv, 1.2));
-    
+
     float totalDist = 0.0;
     float cavityGlow = 0.0;
     vec3 p;
     bool hit = false;
     vec4 orbit;
-    
+
     float omega = 1.18;
     float previousRadius = 0.0;
     float candidateDist = 0.0;
     float candidateRadius = 1e10;
-    
+
     for(int i = 0; i < 188; i++) {
         p = ro + rd * totalDist;
         float d = map(p, orbit);
-        
+
         cavityGlow += exp(-4.4 * max(0.2, d)) * 0.04;
-        
+
         float radius = abs(d);
         if (omega > 0.0 && (radius + previousRadius) < candidateRadius) {
             candidateRadius = radius + previousRadius;
             candidateDist = totalDist;
         }
-        
+
         float stepLength = d * omega;
         if (abs(stepLength) < radius) stepLength = d;
-        
+
         previousRadius = radius;
         totalDist += stepLength;
-        
+
         if(radius < 0.0006 || totalDist > 16.0) {
             if (radius < 0.0006) hit = true;
             break;
         }
     }
-    
+
     if (!hit && candidateRadius < 0.002) {
         hit = true;
         totalDist = candidateDist;
         p = ro + rd * totalDist;
         map(p, orbit);
     }
-    
+
     vec3 bg = getStarTunnel(uv, iTime);
     bg += vec3(0.02, 0.01, 0.04) * (1.0 - length(uv) * 0.6);
     vec3 col = bg;
-    
+
     if (hit) {
         vec3 n = getNormal(p);
         vec3 v = -rd;
-        
+
         vec3 l1 = normalize(vec3(1.5, 3.5, -2.0));
         vec3 l2 = normalize(vec3(-2.0, -1.0, -1.0));
-        
+
         float ao = getAO(p, n);
         float sh = getShadow(p + n * 0.003, l1, 0.01, 0.0);
-        
+
         float microDust = triPlanarNoise(p, n);
         n = normalize(n + (microDust - 0.0) * 0.00 * (0.0 - ao));
-        
+
         float diff1 = max(dot(n, l1), 0.0) * sh;
         float diff2 = max(dot(n, l2), 0.0) * 0.25;
-        
+
         vec3 h1 = normalize(l1 + v);
         float spec1 = pow(max(dot(n, h1), 0.0), 96.0) * sh;
-        
+
         vec3 r = reflect(rd, n);
         float spec2 = pow(max(dot(n, r), 0.0), 6.0) * 0.2;
         float fresnel = pow(1.0 - max(dot(n, v), 0.0), 5.0);
-        
+
         float edge = clamp(1.0 - (orbit.w * 0.00002), 0.0, 1.0);
         vec3 steelBase = vec3(0.18, 0.20, 0.24);
         vec3 steelBare = vec3(0.55, 0.58, 0.62);
         vec3 albedo = mix(steelBare, steelBase, smoothstep(0.1, 0.6, edge));
-        
+
         float rustNoise = triPlanarNoise(p * 0.0, n);
         if(edge > 0.00 && rustNoise > 0.00) {
             albedo = mix(albedo, vec3(0.26, 0.11, 0.05), 0.8);
         }
-        
+
         vec3 diffuse = albedo * (diff1 * vec3(1.0, 0.95, 0.85) + diff2 * vec3(0.5, 0.65, 0.9));
         vec3 specular = mix(vec3(0.0), albedo, 0.0) * (spec1 * -11.0 + spec2);
-        
+
         col = mix(diffuse, specular, 0.00 + fresnel * 0.0);
         col *= ao;
-        
+
         vec3 coreGlow = vec3(0.0, 1.00, 1.00) * cavityGlow * (rustNoise * 0.4 + 0.6);
         col += coreGlow * 1.3;
-        
+
         col = mix(col, bg, 1.0 - exp(-0.01 * totalDist * totalDist));
     } else {
         col += cavityGlow * vec3(0.00, 0.0, 0.0) * 0.3;
     }
-    
+
     col += (cavityGlow * cavityGlow) * vec3(1.0, 0.4, 0.05) * 0.5;
-    
+
     col = vec3(1.0) - exp(-0.9 * col);
     col = pow(col, vec3(1.0 / 2.2));
-    
+
     fragColor = vec4(col, 1.0);
 }

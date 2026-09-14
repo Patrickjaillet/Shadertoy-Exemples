@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 G,in vec2 H){
     vec2 I=(H-.5*iResolution.xy)/iResolution.y;
     float o=iTime*.15,j=smoothstep(-.2,.4,sin(o)),s=iTime*.1;
@@ -67,43 +67,43 @@ void mainImage(out vec4 G,in vec2 H){
             vec2 r_fuv=fract(rp);
             float isRoach=0.0;
             float rShadow=1.0;
-            
+
             for(int X=-1; X<=1; X++) {
                 for(int Y=-1; Y<=1; Y++) {
                     vec2 off=vec2(float(X),float(Y));
                     vec2 cId=r_id+off;
                     vec2 h=fract(sin(vec2(dot(cId,vec2(127.1,311.7)),dot(cId,vec2(269.5,183.3))))*43758.5453);
                     if(h.x>0.4) continue;
-                    
+
                     float rt=iTime*(1.5+h.y);
                     float dash=smoothstep(0.3,0.7,sin(rt*0.5+h.y*10.0));
                     float tM=rt*0.2+dash*rt*2.0;
                     vec2 lPos=vec2(0.5)+vec2(sin(tM),cos(tM*0.8))*0.35;
-                    
+
                     float hide=sin(cId.x*0.5)*cos(cId.y*0.5+iTime*0.15);
                     float s_mult=1.0+step(0.7,h.y)*1.8;
                     float r_scale=smoothstep(-0.15,0.25,hide)*s_mult;
                     if(r_scale<0.01) continue;
-                    
+
                     float tMp=(rt-0.05)*0.2+smoothstep(0.3,0.7,sin((rt-0.05)*0.5+h.y*10.0))*(rt-0.05)*2.0;
                     vec2 lPosp=vec2(0.5)+vec2(sin(tMp),cos(tMp*0.8))*0.35;
                     vec2 dir=normalize(lPos-lPosp+1e-4);
-                    
+
                     vec2 diff=r_fuv-(off+lPos);
                     float ang=atan(dir.y,dir.x);
                     float r_cs=cos(ang),r_sn=sin(ang);
                     diff=mat2(r_cs,r_sn,-r_sn,r_cs)*diff;
                     diff/=max(r_scale,0.001);
-                    
+
                     vec2 aDiff=vec2(abs(diff.x),abs(diff.y));
                     float lAnim=sin(iTime*60.0)*dash;
-                    
+
                     float bd=length(diff*vec2(1.0,2.5))-0.04;
                     float lg1=length(vec2(aDiff.x-0.02,aDiff.y-0.06+lAnim*0.02))-0.004;
                     float lg2=length(vec2(diff.x,aDiff.y-0.06-lAnim*0.02))-0.004;
                     float lg3=length(vec2(aDiff.x+0.02,aDiff.y-0.06+lAnim*0.02))-0.004;
                     float ant=length(vec2(diff.x-0.06,aDiff.y-0.02))-0.003;
-                    
+
                     float rd=min(bd,min(min(lg1,lg2),min(lg3,ant)));
                     if(rd<0.0) isRoach=1.0;
                     rShadow=min(rShadow,smoothstep(0.0,0.1,rd*r_scale));

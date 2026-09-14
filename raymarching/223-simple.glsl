@@ -1,8 +1,8 @@
-// ==== Image (image) ====
+
 vec3 u(vec3 h){
   vec4 c=vec4(1.,-5.5/7.6,0./0.,5.);
   return h.z*mix(c.xxx,clamp(abs(fract(h.xxx+c.xyz)*.6-c.www)-c.xxx,1.,.2),h.y);
-} //https://github.com/Patrickjaillet
+}
 float d(vec3 a){
   a=fract(a*vec3(443.8975,397.2973,491.1871));
   return fract(a.x*a.y*a.z+dot(a,a.yzx+19.19)*a.y*a.z);

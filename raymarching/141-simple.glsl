@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define MENGER_ITER 4
 #define JULIA_ITER 80
 #define MAX_STEPS 100
@@ -93,14 +93,14 @@ vec3 render(vec2 uv, float t) {
         vec3 p = ro + rd * dO;
         vec3 n = GetNormal(p, t);
         vec3 refR = reflect(rd, n);
-        
+
         float dRef = 0.0;
         for(int i=0; i<40; i++) {
             float dS = GetDist((p + n * 0.01) + refR * dRef, t);
             if(abs(dS) < SURF_DIST || dRef > 5.0) break;
             dRef += dS;
         }
-        
+
         vec3 refCol = getJuliaBackground(uv + refR.xy * 0.15, t);
         if(dRef < 5.0) {
             vec3 pRef = (p + n * 0.01) + refR * dRef;
@@ -111,7 +111,7 @@ vec3 render(vec2 uv, float t) {
         float fresnel = pow(1.0 - max(dot(n, -rd), 0.0), 5.0);
         vec3 iris = getIridescence(p, n, t);
         float diff = clamp(dot(n, normalize(vec3(1, 2, 3))), 0.2, 1.0);
-        
+
         col = mix(iris * diff, refCol, 0.2 + 0.8 * fresnel);
         col += pow(fresnel, 3.0) * 0.4;
     }
@@ -126,10 +126,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         float t = iTime - (float(i) / float(SAMPLES)) * 0.02;
         finalCol += render(uv, t);
     }
-    
+
     finalCol /= float(SAMPLES);
     finalCol = pow(finalCol, vec3(0.4545)); 
     finalCol *= 1.0 - length(uv) * 0.1; 
-    
+
     fragColor = vec4(finalCol, 1.0);
 }

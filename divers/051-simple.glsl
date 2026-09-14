@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define R iResolution.xy
 #define T iTime
 
@@ -45,34 +45,34 @@ void mainImage(out vec4 O, vec2 C) {
     vec2 p = (2.0 * C - R) / R.y;
     vec2 m = (2.0 * iMouse.xy - R) / R.y;
     vec2 m_click = (2.0 * abs(iMouse.zw) - R) / R.y;
-    
+
     float isDown = step(0.0, iMouse.z);
     float timeSinceRelease = max(0.0, T - abs(iMouse.w / 1000.0));
-    
+
     float jelly = mix(exp(-4.0 * timeSinceRelease) * cos(10.0 * timeSinceRelease), 1.0, isDown);
-    
+
     vec2 pull = m - m_click;
     float d = length(p - m_click);
     float weight = exp(-d * 3.0);
-    
+
     vec2 p_def = p - (pull * weight * jelly);
-    
+
     vec3 noise = psrdnoise(p_def * 4.0, vec2(10.0), T * 0.1);
     vec3 n = normalize(vec3(-noise.yz * 0.5, 1.0));
-    
+
     vec3 lp = vec3(1.0, 2.0, 3.0), l = normalize(lp - vec3(p_def, 0)), v = vec3(0,0,1), h = normalize(l+v);
-    
+
     float diff = max(dot(n, l), 0.0);
     float spec = pow(max(dot(n, h), 0.0), 64.0);
     float fres = pow(1.0 - n.z, 3.0);
-    
+
     vec3 base = 0.5 + 0.5 * cos(T * 0.1 + noise.x + vec3(0, 2, 4));
     vec3 albedo = mix(vec3(0.01), base, smoothstep(-0.5, 0.5, noise.x));
-    
+
     vec3 col = albedo * (diff + 0.2) + spec * 0.6 + fres * albedo;
-    
+
     float stress = length(pull * weight * jelly);
     col += vec3(0.8, 0.2, 0.5) * stress * 1.2;
-    
+
     O = vec4(pow(ace(col), vec3(0.4545)), 1.0);
 }

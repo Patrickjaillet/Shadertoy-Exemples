@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define RED vec3(1.0, 0.1, 0.05)
 #define ORANGE vec3(1.0, 0.4, 0.1)
 #define GOLD vec3(1.0, 0.8, 0.2)
@@ -42,10 +42,10 @@ float fbm(vec2 p) {
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;
-    
+
     float time = iTime * 1.2;
     float cycle = mod(time, 24.0);
-    
+
     vec2 camUV = uv;
     float angleCam = iTime * 0.2;
     if(cycle > 12.0) camUV *= rot(sin(time * 0.5) * 0.2);
@@ -59,7 +59,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float f1 = fbm(fireUV + time * 0.2);
     float f2 = fbm(fireUV * 1.5 - time * 0.4);
     float fireShape = smoothstep(0.2, 0.9, f1 * f2 + 0.25 - length(camUV) * 0.5);
-    
+
     vec3 col = mix(BLACK, RED, fireShape);
     col = mix(col, ORANGE, smoothstep(0.4, 0.7, fireShape));
     col = mix(col, GOLD, smoothstep(0.7, 1.0, fireShape));
@@ -73,25 +73,25 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         vec2 base = vec2(cos(a), sin(a)) * r;
         p[i] = vec2(base.x * cosY, base.y);
     }
-    
+
     float d = 1e10;
     d = min(d, sdSegment(camUV, p[0], p[2]));
     d = min(d, sdSegment(camUV, p[2], p[4]));
     d = min(d, sdSegment(camUV, p[4], p[1]));
     d = min(d, sdSegment(camUV, p[1], p[3]));
     d = min(d, sdSegment(camUV, p[3], p[0]));
-    
+
     float ringDist = length(vec2(camUV.x / (abs(cosY) + 0.01), camUV.y));
     float rings = min(abs(ringDist - 0.48), abs(ringDist - 0.52));
     d = min(d, rings);
 
     float pulse = 1.0 + 0.3 * sin(time * 5.0);
     float d_glow = (GLOW * pulse + impact * 0.15) / max(d, 0.001);
-    
+
     vec3 logoCol = mix(RED, GOLD, impact);
     col += logoCol * d_glow * 0.6;
     col += logoCol * smoothstep(THICKNESS * (1.0 + impact * 5.0), 0.0, d);
-    
+
     vec2 partUV = camUV * 2.0;
     partUV.y -= time * 1.5;
     float particles = pow(fbm(partUV * 3.0), 12.0) * 50.0;
@@ -100,13 +100,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     col = mix(col, vec3(length(col)), -0.2); 
     col *= smoothstep(1.2, 0.4, length(uv)); 
-    
+
     float chromatic = 0.005 + impact * 0.03;
     vec3 final;
     final.r = col.r;
     final.g = mix(col.g, fireShape, 0.1); 
     final.b = col.b; 
-    
+
     if(impact > 0.8) {
         float flash = sin(time * 50.0) * 0.5 + 0.5;
         col += flash * impact * 0.2;

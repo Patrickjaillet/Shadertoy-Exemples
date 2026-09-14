@@ -15,8 +15,8 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 - **[FAIT]** Dossiers renommés en minuscules, sans espaces ni `&` (ex. `Retro & Synthwave` → `retro-synthwave`), pour rester compatibles sans encodage avec des URL et des chemins de build simples.
 - **[FAIT]** Nommage normalisé en `NNN-simple.glsl` avec numérotation globale continue de `001` à `378` (renumérotée après la suppression des fichiers `multi`, qui avait laissé des trous dans la séquence). L'ancien nommage Shadertoy (`<id>_<Titre>.txt`) a été abandonné ; l'historique de renommage reste consultable via `git log --follow` sur chaque fichier.
 - **[FAIT]** Les 72 shaders multi-passes (`NNN-multi.glsl` : présence de `Buffer A/B/C/D`, `Common` et/ou `Sound`) ont été supprimés du dépôt. Seuls les shaders mono-pass (`Image` seul) sont conservés, ce qui simplifie le runtime de rendu prévu (plus besoin de gérer le ping-pong de buffers ni la concaténation de `Common`).
-- Les fichiers restants contiennent un unique bloc `// ==== Image (image) ====`.
-- Le titre original et l'id Shadertoy ne sont plus portés par le nom de fichier : ils devront être retrouvés dans le contenu du fichier (si présent en commentaire) ou dans l'historique git (nom de fichier avant renommage), sinon considérés comme perdus pour l'affichage.
+- **[FAIT]** Tous les commentaires (`//` et `/* */`) ont été retirés des 378 fichiers `.glsl`, y compris le marqueur technique `// ==== Image (image) ====` et les éventuels titres `// NAME : ...` (conformité à la convention « aucun commentaire dans les fichiers de code »). Chaque fichier ne contient plus que le code GLSL brut du pass `Image`.
+- Le titre original et l'id Shadertoy ne sont pas portés par le nom de fichier ni par le contenu (plus de commentaires) : seul l'historique git (nom de fichier avant renommage) permet de les retrouver, non exploité côté site (cf. étape 4, bouton "Voir sur Shadertoy" abandonné).
 - Pas de métadonnées séparées (pas de JSON par shader) : tout est dans le fichier texte lui-même.
 
 ## Étapes
@@ -27,8 +27,8 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 - [x] Écrire un script (Node.js) `scripts/build-index.js` qui parcourt les dossiers, parse chaque fichier :
   - extrait le numéro (`NNN`) depuis le nom de fichier (le suffixe `-simple` devient implicite, tous les fichiers restants étant mono-pass),
   - extrait la catégorie (nom du dossier ; tous les fichiers sont désormais dans un dossier de catégorie, plus aucun à la racine),
-  - retrouve un titre lisible : en priorité le titre porté par un commentaire `// NAME : ...` s'il existe (18/378 fichiers), sinon fallback sur `Catégorie NNN` (ex. `Tunnel 010`),
-  - extrait le contenu du bloc unique `// ==== Image (image) ====`.
+  - génère un titre lisible `Catégorie NNN` (ex. `Tunnel 010`) — plus de titre `NAME :` à extraire depuis que les commentaires ont été retirés des fichiers,
+  - lit le contenu complet du fichier comme source du shader (plus de marqueur `// ==== Image (image) ====` à chercher, chaque fichier étant intégralement le code du pass `Image`).
   - *(non fait : détection des uniforms/textures utilisées — reporté, non bloquant pour la suite)*.
 - [x] Générer un fichier `data/shaders.json` : liste de `{ num, title, category, file }` (378 entrées).
 - [x] Copier/normaliser les sources brutes dans `data/shaders/<NNN>.json` (un fichier par shader, avec `source` en plus des champs d'index) pour un chargement à la demande côté client (évite de charger 378 shaders d'un coup).
@@ -122,7 +122,7 @@ Site web : https://patrickjaillet.github.io/Shadertoy-Exemples
 
 - [ ] Tous les fichiers `.md` du dépôt en Français.
 - [ ] Logiciel en Anglais `.json` (i18n).
-- [ ] Aucun texte ou commentaire dans les fichiers de code.
+- [x] Aucun texte ou commentaire dans les fichiers de code. *(les 378 fichiers `.glsl` ont été nettoyés de tous les commentaires `//` et `/* */` ; le titre extrait du commentaire `NAME :` sur 18 fichiers a été perdu par la même occasion, ces shaders retombent sur le titre générique `Catégorie NNN` comme les autres — voir CHANGELOG.md.)*
 - [ ] Chaque fonctionnalité ajoutée doit être reflétée dans ce fichier ROADMAP.md.
 - [ ] Sérialisation automatique de la version du logiciel selon la norme stricte SemVer.
 - [ ] Ne pas mettre de nom de phase dans les fichiers.

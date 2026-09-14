@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 #define H(p) fract(sin(dot(p, vec3(12.989, 78.233, 45.164))) * 43758.545)
 #define M(a) mat2(cos(a*0.5), -sin(a*0.8), sin(a*0.8), cos(a*0.5))
 
@@ -43,8 +43,7 @@ void mainImage(out vec4 O, vec2 U) {
     vec2 u = (U - 0.5 * iResolution.xy) / iResolution.y;
     vec3 ro = vec3(0.0, 4.0, 0.0), rd = normalize(vec3(u.x, u.y - 0.4, 1.2)), col = vec3(0.0);
     rd.xy *= M(sin(iTime * 0.6) * 0.18);
- 
-    
+
     float t = 0.0, d, g = 0.0, sk = L(ro + rd * 20.0, 0.12);
     for(int i = 0; i < 80; i++) {
         d = map(ro + rd * t);
@@ -67,9 +66,9 @@ void mainImage(out vec4 O, vec2 U) {
         vec3 brd = rd; 
         brd.yz *= M(sin(iTime * 0.1) * 0.4); 
         brd.xz *= M(iTime * 0.05);
-        
+
         col = vec3(0.15, 0.03, 0.01) * F(brd * 1.5 + iTime * 0.05);
-        
+
         for(float i = 1.0; i < 4.0; i++) {
             vec3 q = brd * (15.0 + i * 7.0);
             vec3 id = floor(q);
@@ -82,7 +81,7 @@ void mainImage(out vec4 O, vec2 U) {
         }
         col += vec3(0.2, 0.05, 0.0) * pow(1.0 - max(rd.y + 0.4, 0.0), 3.0);
     }
-    
+
     col += vec3(0.5, 0.8, 1.0) * sk * 35.0 + vec3(1.0, 0.4, 0.1) * g * 0.03;
     col = clamp((col * (2.51 * col + 0.03)) / (col * (2.43 * col + 0.59) + 0.14), 0.0, 1.0);
     O = vec4(pow(col * 0.85, vec3(0.4545)), 1.0);

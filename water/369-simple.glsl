@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 O, vec2 C) {
     O = vec4(0);
     float i = 0., e = 0., R = 1., s, t = iTime * .8333;

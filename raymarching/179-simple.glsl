@@ -1,4 +1,4 @@
-// ==== Image (image) ====
+
 void mainImage(out vec4 U,in vec2 I){
     const float j[5]=float[5](8.,3.,8.,6.,10.);
     const vec3 k[5]=vec3[5](vec3(0.),vec3(0.),vec3(.3,.2,.5),vec3(-.5,.1,.4),vec3(.1,-.3,.2));

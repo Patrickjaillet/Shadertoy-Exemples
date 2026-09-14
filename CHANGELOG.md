@@ -12,6 +12,10 @@ Le format s'inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 - Miniatures de prévisualisation dans la sidebar : générées à la volée côté client au premier affichage d'un shader, mises en cache dans `localStorage`, affichées à côté du titre pour chaque shader déjà visité.
 - Export vidéo : bouton « Enregistrer » (durée et images/seconde paramétrables par l'utilisateur) qui capture le rendu image par image de façon déterministe (`ShaderToyRuntime.renderFrameAt`, indépendant de `requestAnimationFrame`), puis assemble les images en un fichier `.mp4` (H.264) via ffmpeg.wasm, téléchargeable directement depuis le navigateur. Les binaires ffmpeg.wasm (~31 Mo) sont servis en local (`assets/vendor/ffmpeg/`) plutôt que depuis un CDN : le Worker interne de la bibliothèque utilise une résolution de chemin relative (`importScripts`) qui échoue de façon fiable avec des URLs cross-origin/blob générées à la volée.
 
+### Modifié
+
+- Retrait de tous les commentaires (`//` et `/* */`) des 378 fichiers `.glsl` du dépôt, conformément à la convention du projet « aucun texte ou commentaire dans les fichiers de code ». Le marqueur technique `// ==== Image (image) ====` a également disparu ; `scripts/build-index.js` a été adapté pour ne plus en dépendre (chaque fichier est désormais lu intégralement comme source du shader). Conséquence : les 18 fichiers qui portaient un titre lisible via un commentaire `// NAME : ...` affichent désormais le titre générique `Catégorie NNN` comme tous les autres.
+
 ### Corrigé
 
 - Runtime de rendu migré de WebGL1 vers WebGL2 (GLSL ES 3.00) : plusieurs shaders (`006`, `100`, `250`, `308`, et d'autres) échouaient à la compilation avec des messages comme `'for' : Invalid init declaration` ou `'tanh' : no matching overloaded function found`, ces fonctionnalités GLSL n'existant qu'en GLSL ES 3.00. Shadertoy tournant lui-même en WebGL2, l'alignement corrige le rendu de tous les shaders concernés sans régression sur ceux qui fonctionnaient déjà.

@@ -37,8 +37,7 @@
     mode: 'text/x-csrc',
     theme: 'dracula',
     lineNumbers: true,
-    readOnly: true,
-    viewportMargin: Infinity
+    readOnly: true
   });
 
   const THUMB_PREFIX = 'shadertoy-thumb-';

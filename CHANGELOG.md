@@ -14,6 +14,7 @@ Le format s'inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 ### Corrigé
 
 - Runtime de rendu migré de WebGL1 vers WebGL2 (GLSL ES 3.00) : plusieurs shaders (`006`, `100`, `250`, `308`, et d'autres) échouaient à la compilation avec des messages comme `'for' : Invalid init declaration` ou `'tanh' : no matching overloaded function found`, ces fonctionnalités GLSL n'existant qu'en GLSL ES 3.00. Shadertoy tournant lui-même en WebGL2, l'alignement corrige le rendu de tous les shaders concernés sans régression sur ceux qui fonctionnaient déjà.
+- Défilement à la molette de la souris impossible dans l'éditeur de code : `viewportMargin: Infinity` désactivait le scroller interne de CodeMirror sans fournir d'alternative fonctionnelle. Retiré cette option et fixé la hauteur de `.CodeMirror` à 420px, laissant CodeMirror gérer son propre défilement.
 
 ## [0.1.0] - 2026-09-14
 

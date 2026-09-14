@@ -1,0 +1,7 @@
+{
+  "num": "116",
+  "title": "Raymarching 116",
+  "category": "raymarching",
+  "file": "raymarching/116-simple.glsl",
+  "source": "#define MAX_STEPS 128.0\r\n#define PI 3.14159265\r\n\r\nmat2 rot(float a) {\r\n    float s = sin(a), c = cos(a);\r\n    return mat2(c, -s, s, c);\r\n}\r\n\r\nfloat map(vec3 p, float t) {\r\n    p.xy *= rot(t * 0.2);\r\n    p.yz *= rot(t * 1.0);\r\n    \r\n    float d = 1e6;\r\n    float s = 1.0;\r\n    \r\n    for(int i = 0; i < 10; i++) {\r\n        p = abs(p) - vec3(0.5, 1.2, 0.5);\r\n        p.xy *= rot(1.0);\r\n        p.xz *= rot(0.8);\r\n        d = min(d, length(p) - 0.2 * s);\r\n        s *= 0.7;\r\n    }\r\n    \r\n    return d;\r\n}\r\n\r\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord) {\r\n    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;\r\n    vec3 ro = vec3(0.0, 0.0, -3.0);\r\n    vec3 rd = normalize(vec3(uv, 1.0));\r\n    \r\n    vec3 col = vec3(0.0);\r\n    float t = iTime * 0.3;\r\n    float d = 0.0;\r\n    float acc = 0.0;\r\n    \r\n    for(float i = 0.0; i < MAX_STEPS; i++) {\r\n        vec3 p = ro + rd * d;\r\n        float h = map(p, t);\r\n        \r\n        float glow = exp(-max(0.0, h) * 5.0);\r\n        acc += glow * 0.04;\r\n        \r\n        d += max(0.03, abs(h) * 0.7);\r\n        \r\n        if(d > 12.0 || acc > 1.0) break;\r\n    }\r\n    \r\n    vec3 baseCol = vec3(1.0, 0.5, 0.0);\r\n    col = mix(vec3(0.13, 0.0, -1.00), baseCol, acc);\r\n    col += acc * acc * vec3(1.0, 1.0, 1.0);\r\n    \r\n    fragColor = vec4(col, 1.0);\r\n}"
+}

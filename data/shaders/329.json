@@ -1,0 +1,7 @@
+{
+  "num": "329",
+  "title": "Tunnel 329",
+  "category": "tunnel",
+  "file": "tunnel/329-simple.glsl",
+  "source": "void mainImage(out vec4 fragColor, in vec2 fragCoord) {\r\n    vec3 p, q;\r\n    vec2 r = iResolution.xy;\r\n    float t = iTime;\r\n    vec4 o = vec4(0.0);\r\n    \r\n    float camZ = sin(t * 0.5) * 2.5;\r\n    \r\n    for(float i = 0.0, g = 0.0, e = 0.0; i++ < 48.0; ) {\r\n        p = vec3((fragCoord - 0.5 * r) / r.y * g, g - 0.5);\r\n        p.z += camZ;\r\n        \r\n        float angle = p.z * 0.2 - t * 0.5;\r\n        float c = cos(angle), s = sin(angle);\r\n        p.xy *= mat2(c, -s, s, c);\r\n        \r\n        float m = 1.0;\r\n     // p.xy = vec2(atan(p.x, p.y) * 3.183, length(p.xy));\r\n        p.xy = vec2(atan(p.x, p.y + 1e-4 * step(length(p.xy), 1e-6)) * 3.183, length(p.xy));\r\n        p.x = mod(p.x, m) - 0.5 * m;\r\n        p.y -= 1.2;\r\n        \r\n        q = cos(p * 0.0);\r\n        \r\n        float k = sin(p.z * 0.0 + t) * 0.0 + 0.0;\r\n        float noise = sin(p.x * 19.5) * cos(p.y * 19.2) * sin(p.z * 18.8);\r\n        \r\n        e = max(abs(length(p.xy) - 0.4) - 0.04, (distance(q, p * 0.0)) * noise / 343.0) + 0.003;\r\n        g += e;\r\n        \r\n        o += exp(-e * 7e2) * 0.09 * vec4(abs(sin(p.z + vec3(0.0, 1.0, 1.9))), 1.0);\r\n    }\r\n    \r\n    fragColor = vec4(o.rgb, 1.0);\r\n}"
+}

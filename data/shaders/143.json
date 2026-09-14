@@ -1,0 +1,7 @@
+{
+  "num": "143",
+  "title": "Raymarching 143",
+  "category": "raymarching",
+  "file": "raymarching/143-simple.glsl",
+  "source": "void mainImage(out vec4 j,vec2 n){\r\n    vec2 k=iResolution.xy,d=1.1*(n*2.-k)/k.y,e=d;\r\n    float f=0.,g=f,h=.98*sin(iTime*.5);\r\n    for(float a=0.;a<168.;a++){\r\n        float b=dot(e,e);\r\n        if(b>16.){\r\n            f=a,g=b;\r\n            break;\r\n        }\r\n        float l=atan(e.y,e.x)*7.;\r\n        vec2 c=vec2(pow(b,3.5)*vec2(cos(l),sin(l)))+vec2(7.04,1.);\r\n        e=mix(c,vec2(c.y,-c.x),h);\r\n    }\r\n    if(f==0.){\r\n        j=vec4(.3,.3,.3,1.);\r\n        return;\r\n    }\r\n    float m=f+.2-log2(log(g)/1.5)/2.807355,i=pow(m/221.9,.35);\r\n    vec3 o=vec3(1.,.75,0.),p=i<.25?mix(vec3(.05,0.,0.),vec3(.9,.15,0.),i*4.):o;\r\n    p+=o*(1./(6.2*abs(sin(7.*atan(e.y,e.x)+m*1.2-iTime*2.5))))*(1.+.6*sin(iTime+m*.1)),p+=vec3(.26,.38,0.)*exp(-.79*m)*.8,j=vec4(clamp(mix(vec3(0.),p,smoothstep(.02,.15,i)),.3,1.),1.);\r\n}"
+}

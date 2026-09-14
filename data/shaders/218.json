@@ -1,0 +1,7 @@
+{
+  "num": "218",
+  "title": "Raymarching 218",
+  "category": "raymarching",
+  "file": "raymarching/218-simple.glsl",
+  "source": "#define L(a,b) w = b - a, d = min(d, length(p - a - w * clamp(dot(p - a, w) / dot(w, w), 0., 1.)) - .003)\r\n#define C(q) d = min(d, length(p - q) - .015)\r\n\r\nvoid mainImage(out vec4 O, vec2 U) {\r\n    vec2 R = iResolution.xy,\r\n         p = (U + U - R) / R.y, w;\r\n    float d = 1., t = iTime * .6, a;\r\n    \r\n    for (float i = 0.; i < 6.28; i += .19) {\r\n        a = t + i;\r\n        vec2 D = vec2(sin(a), cos(a)),\r\n             P0 = .425 * D,\r\n             P1 = .85 * D,\r\n             P2 = clamp(P1, -.6, .6);\r\n        \r\n        L(P1, P2);\r\n        L(P0, P2);\r\n        C(P0); C(P1); C(P2);\r\n    }\r\n    \r\n    O = vec4(smoothstep(2. / R.y, 0., d));\r\n}"
+}

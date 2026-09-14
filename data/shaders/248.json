@@ -1,0 +1,7 @@
+{
+  "num": "248",
+  "title": "Retro-gaming 248",
+  "category": "retro-gaming",
+  "file": "retro-gaming/248-simple.glsl",
+  "source": "void mainImage(out vec4 fragColor, in vec2 fragCoord) {\r\n    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;\r\n    float t = iTime * 0.2;\r\n    vec3 col = vec3(0.0);\r\n// https://patrickjaillet.github.io/sandefjord-software/\r\n    for (float i = 0.0, e, g = 0.0, v, u; i < 100.0; ++i) {\r\n        vec3 p = vec3(uv * g, g - 5.1);\r\n        \r\n        float a = t * 4.8 + i * 0.00;\r\n        float s = sin(a), c = cos(a);\r\n        p.xz = mat2(c, s, -s, c) * p.xz;\r\n        \r\n        e = v = 1.3;\r\n\r\n        for (int j = 0; j < 7; ++j) {\r\n            if (j > 3) {\r\n                e = min(e, length(p.xz + length(p) / u * 0.32) / v);\r\n                p.xz = abs(p.xz) - 1.0;\r\n            } else {\r\n                p = abs(p) - 0.18;\r\n            }\r\n            v /= u = dot(p, p);\r\n            p /= u;\r\n            p.y = 0.7 - p.y;\r\n        }\r\n\r\n        g += e;\r\n        col += 0.045 / exp(e * i);\r\n    }\r\n\r\n    col = col / (0.4 + col);\r\n    fragColor = vec4(col, 0.0);\r\n}"
+}

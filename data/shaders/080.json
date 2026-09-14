@@ -1,0 +1,7 @@
+{
+  "num": "080",
+  "title": "Raymarching 080",
+  "category": "raymarching",
+  "file": "raymarching/080-simple.glsl",
+  "source": "#define R(a) mat2(cos(a),sin(a),-sin(a),cos(a))\r\n\r\nvoid mainImage(out vec4 O, vec2 U) {\r\n    vec2 r = iResolution.xy;\r\n    vec3 p, d = vec3((U + U - r) / r.y, -2), o = vec3(0, 0, 7);\r\n    float t = iTime, s, i;\r\n    \r\n    o.yz *= R(.35); d.yz *= R(.35);\r\n    o.xz *= R(t);  d.xz *= R(t);\r\n    o.xy *= R(t);  d.xy *= R(t);\r\n\r\n    O -= O;\r\n    for (s = 2.; s < 12.; s += .08) {\r\n        p = o + d * s;\r\n        for (i = 0.; i < 25.; i++) {\r\n            vec3 C = vec3(sin(i + t), cos(i + t), tan(i + t)),\r\n                 q = abs(p - C) - abs(C);\r\n            if (max(q.x, max(q.y, q.z)) < 0.) {\r\n                ivec2 I = ivec2((p - C) / abs(C) * 32. + 32.);\r\n                if ((I.x & I.y) == 0) O += .015 * (cos(i + vec4(0, 2, 4, 0)) + 1.);\r\n            }\r\n        }\r\n    }\r\n}"
+}

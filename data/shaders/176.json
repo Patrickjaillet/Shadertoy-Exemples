@@ -1,0 +1,7 @@
+{
+  "num": "176",
+  "title": "Raymarching 176",
+  "category": "raymarching",
+  "file": "raymarching/176-simple.glsl",
+  "source": "mat2 rotate2D(float angle) {\r\n    float c = cos(angle);\r\n    float s = sin(angle);\r\n    return mat2(c, s, -s, c);\r\n}\r\n\r\nvoid mainImage(out vec4 fragColor, in vec2 fragCoord) {\r\n    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;\r\n    vec3 color = vec3(0.0);\r\n    \r\n    float time = iTime;\r\n    float rayDepth = 0.05;\r\n    \r\n    for (int i = 0; i < 100; i++) {\r\n        vec3 p = vec3(uv * rayDepth, rayDepth - 1.0);\r\n        \r\n        p.xz *= rotate2D(time * 0.2);\r\n        p.yz *= rotate2D(time * 0.1);\r\n        \r\n        float r = length(p);\r\n        vec3 logP = vec3(\r\n            log(r) - time * 0.5,\r\n            asin(-p.z / r),\r\n            atan(p.x, p.y) + time\r\n        );\r\n        \r\n        float d = logP.y - 1.2;\r\n        float scale = 0.6;\r\n        \r\n        for (int j = 0; j < 6; j++) {\r\n            d += abs(dot(sin(logP * scale), cos(logP.zxy * scale))) / scale;\r\n            scale *= 2.0;\r\n        }\r\n        \r\n        float glow = exp(-abs(d) * 25.2) + 0.35;\r\n        \r\n        vec3 glowColor = vec3(1.0, 0.1, 0.5) * (0.6 + 0.4 * sin(logP.y * 2.0 + time));\r\n        \r\n        color += glow * glowColor * 0.015;\r\n        \r\n        rayDepth += max(abs(d) * r * 0.05, 0.002);\r\n    }\r\n    \r\n    color = pow(color, vec3(0.8));\r\n    \r\n    fragColor = vec4(color, 1.0);\r\n}"
+}

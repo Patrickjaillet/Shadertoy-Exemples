@@ -1,0 +1,7 @@
+{
+  "num": "289",
+  "title": "Space-cosmos 289",
+  "category": "space-cosmos",
+  "file": "space-cosmos/289-simple.glsl",
+  "source": "/*%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£%*\r\nù  ____    _    _   _ ____  _____ _____   _  ___  ____  ____   ù\r\nù / ___|  / \\  | \\ | |  _ \\| ____|  ___| | |/ _ \\|  _ \\|  _ \\  ù\r\nù \\___ \\ / _ \\ |  \\| | | | |  _| | |_ _  | | | | | |_) | | | | ù\r\nù  ___) / ___ \\| |\\  | |_| | |___|  _| |_| | |_| |  _ <| |_| | ù\r\nù |____/_/   \\_\\_| \\_|____/|_____|_|  \\___/ \\___/|_| \\_\\____/  ù\r\nù                       PATRICK JAILLET                        ù\r\nù - https://patrickjaillet.github.io/sandefjord-software       ù\r\nù - https://x.com/JailletPatrick                               ù\r\nù - https://www.youtube.com/channel/UCKcQ3eeBWioM-tE2TBWsL_g   ù\r\n$^%ù£%%^*¨µù*£ùù£ù%%*ù¨¨%µ^$µ%ù^¨%$$^ù^ùµ*£*ù£%*^¨*£$*¨^£%^%*£*/\r\n\r\nvoid mainImage(out vec4 g, vec2 h) {\r\n    vec2 u = iResolution.xy,\r\n         a = abs(.5 - fract((h+h-u)/u.y * vec2(1.-.7*(2.*h.y-u.y)/u.y, 1))),\r\n         b = a, c = u-u;\r\n    \r\n    for(int e=0; e<4; e++)\r\n        b = abs(b) / clamp(abs(b.x*b.y), .1, 1.) - .8,\r\n        c = min(c, abs(b)) + fract(vec2(b.x + iTime*.5, b.y*.2 + iTime));\r\n\r\n    vec2 k = exp(-.9*c);\r\n    g = vec4(k.x * 2.3 + exp(-5.1*length(a)), length(k) + exp(-5.1*length(a)), \r\n    k.y * 4.9 + exp(-5.1*length(a)), 1.);\r\n}"
+}

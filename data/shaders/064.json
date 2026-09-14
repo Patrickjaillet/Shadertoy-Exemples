@@ -1,0 +1,7 @@
+{
+  "num": "064",
+  "title": "Raymarching 064",
+  "category": "raymarching",
+  "file": "raymarching/064-simple.glsl",
+  "source": "void mainImage(out vec4 fragColor, in vec2 fragCoord) {\r\n    vec2 uv = (fragCoord - 0.5 * iResolution.xy) / iResolution.y;\r\n    float t = iTime; \r\n    vec3 col = vec3(0.0);\r\n    \r\n    for (float i = 0.0; i < 32.0; i++) {\r\n        float scale = pow(0.98, i);\r\n        float angle = i * 0.15;\r\n        vec2 p = (uv / scale) * mat2(cos(angle), -sin(angle), sin(angle), cos(angle));\r\n        \r\n        float r = length(p);\r\n        float a = atan(p.y, p.x);\r\n        \r\n        float wind = sin(a * 4.0 + t * 10.0) * r * 0.1;\r\n        a += wind;\r\n        \r\n        p += vec2(sin(r * 2.6 + i * 1.2), cos(r * 3.4)) * 0.02;\r\n        \r\n        float petC = floor(3.0 + mod(i, 3.0)); \r\n        \r\n        float petVal = mix(abs(sin(a)) * 0.5, sin(petC * a), 1.0) * (1.0 - r);\r\n        \r\n        float edge = smoothstep(0.2, 0.16, abs(petVal - 0.5));\r\n        vec3 layerCol = mix(vec3(1.0, 0.2, 0.4), vec3(1.0, 0.7, 0.8), sin(i + r * 8.0));\r\n        \r\n        col += edge * layerCol * smoothstep(0.0, 0.0, 0.8 - r) * pow(0.98, i) * 1.5;\r\n    }\r\n    \r\n    fragColor = vec4(tanh(col * 0.3), 1.0);\r\n}"
+}

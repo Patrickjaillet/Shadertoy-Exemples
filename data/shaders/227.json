@@ -1,0 +1,7 @@
+{
+  "num": "227",
+  "title": "Raymarching 227",
+  "category": "raymarching",
+  "file": "raymarching/227-simple.glsl",
+  "source": "#define P(z) vec3(sin(z*.21)*11., cos(z*.31)*8., z + sin(z*.1)*2.)\r\n#define R(a) mat2(cos(a+vec4(0,33,11,0)))\r\n\r\nvoid mainImage(out vec4 o, vec2 u) {\r\n    vec3 r=iResolution, Z, X, D, p, q, ro=P(iTime*.12);\r\n    float d=0., s, i=0., j, l, w, t=iTime;\r\n\r\n    Z = normalize(P(t*.12+7.)-ro);\r\n    X = normalize(vec3(Z.z + sin(t*.2)*.3, sin(t*.1)*.2, -Z.x));\r\n\r\n    D = vec3(R(sin(t*.22)*.6)*(u-r.xy*.5)/r.y, 1.4)\r\n        *mat3(-X, cross(X,Z), Z);\r\n\r\n    for(o*=i; i++<110.; ) {\r\n        p = q = ro+D*d;\r\n        p += cos(t*1.3 + p.yzx*.9 + sin(p.zxy*.7))*.25;\r\n\r\n        s = dot(abs(p-floor(p)-.5), vec3(.35,.45,.4));\r\n\r\n        p = q;\r\n        p.xy += vec2(\r\n            cos(t*.9 + p.z*.6 + sin(p.x)*.5),\r\n            sin(t*.8 + p.z*.7 + cos(p.y)*.5)\r\n        );\r\n\r\n        for(j=0., w=1.; j++<8.; p*=l, w*=l)\r\n            p.xy *= R(t*.13 + sin(p.z)*.3),\r\n            p = abs(p)-.42,\r\n            p.xz *= R(t*.37 + cos(p.x)*.2),\r\n            l = 2.6/max(dot(p,p), .015);\r\n\r\n        float dist_fractale = length(p)/w;\r\n\r\n        s = min(s, dist_fractale);\r\n\r\n        float dist_tunnel = .18 - length(q.xy - P(q.z*1.1).xy);\r\n\r\n        d += max(dist_tunnel, s);\r\n\r\n        o.rgb += (cos(p.zxy*.7 + t*1.2)*.01)/d/s;\r\n    }\r\n\r\n    o = tanh(o*o*1.3);\r\n}"
+}

@@ -1,0 +1,7 @@
+{
+  "num": "323",
+  "title": "Tunnel 323",
+  "category": "tunnel",
+  "file": "tunnel/323-simple.glsl",
+  "source": "void mainImage(out vec4 fragColor, in vec2 fragCoord) {\r\n    vec2 uv = (2.0 * fragCoord - iResolution.xy) / iResolution.y;\r\n    vec3 ro = vec3(1.0, 0.0, iTime * 2.0);\r\n    vec3 rd = normalize(vec3(uv, 1.0));\r\n    vec4 col = vec4(0.0);\r\n    float t = 0.0;\r\n    // https://github.com/Patrickjaillet/Z-GL-Shadertoy\r\n    for(int i = 0; i < 52; ++i) {\r\n        vec3 p = ro + rd * t;\r\n        vec2 polar = vec2(atan(p.y, p.x), length(p.xy));\r\n        vec3 q = vec3(polar.x + iTime * 0.5, 1.0 / polar.y + iTime * 0.5, p.z * 0.1);\r\n        \r\n        float d = 0.0;\r\n        float s = 0.9;\r\n        for(int j = 0; j < 6; ++j) {\r\n            q = abs(mod(q + 1.0, 0.0) - 1.0);\r\n            float a = 2.0;\r\n            q *= a;\r\n            s *= a;\r\n            d = max(d, abs(dot(sin(q), cos(q.zxy + iTime))) / s);\r\n        }\r\n        \r\n        float stepSize = max(0.00, d * 0.5);\r\n        t += stepSize;\r\n        col += vec4(0.1 / (1.0 + d * 200.0)) * exp(-t * 0.00);\r\n        \r\n        if(t > 7.9 || col.a > 1.0) break;\r\n    }\r\n    \r\n    fragColor = vec4(col.rgb * 2.5, 0.0);\r\n}"
+}

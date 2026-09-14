@@ -24,14 +24,14 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 ### 1. Normalisation des données (build-time, statique)
 - [x] Renommer tous les fichiers shaders en `NNN-simple.glsl` / `NNN-multi.glsl` (numérotation globale, via `git mv` pour préserver l'historique).
 - [x] Supprimer les 72 shaders multi-passes (`NNN-multi.glsl`) : le dépôt ne contient plus que des shaders mono-pass (`NNN-simple.glsl`).
-- [ ] Écrire un script (Node.js) `scripts/build-index.js` qui parcourt les dossiers, parse chaque fichier :
+- [x] Écrire un script (Node.js) `scripts/build-index.js` qui parcourt les dossiers, parse chaque fichier :
   - extrait le numéro (`NNN`) depuis le nom de fichier (le suffixe `-simple` devient implicite, tous les fichiers restants étant mono-pass),
-  - extrait la catégorie (nom du dossier ; les fichiers à la racine rattachés à une catégorie `divers` ou dédiée à définir),
-  - retrouve un titre lisible : en priorité un titre en commentaire dans le fichier s'il existe, sinon fallback sur `Catégorie NNN` (ex. `Tunnel 010`),
-  - extrait le contenu du bloc unique `// ==== Image (image) ====`,
-  - détecte les uniforms/textures utilisées si possible (optionnel, best-effort).
-- [ ] Générer un fichier `data/shaders.json` : liste de `{ num, title, category, file, source }`.
-- [ ] Copier/normaliser les sources brutes dans `data/shaders/<NNN>.json` (un fichier par shader) pour un chargement à la demande côté client (évite de charger 378 shaders d'un coup).
+  - extrait la catégorie (nom du dossier ; les 2 fichiers à la racine sont rattachés à la catégorie `divers`),
+  - retrouve un titre lisible : en priorité le titre porté par un commentaire `// NAME : ...` s'il existe (18/378 fichiers), sinon fallback sur `Catégorie NNN` (ex. `Tunnel 010`),
+  - extrait le contenu du bloc unique `// ==== Image (image) ====`.
+  - *(non fait : détection des uniforms/textures utilisées — reporté, non bloquant pour la suite)*.
+- [x] Générer un fichier `data/shaders.json` : liste de `{ num, title, category, file }` (378 entrées).
+- [x] Copier/normaliser les sources brutes dans `data/shaders/<NNN>.json` (un fichier par shader, avec `source` en plus des champs d'index) pour un chargement à la demande côté client (évite de charger 378 shaders d'un coup).
 
 ### 2. Squelette du site statique
 - [ ] Structure : `index.html`, `assets/css/style.css`, `assets/js/app.js`.

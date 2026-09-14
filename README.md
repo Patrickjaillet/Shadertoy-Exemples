@@ -54,10 +54,6 @@ Puis ouvrir l'URL affichée dans un navigateur.
 - Node.js pour le script de build (`scripts/build-index.js`), sans dépendance npm.
 - GitHub Actions pour le déploiement automatique sur GitHub Pages.
 
-## Documentation du projet
-
-Le détail des étapes de développement, des choix techniques et des limitations connues est documenté dans [roadmap.md](roadmap.md).
-
 ## Licence et copyright
 
 **Shadertoy Exemples**

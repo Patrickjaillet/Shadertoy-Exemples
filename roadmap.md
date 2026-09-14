@@ -11,7 +11,7 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 
 ## Constats sur le dépôt (état actuel)
 
-- 378 fichiers `.glsl` répartis dans 7 dossiers thématiques : `divers`, `raymarching`, `retro-synthwave`, `retro-gaming`, `space-cosmos`, `tunnel`, `water` (fichiers supplémentaires possibles à la racine).
+- 378 fichiers `.glsl` répartis dans 7 dossiers thématiques : `divers`, `raymarching`, `retro-synthwave`, `retro-gaming`, `space-cosmos`, `tunnel`, `water`. Plus aucun fichier à la racine (les 2 fichiers historiques `001`/`002` ont été déplacés dans `divers`).
 - **[FAIT]** Dossiers renommés en minuscules, sans espaces ni `&` (ex. `Retro & Synthwave` → `retro-synthwave`), pour rester compatibles sans encodage avec des URL et des chemins de build simples.
 - **[FAIT]** Nommage normalisé en `NNN-simple.glsl` avec numérotation globale continue de `001` à `378` (renumérotée après la suppression des fichiers `multi`, qui avait laissé des trous dans la séquence). L'ancien nommage Shadertoy (`<id>_<Titre>.txt`) a été abandonné ; l'historique de renommage reste consultable via `git log --follow` sur chaque fichier.
 - **[FAIT]** Les 72 shaders multi-passes (`NNN-multi.glsl` : présence de `Buffer A/B/C/D`, `Common` et/ou `Sound`) ont été supprimés du dépôt. Seuls les shaders mono-pass (`Image` seul) sont conservés, ce qui simplifie le runtime de rendu prévu (plus besoin de gérer le ping-pong de buffers ni la concaténation de `Common`).
@@ -26,7 +26,7 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 - [x] Supprimer les 72 shaders multi-passes (`NNN-multi.glsl`) : le dépôt ne contient plus que des shaders mono-pass (`NNN-simple.glsl`).
 - [x] Écrire un script (Node.js) `scripts/build-index.js` qui parcourt les dossiers, parse chaque fichier :
   - extrait le numéro (`NNN`) depuis le nom de fichier (le suffixe `-simple` devient implicite, tous les fichiers restants étant mono-pass),
-  - extrait la catégorie (nom du dossier ; les 2 fichiers à la racine sont rattachés à la catégorie `divers`),
+  - extrait la catégorie (nom du dossier ; tous les fichiers sont désormais dans un dossier de catégorie, plus aucun à la racine),
   - retrouve un titre lisible : en priorité le titre porté par un commentaire `// NAME : ...` s'il existe (18/378 fichiers), sinon fallback sur `Catégorie NNN` (ex. `Tunnel 010`),
   - extrait le contenu du bloc unique `// ==== Image (image) ====`.
   - *(non fait : détection des uniforms/textures utilisées — reporté, non bloquant pour la suite)*.

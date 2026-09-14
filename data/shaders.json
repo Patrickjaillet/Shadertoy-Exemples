@@ -3,13 +3,13 @@
     "num": "001",
     "title": "Divers 001",
     "category": "divers",
-    "file": "001-simple.glsl"
+    "file": "divers/001-simple.glsl"
   },
   {
     "num": "002",
     "title": "Divers 002",
     "category": "divers",
-    "file": "002-simple.glsl"
+    "file": "divers/002-simple.glsl"
   },
   {
     "num": "003",

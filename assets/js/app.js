@@ -22,7 +22,18 @@
     btnReset: document.getElementById('btn-reset'),
     btnAbout: document.getElementById('btn-about'),
     btnAboutClose: document.getElementById('btn-about-close'),
-    aboutOverlay: document.getElementById('about-overlay')
+    aboutOverlay: document.getElementById('about-overlay'),
+    btnRecord: document.getElementById('btn-record'),
+    recordOverlay: document.getElementById('record-overlay'),
+    btnRecordClose: document.getElementById('btn-record-close'),
+    recordForm: document.getElementById('record-form'),
+    recordDuration: document.getElementById('record-duration'),
+    recordFps: document.getElementById('record-fps'),
+    btnRecordStart: document.getElementById('btn-record-start'),
+    recordProgress: document.getElementById('record-progress'),
+    recordProgressText: document.getElementById('record-progress-text'),
+    recordResult: document.getElementById('record-result'),
+    recordDownloadLink: document.getElementById('record-download-link')
   };
 
   let runtime = null;
@@ -204,6 +215,7 @@
     el.btnPlay.disabled = !enabled;
     el.btnPause.disabled = !enabled;
     el.btnReset.disabled = !enabled;
+    el.btnRecord.disabled = !enabled;
   }
 
   function renderShader(shader) {
@@ -222,6 +234,55 @@
       setTimeout(() => captureThumbnail(shader.num), 400);
     } catch (err) {
       showViewportError(err.message || String(err));
+    }
+  }
+
+  function openRecordDialog() {
+    if (!runtime || !state.current) return;
+    el.recordForm.hidden = false;
+    el.recordProgress.hidden = true;
+    el.recordResult.hidden = true;
+    el.recordOverlay.hidden = false;
+  }
+
+  function closeRecordDialog() {
+    el.recordOverlay.hidden = true;
+    if (el.recordDownloadLink.href) {
+      URL.revokeObjectURL(el.recordDownloadLink.href);
+      el.recordDownloadLink.removeAttribute('href');
+    }
+  }
+
+  async function startRecording() {
+    const duration = Math.min(30, Math.max(1, Number(el.recordDuration.value) || 5));
+    const fps = Math.min(60, Math.max(1, Number(el.recordFps.value) || 30));
+
+    const wasPlaying = runtime.playing;
+    runtime.pause();
+
+    el.recordForm.hidden = true;
+    el.recordProgress.hidden = false;
+    el.recordResult.hidden = true;
+
+    try {
+      const url = await ShaderVideoExport.exportVideo(
+        runtime,
+        { durationSeconds: duration, fps },
+        (message) => { el.recordProgressText.textContent = message; }
+      );
+
+      el.recordDownloadLink.href = url;
+      const safeName = `${state.current.num}-${state.current.title}`.replace(/[^a-z0-9-]+/gi, '_');
+      el.recordDownloadLink.download = `${safeName}.mp4`;
+
+      el.recordProgress.hidden = true;
+      el.recordResult.hidden = false;
+    } catch (err) {
+      el.recordProgressText.textContent = `Erreur : ${err.message || err}`;
+      console.error(err);
+    } finally {
+      runtime.reset();
+      if (wasPlaying) runtime.play();
     }
   }
 
@@ -258,8 +319,18 @@
     el.aboutOverlay.addEventListener('click', (e) => {
       if (e.target === el.aboutOverlay) el.aboutOverlay.hidden = true;
     });
+
+    el.btnRecord.addEventListener('click', openRecordDialog);
+    el.btnRecordClose.addEventListener('click', closeRecordDialog);
+    el.recordOverlay.addEventListener('click', (e) => {
+      if (e.target === el.recordOverlay) closeRecordDialog();
+    });
+    el.btnRecordStart.addEventListener('click', startRecording);
+
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !el.aboutOverlay.hidden) el.aboutOverlay.hidden = true;
+      if (e.key !== 'Escape') return;
+      if (!el.aboutOverlay.hidden) el.aboutOverlay.hidden = true;
+      if (!el.recordOverlay.hidden) closeRecordDialog();
     });
   }
 

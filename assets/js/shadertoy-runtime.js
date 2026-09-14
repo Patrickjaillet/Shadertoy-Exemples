@@ -189,6 +189,18 @@ void main() {
     }
 
     _renderFrame(delta) {
+      this._draw(this.elapsed, delta || 0, this.frame);
+    }
+
+    /**
+     * Rend une frame a un instant precis, de facon deterministe (hors boucle
+     * requestAnimationFrame), pour l'export image par image.
+     */
+    renderFrameAt(time, frameIndex, frameDelta) {
+      this._draw(time, frameDelta || 0, frameIndex || 0);
+    }
+
+    _draw(time, delta, frameIndex) {
       const gl = this.gl;
       const canvas = this.canvas;
       if (!this.program) return;
@@ -202,9 +214,9 @@ void main() {
 
       const date = new Date();
       gl.uniform3f(this.locations.iResolution, canvas.width, canvas.height, 1.0);
-      gl.uniform1f(this.locations.iTime, this.elapsed);
-      gl.uniform1f(this.locations.iTimeDelta, delta || 0);
-      gl.uniform1i(this.locations.iFrame, this.frame);
+      gl.uniform1f(this.locations.iTime, time);
+      gl.uniform1f(this.locations.iTimeDelta, delta);
+      gl.uniform1i(this.locations.iFrame, frameIndex);
       gl.uniform4f(this.locations.iMouse, this.mouse[0], this.mouse[1], this.mouse[2], this.mouse[3]);
       gl.uniform4f(
         this.locations.iDate,

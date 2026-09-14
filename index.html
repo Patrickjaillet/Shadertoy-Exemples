@@ -32,6 +32,7 @@
             <button id="btn-play" class="btn" disabled>Play</button>
             <button id="btn-pause" class="btn" disabled>Pause</button>
             <button id="btn-reset" class="btn" disabled>Reset</button>
+            <button id="btn-record" class="btn" disabled>Enregistrer</button>
           </div>
         </div>
         <div class="viewport-frame">
@@ -66,9 +67,41 @@
     </div>
   </div>
 
+  <div id="record-overlay" class="about-overlay" hidden>
+    <div class="about-dialog" role="dialog" aria-modal="true" aria-labelledby="record-title">
+      <div class="about-header">
+        <h2 id="record-title">Enregistrer une vidéo</h2>
+        <button id="btn-record-close" class="about-close" aria-label="Fermer">×</button>
+      </div>
+
+      <div id="record-form">
+        <label class="record-field">
+          Durée (secondes)
+          <input id="record-duration" type="number" min="1" max="30" step="1" value="5">
+        </label>
+        <label class="record-field">
+          Images par seconde
+          <input id="record-fps" type="number" min="1" max="60" step="1" value="30">
+        </label>
+        <p class="record-hint">Rendu image par image (déterministe), puis assemblage en .mp4 via ffmpeg.wasm (chargé au premier export, ~30 Mo).</p>
+        <button id="btn-record-start" class="btn btn-primary">Démarrer l'enregistrement</button>
+      </div>
+
+      <div id="record-progress" hidden>
+        <p id="record-progress-text">Préparation...</p>
+      </div>
+
+      <div id="record-result" hidden>
+        <p>Vidéo prête.</p>
+        <a id="record-download-link" class="btn btn-primary" download="shader.mp4">Télécharger le .mp4</a>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
   <script src="assets/js/shadertoy-runtime.js"></script>
+  <script src="assets/js/video-export.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>

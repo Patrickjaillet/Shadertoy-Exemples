@@ -141,6 +141,64 @@ html, body {
   color: var(--accent);
 }
 
+.record-field {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.record-field input {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.record-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.record-hint {
+  margin: 4px 0 16px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.btn-primary {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0d0f12;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  color: #0d0f12;
+}
+
+#record-progress-text {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+#record-result p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
 .search-input {
   width: 100%;
   padding: 8px 10px;

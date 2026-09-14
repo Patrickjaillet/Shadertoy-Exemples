@@ -87,11 +87,19 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 
 **Étape 8 complète : les 8 étapes de la roadmap sont désormais toutes réalisées** (miniatures de l'étape 5 restant en option non bloquante, cf. Risques).
 
+### 9. Export vidéo (ajout post-roadmap initiale)
+- [x] Bouton « Enregistrer » dans le viewport, avec durée (secondes) et images/seconde (FPS) saisis par l'utilisateur.
+- [x] Rendu déterministe image par image : `ShaderToyRuntime.renderFrameAt(time, frameIndex, frameDelta)` force `iTime`/`iFrame` à des valeurs précises indépendamment de la boucle `requestAnimationFrame`, garantissant que chaque frame exportée correspond exactement à l'instant attendu (pas de perte/doublon de frame liée aux variations de performance).
+- [x] Assemblage en `.mp4` (H.264) via [ffmpeg.wasm](https://ffmpegwasm.netlify.app/) : chaque frame est capturée en PNG (`canvas.toBlob`), écrite dans le système de fichiers virtuel de ffmpeg, puis encodée via `ffmpeg -framerate <fps> -i frame%05d.png -c:v libx264 -pix_fmt yuv420p output.mp4`. Téléchargement automatique du fichier résultant.
+- **Problème résolu — Worker ffmpeg.wasm et CDN** : le Worker interne de `@ffmpeg/ffmpeg` charge son propre script core (`ffmpeg-core.js`) via `importScripts()` avec une résolution de chemin relative, puis charge le `.wasm` associé de la même façon. Cette résolution échoue de manière fiable dès que `ffmpeg.js` est servi depuis un CDN cross-origin ou via une `blob:` URL générée à la volée (testé sur plusieurs approches : chargement direct, `toBlobURL`, `classWorkerURL` — toutes en échec avec des `SecurityError` ou `failed to import ffmpeg-core.js`). **Solution retenue** : télécharger les binaires ffmpeg.wasm (`ffmpeg.js`, `814.ffmpeg.js`, `ffmpeg-core.js`, `ffmpeg-core.wasm`, `ffmpeg-util.js`, ~31 Mo au total) et les committer dans `assets/vendor/ffmpeg/`, servis par le site avec de vrais chemins relatifs same-origin — la résolution interne fonctionne alors nativement.
+- Testé en conditions réelles (Playwright + Chromium) : export d'une vidéo de 2 secondes à 10 fps sur le shader `307`, téléchargement effectif d'un fichier `.mp4` valide (signature `ISO Media, MP4 Base Media v1` confirmée).
+
 ## Pile technique proposée
 
 - HTML/CSS/JS vanilla + WebGL2 (GLSL ES 3.00, sans fallback WebGL1) pour le runtime de rendu, aligné sur l'environnement de rendu réel de Shadertoy.
 - CodeMirror 6 (CDN) pour l'éditeur en lecture seule avec coloration GLSL.
-- Node.js uniquement pour le script de build (génération de `data/shaders.json`), aucune dépendance runtime côté client au-delà des CDN.
+- ffmpeg.wasm (binaires vendorisés localement, `assets/vendor/ffmpeg/`) pour l'export vidéo `.mp4` côté client.
+- Node.js uniquement pour le script de build (génération de `data/shaders.json`), aucune dépendance runtime côté client au-delà des CDN et des binaires vendorisés.
 - GitHub Actions + GitHub Pages pour l'hébergement et le déploiement automatique.
 
 ## Risques / points d'attention

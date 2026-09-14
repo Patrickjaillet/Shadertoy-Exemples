@@ -12,6 +12,7 @@ Site web statique permettant de parcourir et visualiser les shaders GLSL du dép
 - Lien direct partageable vers un shader précis (`#/<numéro>`).
 - Détection et signalement des shaders non affichables (dépendant de textures externes absentes du dépôt) : badge dans la liste et message explicite dans le viewport, le code restant toujours consultable.
 - Erreurs de compilation GLSL affichées de façon lisible dans l'interface plutôt qu'un écran noir silencieux.
+- Export vidéo : enregistrement du rendu image par image (durée et FPS paramétrables), assemblé en fichier `.mp4` téléchargeable directement depuis le navigateur.
 
 378 shaders sont actuellement référencés, dont 19 marqués comme non affichables (dépendance à des textures externes non fournies dans le dépôt).
 
@@ -47,8 +48,9 @@ Puis ouvrir l'URL affichée dans un navigateur.
 
 ## Pile technique
 
-- HTML/CSS/JS vanilla, WebGL pour le rendu des shaders.
+- HTML/CSS/JS vanilla, WebGL2 pour le rendu des shaders.
 - [CodeMirror 5](https://codemirror.net/5/) pour la coloration syntaxique GLSL de l'éditeur (chargé via cdnjs).
+- [ffmpeg.wasm](https://ffmpegwasm.netlify.app/) (binaires servis localement depuis `assets/vendor/ffmpeg/`) pour l'export vidéo `.mp4`.
 - Node.js pour le script de build (`scripts/build-index.js`), sans dépendance npm.
 - GitHub Actions pour le déploiement automatique sur GitHub Pages.
 

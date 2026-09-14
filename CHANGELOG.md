@@ -10,6 +10,7 @@ Le format s'inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 
 - Favicon SVG inline pour éviter le 404 sur `favicon.ico`.
 - Miniatures de prévisualisation dans la sidebar : générées à la volée côté client au premier affichage d'un shader, mises en cache dans `localStorage`, affichées à côté du titre pour chaque shader déjà visité.
+- Export vidéo : bouton « Enregistrer » (durée et images/seconde paramétrables par l'utilisateur) qui capture le rendu image par image de façon déterministe (`ShaderToyRuntime.renderFrameAt`, indépendant de `requestAnimationFrame`), puis assemble les images en un fichier `.mp4` (H.264) via ffmpeg.wasm, téléchargeable directement depuis le navigateur. Les binaires ffmpeg.wasm (~31 Mo) sont servis en local (`assets/vendor/ffmpeg/`) plutôt que depuis un CDN : le Worker interne de la bibliothèque utilise une résolution de chemin relative (`importScripts`) qui échoue de façon fiable avec des URLs cross-origin/blob générées à la volée.
 
 ### Corrigé
 

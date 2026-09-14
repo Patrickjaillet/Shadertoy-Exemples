@@ -253,16 +253,18 @@ html, body {
   white-space: pre-wrap;
 }
 
-.code-view {
-  margin: 0;
-  padding: 14px;
+.code-editor {
   max-height: 420px;
   overflow: auto;
+}
+
+.code-editor .CodeMirror {
+  height: auto;
+  max-height: 420px;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 12.5px;
   line-height: 1.5;
-  color: var(--text);
-  white-space: pre;
+  background: var(--bg-panel);
 }
 
 /* Sidebar toggle (mobile) */

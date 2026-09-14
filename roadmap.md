@@ -51,10 +51,11 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 - [ ] Gestion des shaders qui utilisent des textures externes (`iChannel` image/cubemap) : à ce stade ces shaders (19/378) compilent probablement mais avec un rendu non fidèle (aucune texture liée à `iChannel0..3`) ; le fallback explicite (message "aperçu non disponible") reste à faire (cf. Étape 6).
 
 ### 4. Éditeur de code avec copie
-- [ ] Intégrer un éditeur en lecture seule avec coloration syntaxique GLSL (ex. CodeMirror 6, léger, chargé via CDN pour rester statique).
-- [ ] Bouton "Copier le code" unique par shader (copie dans le presse-papier via `navigator.clipboard`), tous les shaders restants n'ayant qu'un seul pass `Image`.
-- [ ] Feedback visuel sur la copie (ex. "Copié !" temporaire).
-- [ ] Bouton "Voir sur Shadertoy" : l'id Shadertoy d'origine n'étant plus dans le nom de fichier, ce lien nécessite de retrouver l'id via l'historique git (nom de fichier avant renommage) ou un commentaire dans le code ; sinon, fonctionnalité abandonnée.
+- [x] Éditeur en lecture seule avec coloration syntaxique GLSL : CodeMirror 5 (mode `clike`, proche de la syntaxe C/GLSL) chargé via cdnjs, thème `dracula`. CodeMirror 6 nécessite un bundler (imports ES modules), écarté au profit de CodeMirror 5 qui s'intègre en simples balises `<script>`/`<link>`, cohérent avec la contrainte "site 100% statique sans backend".
+- [x] Bouton "Copier le code" unique par shader (copie dans le presse-papier via `navigator.clipboard`), tous les shaders restants n'ayant qu'un seul pass `Image`.
+- [x] Feedback visuel sur la copie (ex. "Copié !" temporaire).
+- [x] **Bouton "Voir sur Shadertoy" abandonné.** Investigation menée : l'id Shadertoy d'origine (ex. `3XKfzt`) est bien récupérable via `git log --follow` sur l'historique de renommage pour la plupart des fichiers, mais **`--follow` se trompe de piste sur 42 des 378 fichiers** (~11%) à cause des renommages en chaîne successifs (contenu très similaire entre certains shaders qui perturbe la détection de similarité de git). Un lien erroné vers le mauvais shader Shadertoy étant pire qu'une fonctionnalité absente, cette piste est abandonnée définitivement.
+- Testé en conditions réelles (Playwright + Chromium) : l'éditeur affiche le code avec coloration syntaxique et numéros de ligne, le bouton copier place bien le code source dans le presse-papier (vérifié avec permissions `clipboard-read`/`clipboard-write` accordées).
 
 ### 5. Navigation et état
 - [ ] Routing simple côté client via `#hash` (ex. `#/tunnel/010`) pour permettre le lien direct vers un shader précis.

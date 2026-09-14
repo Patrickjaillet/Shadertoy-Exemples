@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shadertoy Exemples</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -42,11 +44,13 @@
           <span class="editor-label">Code source</span>
           <button id="btn-copy" class="btn" disabled>Copier le code</button>
         </div>
-        <pre id="code-view" class="code-view"><code id="code-content"></code></pre>
+        <div id="code-editor" class="code-editor"></div>
       </section>
     </main>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
   <script src="assets/js/shadertoy-runtime.js"></script>
   <script src="assets/js/app.js"></script>
 </body>

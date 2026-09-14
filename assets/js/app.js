@@ -12,7 +12,7 @@
     searchInput: document.getElementById('search-input'),
     categoryList: document.getElementById('category-list'),
     currentTitle: document.getElementById('current-title'),
-    codeContent: document.getElementById('code-content'),
+    codeEditor: document.getElementById('code-editor'),
     canvas: document.getElementById('shader-canvas'),
     viewportPlaceholder: document.getElementById('viewport-placeholder'),
     viewportError: document.getElementById('viewport-error'),
@@ -28,6 +28,15 @@
   } catch (err) {
     console.error(err);
   }
+
+  const codeMirror = CodeMirror(el.codeEditor, {
+    value: '',
+    mode: 'text/x-csrc',
+    theme: 'dracula',
+    lineNumbers: true,
+    readOnly: true,
+    viewportMargin: Infinity
+  });
 
   function groupByCategory(entries) {
     const map = new Map();
@@ -92,7 +101,8 @@
 
       state.current = shader;
       el.currentTitle.textContent = `${shader.num} — ${shader.title}`;
-      el.codeContent.textContent = shader.source;
+      codeMirror.setValue(shader.source);
+      codeMirror.refresh();
       el.btnCopy.disabled = false;
 
       renderShader(shader);

@@ -70,11 +70,13 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 - Testé en conditions réelles (Playwright + Chromium) : le shader `003` (utilisation de `iChannel0`/`iChannel1`) affiche le badge dans la sidebar et le message clair dans le viewport, avec le code toujours visible dans l'éditeur.
 
 ### 7. Déploiement GitHub Pages
-- [ ] Ajouter un workflow GitHub Actions (`.github/workflows/deploy.yml`) qui :
+- [x] Ajouter un workflow GitHub Actions (`.github/workflows/deploy.yml`) qui :
+  - se déclenche sur chaque push vers `main` (+ déclenchement manuel `workflow_dispatch`),
   - exécute `scripts/build-index.js` pour régénérer `data/`,
-  - publie le contenu statique sur la branche `gh-pages` (ou déploiement Pages natif via `actions/deploy-pages`).
-- [ ] Vérifier que tous les chemins (dossiers avec espaces/accents comme `Retro & Synthwave`) sont correctement encodés en URL.
-- [ ] Tester le site en local (`npx serve` ou équivalent) avant publication.
+  - publie le contenu statique via le déploiement Pages natif (`actions/configure-pages`, `actions/upload-pages-artifact`, `actions/deploy-pages`), préféré à la branche `gh-pages` car plus simple à opérer (pas de branche annexe à maintenir) et recommandé par GitHub.
+  - **Action manuelle requise côté utilisateur, non automatisable** : dans les paramètres du dépôt GitHub (`Settings > Pages > Build and deployment > Source`), sélectionner "GitHub Actions" pour que ce workflow puisse effectivement publier.
+- [x] Vérifier que tous les chemins sont correctement utilisables en URL : dossiers déjà normalisés (minuscules, sans espaces/accents/caractères spéciaux) depuis les étapes précédentes, aucun chemin problématique restant dans le dépôt. Le site ne navigue de toute façon jamais directement vers un fichier `.glsl` par URL (uniquement via `fetch()` de JSON), ce qui élimine ce risque par construction.
+- [x] Testé le site en local (`npx serve .`) avant publication : page d'accueil, `data/shaders.json` et un `data/shaders/<NNN>.json` répondent tous en 200.
 
 ### 8. Finitions
 - [ ] README mis à jour avec lien vers le site publié et instructions de contribution (comment ajouter un nouveau shader : juste déposer le fichier dans le bon dossier + relancer le build).

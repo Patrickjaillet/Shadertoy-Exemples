@@ -4,6 +4,12 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 
 Le format s'inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et ce projet suit le [Versionnage Sémantique](https://semver.org/lang/fr/) (SemVer).
 
+## [Non publié]
+
+### Ajouté
+
+- Miniatures de prévisualisation dans la sidebar : générées à la volée côté client au premier affichage d'un shader, mises en cache dans `localStorage`, affichées à côté du titre pour chaque shader déjà visité.
+
 ## [0.1.0] - 2026-09-14
 
 Premier jalon fonctionnel du site de visualisation des shaders.

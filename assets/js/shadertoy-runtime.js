@@ -51,7 +51,8 @@ void main() {
   class ShaderToyRuntime {
     constructor(canvas) {
       this.canvas = canvas;
-      this.gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      const contextOptions = { preserveDrawingBuffer: true };
+      this.gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
       if (!this.gl) {
         throw new Error('WebGL non disponible sur ce navigateur.');
       }

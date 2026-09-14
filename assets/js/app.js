@@ -41,6 +41,35 @@
     viewportMargin: Infinity
   });
 
+  const THUMB_PREFIX = 'shadertoy-thumb-';
+
+  function getThumbnail(num) {
+    try {
+      return localStorage.getItem(THUMB_PREFIX + num);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function saveThumbnail(num, dataUrl) {
+    try {
+      localStorage.setItem(THUMB_PREFIX + num, dataUrl);
+    } catch (err) {
+      // Stockage plein ou indisponible (navigation privée) : on continue sans miniature persistée.
+    }
+  }
+
+  function captureThumbnail(num) {
+    if (getThumbnail(num)) return;
+    try {
+      const dataUrl = el.canvas.toDataURL('image/jpeg', 0.6);
+      saveThumbnail(num, dataUrl);
+      renderSidebar();
+    } catch (err) {
+      // Canvas potentiellement "tainted" ou navigateur restrictif : on ignore silencieusement.
+    }
+  }
+
   function groupByCategory(entries) {
     const map = new Map();
     for (const entry of entries) {
@@ -81,7 +110,21 @@
         if (state.current && state.current.num === entry.num) item.classList.add('active');
 
         const btn = document.createElement('button');
-        btn.textContent = `${entry.num} — ${entry.title}`;
+        btn.className = 'shader-item-btn';
+
+        const thumb = getThumbnail(entry.num);
+        if (thumb) {
+          const img = document.createElement('img');
+          img.className = 'shader-thumb';
+          img.src = thumb;
+          img.alt = '';
+          btn.appendChild(img);
+        }
+
+        const label = document.createElement('span');
+        label.textContent = `${entry.num} — ${entry.title}`;
+        btn.appendChild(label);
+
         if (entry.unsupported) {
           const badge = document.createElement('span');
           badge.className = 'unsupported-badge';
@@ -177,6 +220,7 @@
       runtime.load(shader.source);
       clearViewportError();
       setPlaybackControls(true);
+      setTimeout(() => captureThumbnail(shader.num), 400);
     } catch (err) {
       showViewportError(err.message || String(err));
     }

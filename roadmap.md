@@ -34,11 +34,12 @@ Le site est 100% statique (HTML/CSS/JS, pas de backend), pour pouvoir être serv
 - [x] Copier/normaliser les sources brutes dans `data/shaders/<NNN>.json` (un fichier par shader, avec `source` en plus des champs d'index) pour un chargement à la demande côté client (évite de charger 378 shaders d'un coup).
 
 ### 2. Squelette du site statique
-- [ ] Structure : `index.html`, `assets/css/style.css`, `assets/js/app.js`.
-- [ ] Layout à deux zones principales :
-  - **Sidebar / liste** : catégories repliables + liste des shaders (titre, recherche texte, filtre par catégorie).
-  - **Zone principale** : viewport de rendu (canvas 800×450) au-dessus, éditeur de code en dessous (ou côte à côte selon largeur d'écran).
-- [ ] Responsive minimal : sur petit écran, la sidebar devient un menu réductible et le viewport garde son ratio (scalé en `max-width`, mais résolution interne du canvas conservée à 800×450 pour la fidélité du rendu).
+- [x] Structure : `index.html`, `assets/css/style.css`, `assets/js/app.js`.
+- [x] Layout à deux zones principales :
+  - **Sidebar / liste** : catégories repliables + liste des shaders (titre, recherche texte en direct). Filtre par catégorie couvert implicitement par le regroupement (une catégorie sans résultat de recherche est masquée).
+  - **Zone principale** : viewport de rendu (canvas 800×450) au-dessus, éditeur de code en dessous.
+- [x] Responsive minimal : sur petit écran (≤720px), la sidebar devient un panneau réductible via un bouton "☰ Shaders", le viewport garde son ratio 800×450 via `aspect-ratio` en CSS (résolution interne du canvas conservée à 800×450 pour la fidélité du rendu).
+- Le rendu WebGL réel (étape 3) et l'éditeur CodeMirror (étape 4) ne sont pas encore branchés : le code source s'affiche pour l'instant en texte brut dans un `<pre>`, et le viewport affiche un message d'attente.
 
 ### 3. Viewport de rendu WebGL (800×450)
 - [ ] Canvas fixé à `width=800 height=450` (résolution interne), avec `iResolution` réglé en conséquence.

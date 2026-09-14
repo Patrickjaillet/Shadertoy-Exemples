@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shadertoy Exemples</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="app">
+    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Ouvrir/fermer la liste des shaders">☰ Shaders</button>
+
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <h1 class="sidebar-title">Shadertoy Exemples</h1>
+        <input id="search-input" class="search-input" type="search" placeholder="Rechercher un shader...">
+      </div>
+      <nav id="category-list" class="category-list"></nav>
+    </aside>
+
+    <main class="main">
+      <section class="viewport-panel">
+        <div class="viewport-header">
+          <h2 id="current-title" class="current-title">Sélectionnez un shader</h2>
+          <div class="viewport-controls">
+            <button id="btn-play" class="btn" disabled>Play</button>
+            <button id="btn-pause" class="btn" disabled>Pause</button>
+            <button id="btn-reset" class="btn" disabled>Reset</button>
+          </div>
+        </div>
+        <div class="viewport-frame">
+          <canvas id="shader-canvas" width="800" height="450"></canvas>
+          <div id="viewport-placeholder" class="viewport-placeholder">
+            Choisissez un shader dans la liste pour l'afficher ici.
+          </div>
+        </div>
+      </section>
+
+      <section class="editor-panel">
+        <div class="editor-header">
+          <span class="editor-label">Code source</span>
+          <button id="btn-copy" class="btn" disabled>Copier le code</button>
+        </div>
+        <pre id="code-view" class="code-view"><code id="code-content"></code></pre>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
